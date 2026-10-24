@@ -29,19 +29,19 @@
 | DEC-006 | Layered monolith | ACCEPTED |
 | DEC-007 | Struktur folder baseline (termasuk `Container/`) | ACCEPTED |
 | DEC-008 | Zod untuk validasi request BE | ACCEPTED |
-| DEC-009 | Testing Vitest + Supertest | PROPOSED |
+| DEC-009 | Testing Vitest + Supertest | ACCEPTED |
 | DEC-010 | Judul KP final | ACCEPTED |
 | DEC-011 | Uang sebagai Decimal | PROPOSED |
 | DEC-012 | Ledger stok + transaksi atomik | PROPOSED |
-| DEC-013 | JWT di cookie HttpOnly | PROPOSED |
+| DEC-013 | JWT di cookie HttpOnly | ACCEPTED |
 | DEC-014 | Kebijakan hosting | PROPOSED |
 | DEC-015 | Strategi backup | PROPOSED |
 | DEC-016 | Fitur pemesanan lensa | NEEDS_CONFIRMATION |
 | DEC-017 | Kebijakan harga grosir | NEEDS_CONFIRMATION |
 | DEC-018 | Matriks hak akses | NEEDS_CONFIRMATION |
-| DEC-019 | Nama berkas konfigurasi Prisma | PROPOSED |
+| DEC-019 | Nama berkas konfigurasi Prisma | REJECTED |
 | DEC-020 | TanStack Table untuk tabel | PROPOSED |
-| DEC-021 | Format response/error API | PROPOSED |
+| DEC-021 | Format response/error API | ACCEPTED |
 | DEC-022 | Arah desain Optical Luxury — Vintage Modern | ACCEPTED |
 | DEC-023 | Token warna dan penyesuaian kontras | PROPOSED |
 | DEC-024 | Font UI | NEEDS_CONFIRMATION |
@@ -49,6 +49,10 @@
 | DEC-026 | Shared package FE-BE / OpenAPI codegen | REJECTED |
 | DEC-027 | Next.js dan NestJS | REJECTED |
 | DEC-028 | Data pelanggan | NEEDS_CONFIRMATION |
+| DEC-029 | Backend memakai ES Modules | ACCEPTED |
+| DEC-030 | Primary key integer autoincrement | ACCEPTED |
+| DEC-031 | Login dengan username, hash argon2id | ACCEPTED |
+| DEC-032 | Library dan rate limit auth | ACCEPTED |
 
 ## Keputusan
 
@@ -106,9 +110,9 @@
 - **Dampak:** FE dan BE memakai bahasa skema yang sama tetapi skema ditulis terpisah (DEC-026).
 
 ### DEC-009 Testing: Vitest + Supertest
-- **Tanggal:** tidak tercatat. **Status:** PROPOSED.
-- **Konteks:** prompt menyebut keduanya "apabila sesuai dengan konfigurasi proyek". Konfigurasi aktual belum bisa diperiksa.
-- **Keputusan (usulan):** integration test BE dengan Vitest + Supertest di database test terpisah, fokus alur kritis.
+- **Tanggal:** diterima developer 24 Oktober 2026 (Tahap 1). **Status:** ACCEPTED.
+- **Konteks:** prompt menyebut keduanya "apabila sesuai dengan konfigurasi proyek". Audit Tahap 0 menemukan belum ada framework test.
+- **Keputusan:** integration test BE dengan Vitest + Supertest di database test terpisah, fokus alur kritis. Test hanya membaca `BE/.env.test`, dan nama database test wajib berakhiran `_test` (dicek di `BE/tests/setup.ts`).
 - **Alasan:** biaya rendah, nilai tinggi pada stok, transaksi, dan akses.
 
 ### DEC-010 Judul KP final
@@ -130,8 +134,8 @@
 - **Referensi:** `DATABASE.md` bagian 8-10, 15.
 
 ### DEC-013 JWT di cookie HttpOnly
-- **Tanggal:** tidak tercatat. **Status:** PROPOSED. Prompt menyebut JWT "harus difinalkan sebelum implementasi".
-- **Keputusan (usulan):** JWT di cookie HttpOnly, Secure, SameSite=Lax, dengan pengecekan status aktif pengguna per request dan pemeriksaan `Origin` untuk request ubah data.
+- **Tanggal:** diterima developer 24 Oktober 2026 (Tahap 2), bersama status M-01 CONFIRMED. **Status:** ACCEPTED.
+- **Keputusan:** JWT (HS256) di cookie HttpOnly `access_token`, Secure di production, SameSite=Lax, Path=/, berlaku **8 jam** tanpa refresh token. Status aktif dan role pengguna dibaca dari database pada setiap request. Request ubah data diperiksa `Origin`/`Referer` terhadap `APP_ORIGIN` dan wajib JSON bila ber-body.
 - **Alasan:** token tidak terbaca JavaScript. Satu origin di produksi menyederhanakan CSRF.
 - **Alternatif:** JWT di browser storage (token terbaca bila ada XSS), sesi server-side (bisa dicabut, butuh tabel sesi dan menyimpang dari baseline JWT).
 - **Dampak/trade-off:** `AuthContext` tanpa token, tanpa interceptor Bearer, perlu mitigasi CSRF. HttpOnly tidak menghilangkan risiko XSS.
@@ -165,10 +169,11 @@
 - **Keputusan sementara:** deny by default, dua role (`owner`, `staff`), izin sensitif dibatasi seminimal mungkin sampai dikonfirmasi.
 
 ### DEC-019 Nama berkas konfigurasi Prisma
-- **Tanggal:** tidak tercatat. **Status:** PROPOSED.
+- **Tanggal:** ditolak developer 24 Oktober 2026 (Tahap 1). **Status:** REJECTED.
 - **Konteks:** developer memakai berkas bernama `prisma7.config.ts`. Dokumentasi resmi Prisma 7 menyebut `prisma.config.ts` di root project.
-- **Keputusan (usulan):** gunakan nama standar `prisma.config.ts`, kecuali ada alasan khusus menggunakan nama lain.
-- **Dampak:** perubahan kecil. Tidak dilakukan oleh dokumentasi.
+- **Usulan yang ditolak:** ganti ke nama standar `prisma.config.ts`.
+- **Alasan penolakan:** audit Tahap 0 membuktikan Prisma CLI 7.10.1 memuat `prisma7.config.ts` ("Loaded Prisma config from prisma7.config.ts"). Rename hanya soal konvensi.
+- **Dampak:** berkas tetap `BE/prisma7.config.ts`. Jika versi Prisma berikutnya tidak lagi mendeteksinya, tinjau ulang keputusan ini.
 
 ### DEC-020 TanStack Table untuk tabel
 - **Tanggal:** tidak tercatat. **Status:** PROPOSED.
@@ -177,8 +182,8 @@
 - **Dampak:** dependency baru. Butuh persetujuan sebelum dipasang.
 
 ### DEC-021 Format response dan error API
-- **Tanggal:** tidak tercatat. **Status:** PROPOSED.
-- **Keputusan (usulan):** sukses `{ data, meta }`, error `{ error: { code, message, details } }`, dipakai konsisten di seluruh endpoint.
+- **Tanggal:** diterima developer 24 Oktober 2026 (Tahap 1). **Status:** ACCEPTED.
+- **Keputusan:** sukses `{ data, meta }`, error `{ error: { code, message, details } }`, dipakai konsisten di seluruh endpoint. Diimplementasikan di `BE/src/utils/api-response.ts` dan `BE/src/middlewares/error.middleware.ts`.
 - **Referensi:** `API_CONTRACT.md` bagian 2-4.
 
 ### DEC-022 Arah desain Optical Luxury — Vintage Modern
@@ -208,3 +213,29 @@
 ### DEC-028 Data pelanggan
 - **Status:** NEEDS_CONFIRMATION (Q-04).
 - **Dampak:** tabel pelanggan dan pertimbangan privasi data pribadi. Tidak diimplementasikan sampai dikonfirmasi.
+
+### DEC-029 Backend memakai ES Modules
+- **Tanggal:** diterima developer 24 Oktober 2026 (Tahap 1). **Status:** ACCEPTED.
+- **Konteks:** audit Tahap 0 menemukan `BE/package.json` bertipe CommonJS sementara `prisma7.config.ts` ditulis ESM, sehingga typecheck gagal. Dokumentasi Prisma 7 menyatakan Prisma 7 ESM-first.
+- **Keputusan:** `"type": "module"`, TypeScript `module`/`moduleResolution` `nodenext`, import relatif memakai ekstensi `.js`. Generator `prisma-client` memakai output default (ESM).
+- **Alternatif:** CommonJS dengan `moduleFormat = "cjs"` (melawan default Prisma 7).
+- **Dampak:** build memakai `tsc -p tsconfig.build.json` ke `dist/`, lalu `node dist/server.js`.
+
+### DEC-030 Primary key integer autoincrement
+- **Tanggal:** diterima developer 24 Oktober 2026 (Tahap 2). **Status:** ACCEPTED.
+- **Keputusan:** semua tabel memakai `Int @id @default(autoincrement())` (`SERIAL`). ID dikirim di API sebagai number.
+- **Alasan:** paling sederhana dibaca dan di-debug untuk aplikasi internal satu toko.
+- **Alternatif:** UUID v7 (tidak bisa ditebak, string panjang).
+- **Trade-off:** urutan dan jumlah ID terlihat oleh pengguna yang berhak. Akses tetap dijaga RBAC di BE.
+
+### DEC-031 Login dengan username, hash argon2id
+- **Tanggal:** diterima developer 24 Oktober 2026 (Tahap 2). **Status:** ACCEPTED.
+- **Keputusan:** identitas login `username` (unik, huruf kecil, dijaga CHECK di database). Password di-hash argon2id (paket `argon2`, parameter default m=64 MiB, t=3, p=4). Panjang minimum password akun baru 12 karakter.
+- **Alasan:** pegawai tidak wajib punya email (lebih sedikit data pribadi). argon2id adalah pilihan utama OWASP.
+- **Belum diverifikasi:** benchmark biaya hash di server produksi, dan instalasi native addon `argon2` di platform hosting.
+
+### DEC-032 Library dan rate limit auth
+- **Tanggal:** disetujui developer 24 Oktober 2026 (Tahap 2). **Status:** ACCEPTED.
+- **Keputusan:** `jose` untuk JWT, `cookie-parser` untuk membaca cookie, rate limit login ditulis sendiri in-memory (`BE/src/services/login-rate-limit.service.ts`) dengan angka di `SECURITY.md` bagian 8.
+- **Alternatif:** jsonwebtoken, paket `cookie`, rate-limiter-flexible, express-rate-limit.
+- **Trade-off:** counter hilang saat restart dan tidak dibagi antar-instance (cukup untuk satu instance).

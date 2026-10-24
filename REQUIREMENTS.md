@@ -33,7 +33,7 @@ Sumber yang tersedia hanya prompt developer (lihat `PROJECT_CONTEXT.md` bagian 7
 
 | ID | Modul | Status | Dasar |
 |---|---|---|---|
-| M-01 | Authentication dan authorization | PROPOSED | Prasyarat; role owner/pegawai disebut di kebutuhan awal |
+| M-01 | Authentication dan authorization | **CONFIRMED** | Dikonfirmasi developer 24 Okt 2026 (DEC-013). Matriks izin tetap menunggu Q-03 |
 | M-02 | Dashboard | PROPOSED | Kebutuhan awal |
 | M-03 | Produk | PROPOSED | Prasyarat penjualan, pembelian, inventaris |
 | M-04 | Kategori | PROPOSED | Kebutuhan awal |

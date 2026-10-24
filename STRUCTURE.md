@@ -92,16 +92,21 @@ BE/
 │   ├── lib/             # instance library (prisma.ts)
 │   ├── utils/           # fungsi murni: password, jwt, api-response, app-error
 │   ├── types/           # tipe bersama BE, augmentasi Express (req.user)
+│   ├── generated/prisma/ # hasil `prisma generate`, tidak di-commit
 │   ├── app.ts           # setup Express, middleware global, mount routes
 │   └── server.ts        # listen saja
+├── tests/               # integration test Vitest + Supertest (DEC-009), setup.ts memuat .env.test
 ├── .env
 ├── .env.example
+├── .env.test            # database test terpisah, tidak di-commit
 ├── package.json
-├── tsconfig.json
-└── prisma.config.ts     # nama standar Prisma 7 (lihat DEC-019)
+├── tsconfig.json        # typecheck seluruh BE (noEmit)
+├── tsconfig.build.json  # build src/ ke dist/
+├── vitest.config.ts
+└── prisma7.config.ts    # konfigurasi Prisma 7 (nama dipertahankan, DEC-019 REJECTED)
 ```
 
-`.env` tidak boleh disentuh atau dimasukkan ke git. Berkas konfigurasi Prisma yang ada di proyek developer bernama `prisma7.config.ts`. Rekomendasinya diganti ke nama standar (DEC-019, PROPOSED), tetapi perubahan ini tidak dilakukan oleh dokumentasi.
+`.env` dan `.env.test` tidak boleh disentuh AI atau dimasukkan ke git.
 
 ## 4. Tanggung jawab folder
 
@@ -249,6 +254,13 @@ BE/src/utils/jwt.ts
 ```
 
 `AuthContext` hanya memegang state auth global. Jika JWT cookie HttpOnly dipakai (DEC-013), `AuthContext` **tidak** menyimpan token. Tidak ada logic produk, penjualan, atau inventaris di sana.
+
+**Kondisi aktual setelah Tahap 2 (24 Okt 2026), selisih terhadap contoh di atas:**
+
+- FE `features/auth/context/auth-context.ts` berisi `createContext`, terpisah dari `AuthContext.tsx` (yang hanya mengekspor `AuthProvider`), agar aturan lint `react-refresh/only-export-components` terpenuhi.
+- FE tambahan: `features/auth/components/LogoutButton.tsx`, `routes/router.tsx` (daftar route), `pages/LoginPage.tsx`, `pages/HomePage.tsx` (halaman sementara sampai dashboard Tahap 8), `types/api.ts`, `utils/api-error.ts`.
+- `routes/RoleRoute.tsx` **ditunda** sampai ada route yang membutuhkan role tertentu.
+- BE tambahan: `middlewares/validate.middleware.ts`, `middlewares/origin.middleware.ts`, `services/login-rate-limit.service.ts` (rate limit butuh hasil login, jadi berada di service, bukan middleware), `types/auth.ts`, `types/express.d.ts`, `prisma/seed.ts`, `tests/helpers.ts`.
 
 ## 12. Contoh page yang hanya menyusun komponen
 

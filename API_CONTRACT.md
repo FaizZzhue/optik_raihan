@@ -49,6 +49,18 @@
 
 - `code`: string stabil untuk dipakai FE (bukan teks bahasa). `message`: teks untuk pengguna. `details`: opsional, untuk error per field atau konteks.
 - Kode awal yang diusulkan: `VALIDATION_ERROR`, `UNAUTHENTICATED`, `FORBIDDEN`, `NOT_FOUND`, `CONFLICT`, `INSUFFICIENT_STOCK`, `INTERNAL_ERROR`. Daftar final mengikuti yang benar-benar diimplementasikan dan dicatat di sini.
+- **Sudah diimplementasikan** (`BE/src/constants/error.constants.ts`):
+
+| Kode | Status | Kapan |
+|---|---|---|
+| `VALIDATION_ERROR` | 400 | Body JSON rusak, atau validasi Zod gagal (`details` per field) |
+| `UNAUTHENTICATED` | 401 | Tanpa sesi, sesi rusak/kedaluwarsa/user nonaktif, atau login gagal (pesan generik) |
+| `FORBIDDEN` | 403 | Role tidak berhak, atau Origin/Referer bukan origin aplikasi |
+| `NOT_FOUND` | 404 | Resource atau path tidak dikenal (path di bawah `/api` tanpa sesi lebih dulu kena 401) |
+| `PAYLOAD_TOO_LARGE` | 413 | Body > 100 KB |
+| `UNSUPPORTED_MEDIA_TYPE` | 415 | Request ubah data ber-body yang bukan `application/json` |
+| `TOO_MANY_REQUESTS` | 429 | Login terkunci sementara (`SECURITY.md` bagian 8) |
+| `INTERNAL_ERROR` | 500 | Error tak terduga, pesan generik "Terjadi kesalahan pada server." |
 - Tidak ada stack trace atau detail internal di production.
 
 ## 4. HTTP status codes
@@ -63,6 +75,9 @@
 | 403 | Login tetapi tidak berhak |
 | 404 | Resource tidak ditemukan |
 | 409 | Konflik dengan keadaan data (duplikat, stok tidak cukup) |
+| 413 | Body request melebihi batas ukuran |
+| 415 | Body request ubah data bukan JSON |
+| 429 | Terlalu banyak percobaan (rate limit login) |
 | 500 | Error tak terduga |
 
 Status 422 tidak dipakai agar kontrak sederhana. Satu aturan: salah bentuk/nilai input = 400, bertentangan dengan keadaan data = 409.
@@ -108,7 +123,7 @@ Aturan:
 
 - BE memvalidasi semua `body`, `query`, dan `params` dengan Zod (`BE/src/validators/<domain>.validator.ts`) lewat middleware validasi. Kegagalan menghasilkan 400 `VALIDATION_ERROR` dengan `details` per field.
 - FE memvalidasi form dengan skema sendiri untuk UX. Kedua skema harus selaras tetapi ditulis terpisah (DEC-026). Kesesuaiannya dijaga lewat integration test endpoint.
-- Request menolak field tak dikenal atau mengabaikannya secara konsisten (pilih satu perilaku dan catat di sini saat implementasi).
+- **Field tak dikenal diabaikan** (dibuang oleh `z.object` di `validateBody`), sehingga field seperti `role` atau `userId` di body tidak pernah sampai ke service.
 
 ## 9. Autentikasi dan cookie (DEC-013, PROPOSED)
 
@@ -151,7 +166,14 @@ Jika keputusan berubah, bagian ini, `SECURITY.md`, dan `ARCHITECTURE.md` diperba
 - Menambah field opsional pada response tidak breaking. Menghapus, mengganti nama, atau mengubah tipe field adalah breaking.
 - Jaga kontrak dengan integration test (Supertest) untuk endpoint kritis.
 
-**Riwayat perubahan kontrak:** (kosong, belum ada API terimplementasi)
+**Riwayat perubahan kontrak:**
+
+| Tanggal | Perubahan |
+|---|---|
+| 24 Okt 2026 | `GET /api/health` (publik, tanpa auth): `200 { "data": { "status": "ok", "database": "ok" } }`. Jika database tidak terjangkau: `500 INTERNAL_ERROR` lewat error middleware. |
+| 24 Okt 2026 | Format error bagian 3 diterapkan (DEC-021). Kode aktif: `VALIDATION_ERROR`, `NOT_FOUND`, `PAYLOAD_TOO_LARGE`, `INTERNAL_ERROR`. Status 413 ditambahkan ke bagian 4. |
+| 24 Okt 2026 | Auth (DEC-013): `POST /api/auth/login` body `{ username, password }` → `200 { data: { id, username, name, role } }` + cookie `access_token` (HttpOnly, SameSite=Lax, Path=/, Max-Age=28800, Secure di production); gagal → `401 UNAUTHENTICATED` "Username atau password salah."; terkunci → `429`. `POST /api/auth/logout` → `204` + hapus cookie (tidak butuh sesi). `GET /api/auth/me` → `200 { data: user }` atau `401`. |
+| 24 Okt 2026 | Kode baru: `UNAUTHENTICATED`, `FORBIDDEN`, `UNSUPPORTED_MEDIA_TYPE`, `TOO_MANY_REQUESTS`; status 415 dan 429 ditambahkan. Semua path `/api` selain `/health` dan `/auth/*` wajib sesi (deny by default). POST/PUT/PATCH/DELETE ke `/api` wajib Origin/Referer = `APP_ORIGIN`. |
 
 ## 14. Contoh ilustratif (bukan kontrak final)
 

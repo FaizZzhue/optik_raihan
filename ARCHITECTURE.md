@@ -113,7 +113,7 @@ Jika ada error di mana pun, service melempar `AppError`, `error.middleware.ts` m
 
 Aturan:
 - Satu kelas `AppError` (kode, pesan, status HTTP) di `BE/src/utils/`.
-- Controller tidak menulis `try/catch` berulang. Gunakan pembungkus async atau mekanisme yang diputuskan saat implementasi, selama konsisten.
+- Controller tidak menulis `try/catch` berulang. BE memakai Express 5 (5.2.1), yang meneruskan promise ditolak dari handler async ke error middleware secara otomatis, jadi tidak ada pembungkus async.
 - FE: error API ditangani global di interceptor untuk 401, dan per mutation untuk error domain.
 
 ## 8. Manajemen konfigurasi
@@ -137,8 +137,8 @@ Rincian: `SECURITY.md` dan `API_CONTRACT.md`.
 
 | Aspek | Development | Production (DEC-014, PROPOSED) |
 |---|---|---|
-| FE | `vite dev`, proxy `/api` ke BE | Hasil `vite build` dilayani Express sebagai file statis |
-| BE | `tsx`/watch (alat ditentukan saat implementasi) | Satu service Node di PaaS |
+| FE | `vite dev` (port 5173), proxy `/api` ke BE `http://localhost:4000` | Hasil `vite build` dilayani Express sebagai file statis |
+| BE | `tsx watch src/server.ts`, port default 4000 | Satu service Node di PaaS (`npm run build` lalu `npm start`) |
 | DB | PostgreSQL lokal | PostgreSQL managed berbayar dengan backup |
 | Origin | Satu origin lewat proxy Vite | Satu origin (FE dan API satu domain) |
 | CORS | Tidak dibutuhkan | Tidak dibutuhkan |

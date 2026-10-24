@@ -30,6 +30,7 @@
 - Tingkat biaya (cost) disetel setinggi yang masih nyaman pada server produksi. Titik awal bcrypt cost 12 adalah angka awal, bukan hasil benchmark, dan harus dievaluasi.
 - Tidak pernah menyimpan, mencatat di log, atau mengembalikan password dalam bentuk asli. Hash tidak ikut dalam DTO.
 - Kebijakan panjang minimum password ditetapkan saat implementasi. Tidak ada password default yang tertinggal di produksi (seed: `DATABASE.md` bagian 13).
+- **Diterapkan (24 Okt 2026, DEC-031):** argon2id (paket `argon2`, parameter default m=64 MiB, t=3, p=4, belum di-benchmark). Password akun baru minimal 12 karakter (`PASSWORD_MIN_LENGTH`). Input password login dibatasi 128 karakter. Login dengan username yang tidak ada tetap menjalankan verifikasi argon2 terhadap hash palsu agar waktu respons tidak membedakan kasusnya.
 
 ## 4. JWT dan cookie (DEC-013, PROPOSED)
 
@@ -79,6 +80,8 @@ Berlaku karena autentikasi memakai cookie.
 - Penguncian akun permanen setelah beberapa gagal bisa dipakai untuk menyerang ketersediaan akun. Pilih backoff bertahap berdasarkan kombinasi IP dan username.
 - Penyimpanan counter in-memory cukup untuk satu instance. Jika instance lebih dari satu, butuh penyimpanan bersama.
 - Angka batas ditetapkan saat implementasi dan dicatat di sini.
+- **Diterapkan pada login (24 Okt 2026, `BE/src/services/login-rate-limit.service.ts`):** kunci = IP + username (huruf kecil). 5 kegagalan pertama bebas. Kegagalan ke-6 mengunci 30 detik, ke-7 60 detik, dan seterusnya berlipat dua sampai maksimal 15 menit. Selama terkunci, login ditolak `429 TOO_MANY_REQUESTS`, termasuk dengan password benar. Login sukses mengosongkan counter. Counter dilupakan setelah 15 menit tanpa kegagalan baru.
+- **Risiko terbuka (Tahap 9):** `trust proxy` belum diatur. Di balik proxy hosting, `req.ip` bisa berupa IP proxy, sehingga kunci praktis menjadi per username dan penyerang dapat mengunci sementara akun orang lain (maksimal 15 menit per siklus). Belum ada batas umum per IP untuk banyak username, dan belum ada rate limit umum untuk API lain.
 
 ## 9. Validasi input
 
@@ -142,11 +145,11 @@ Integration test (Supertest) minimal untuk:
 
 | Hal | Status | Keputusan terkait |
 |---|---|---|
-| JWT di cookie HttpOnly | PROPOSED | DEC-013 |
-| Mitigasi CSRF via SameSite + Origin check | PROPOSED | DEC-013 |
+| JWT di cookie HttpOnly | **ACCEPTED** (diterapkan Tahap 2) | DEC-013 |
+| Mitigasi CSRF via SameSite + Origin check | **ACCEPTED** (diterapkan Tahap 2) | DEC-013 |
 | Satu origin di produksi (tanpa CORS) | PROPOSED | DEC-014 |
-| Algoritma hash password (bcrypt/argon2id) | NEEDS_CONFIRMATION | Dipilih saat implementasi sebagai dependency |
+| Algoritma hash password | **ACCEPTED**: argon2id | DEC-031 |
 | Matriks hak akses | NEEDS_CONFIRMATION | DEC-018 |
-| Masa berlaku sesi | NEEDS_CONFIRMATION | DEC-013 |
+| Masa berlaku sesi | **ACCEPTED**: 8 jam, tanpa refresh token | DEC-013 |
 | Daftar aksi yang diaudit | NEEDS_CONFIRMATION | Dengan owner |
 | Upload file | NEEDS_CONFIRMATION | Q-15 |

@@ -12,8 +12,10 @@
 ## 1. Teknologi
 
 - PostgreSQL sebagai database (DEC-003). Prisma ORM sebagai akses data (DEC-004).
-- Prisma 7 mewajibkan driver adapter untuk membuat client, dan konfigurasi CLI berada di `prisma.config.ts` pada root project BE (DEC-019). Ikuti dokumentasi resmi untuk versi terpasang.
-- Satu instance `PrismaClient` di `BE/src/lib/prisma.ts`. Hanya service yang memakainya.
+- Prisma 7 mewajibkan driver adapter untuk membuat client, dan konfigurasi CLI berada di `BE/prisma7.config.ts` (DEC-019 REJECTED, nama dipertahankan). Ikuti dokumentasi resmi untuk versi terpasang.
+- Terpasang (diverifikasi 24 Okt 2026): `prisma` dan `@prisma/client` 7.10.1, `@prisma/adapter-pg` 7.10.1, `pg` 8.23.1.
+- `prisma7.config.ts` memakai `env("DATABASE_URL")`, sehingga perintah Prisma CLI (termasuk `prisma generate` di skrip `build`) gagal dengan pesan jelas bila `DATABASE_URL` tidak ada.
+- Satu instance `PrismaClient` (dengan `PrismaPg`) di `BE/src/lib/prisma.ts`. Hanya service yang memakainya.
 - Prisma melindungi dari SQL injection lewat query terparameter. Jika `$queryRaw` dipakai, gunakan bentuk terparameter, tidak pernah menyambung string dari input pengguna (`SECURITY.md`).
 
 ## 2. Konvensi schema dan migrasi
@@ -21,7 +23,8 @@
 - Nama model PascalCase tunggal di Prisma, dipetakan ke tabel snake_case jamak (`@@map`). Pola pemetaan ditetapkan sekali dan konsisten.
 - Nama field camelCase di Prisma, kolom snake_case di database (`@map`).
 - Semua tabel punya `createdAt`, `updatedAt`. Tabel transaksi dan master yang penting mencatat pelaku (`createdById`).
-- Primary key: jenis (UUID atau integer auto-increment) **belum diputuskan**. Tentukan sekali sebelum schema pertama dan catat di `DECISIONS.md`.
+- Primary key: **integer autoincrement** (`Int @id @default(autoincrement())`, DEC-030).
+- Kolom waktu memakai `@db.Timestamptz(3)`.
 - Migrasi: satu perubahan logis per migrasi, dengan nama deskriptif. Migrasi yang sudah dipakai di lingkungan bersama tidak diedit, buat migrasi baru.
 - Migrasi dijalankan **hanya dengan persetujuan** (`../CLAUDE.md` bagian 9). Di produksi gunakan perintah deploy migrasi, bukan perintah development.
 - Constraint yang tidak bisa ditulis di `schema.prisma` (misalnya CHECK) ditambahkan manual di SQL migrasi dan dicatat di dokumen ini.
@@ -42,6 +45,8 @@
 | AuditLog | Jejak aksi penting | NFR-03 |
 
 Tidak ada entitas untuk pemesanan lensa atau pelanggan sampai Q-01 dan Q-04 dijawab. Field spesifik tiap entitas ditentukan setelah requirement terkait `CONFIRMED`.
+
+**Sudah di schema:** `User` (tabel `users`, enum `user_role`: `owner`, `staff`) dengan field `id`, `username` (unik, `VARCHAR(50)`), `name`, `password_hash`, `role`, `is_active`, `created_at`, `updated_at`. Migrasi: `prisma/migrations/20261024150000_create_users` (disetujui developer 24 Okt 2026). Constraint manual: `users_username_lowercase` (`CHECK (username = lower(username))`). **Status:** file migrasi dibuat, **belum dijalankan** di database mana pun.
 
 ## 4. Relasi, foreign key, dan constraint
 

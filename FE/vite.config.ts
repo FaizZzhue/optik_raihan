@@ -7,7 +7,13 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(import.meta.dirname, "./src"),
+    },
+  },
+  server: {
+    proxy: {
+      // Satu origin di development: /api diteruskan ke BE (PORT default di BE/.env.example).
+      "/api": "http://localhost:4000",
     },
   },
 });

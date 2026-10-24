@@ -49,7 +49,7 @@
 ## Tahap 1: Fondasi
 
 - **Deliverable:** BE dan FE berjalan, konfigurasi tervalidasi, penanganan error terpusat, koneksi database, kerangka test.
-- **File/modul:** `BE/src/{app,server}.ts`, `config/`, `lib/prisma.ts`, `middlewares/error.middleware.ts`, `utils/{app-error,api-response}.ts`, `prisma.config.ts` (DEC-019), `FE/src/{main,App}.tsx`, `services/api/axios.ts`, `lib/queryClient.ts`, alias `@/`.
+- **File/modul:** `BE/src/{app,server}.ts`, `config/`, `lib/prisma.ts`, `middlewares/error.middleware.ts`, `utils/{app-error,api-response}.ts`, `prisma7.config.ts` (DEC-019 REJECTED), `FE/src/{main,App}.tsx`, `services/api/axios.ts`, `lib/queryClient.ts`, alias `@/`.
 - **Acceptance criteria:** BE start gagal bila konfigurasi tidak valid. Endpoint kesehatan merespons. Error mengikuti format `API_CONTRACT.md` bagian 3. FE dapat memanggil BE melalui proxy dalam satu origin. Koneksi Prisma ke PostgreSQL berfungsi dengan versi terpasang.
 - **Test:** integration test endpoint kesehatan dan format error (Vitest + Supertest, database test terpisah).
 - **Exit criteria:** test lulus. Migrasi pertama (jika ada) disetujui dan dijalankan terkontrol.
@@ -61,6 +61,11 @@
 - **Acceptance criteria:** AC-01.1 sampai AC-01.5. Token tidak ada di JavaScript FE. Matriks izin awal sesuai jawaban Q-03.
 - **Test:** seluruh daftar `SECURITY.md` bagian 15 yang berlaku pada tahap ini.
 - **Exit criteria:** test keamanan lulus. Perilaku cookie diuji pada kondisi mirip production.
+- **Status (24 Okt 2026):** kode, migrasi (file), seed, dan test ditulis. Test yang butuh database **belum dijalankan** karena DB development dan test belum tersedia. Tahap belum selesai.
+- **Deviasi dari daftar file:**
+  - `RoleRoute.tsx` ditunda sampai ada route berbasis role.
+  - Rate limit login berada di `services/login-rate-limit.service.ts`, bukan middleware.
+  - `validateBody` hanya memvalidasi body; query dan params ditambahkan saat route pertama membutuhkannya.
 
 ## Tahap 3: Master data, kategori dan produk (pola utama)
 
