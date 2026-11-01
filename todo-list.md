@@ -24,14 +24,14 @@
 - **Milestone:** Tahap 2 (Authentication dan RBAC) menunggu persetujuan developer; Tahap 3 (kategori dan produk) berikutnya.
 - **Goal:** fondasi dan auth terverifikasi di browser, lalu pola acuan CRUD end-to-end pada kategori dan produk.
 - **Target date (if applicable):** tidak ada dasar tanggal; tidak ditetapkan.
-- **Last updated:** 2 November 2026 (rekonsiliasi dokumentasi setelah adopsi PADS; hasil pemeriksaan di `PROJECT-CONTEXT.md` bagian 11).
+- **Last updated:** 2 November 2026 (sinkronisasi dengan `.agents/docs/PRD.md`, `.agents/docs/ERD.md`, dan lokasi PADS di `.agents/skills/`; sebelumnya rekonsiliasi dokumentasi setelah adopsi PADS, hasil pemeriksaan di `PROJECT-CONTEXT.md` bagian 11).
 
 ## Aturan pengerjaan tahap (dari proyek ini)
 
 - Vertical slice: tiap tahap menghasilkan fitur utuh dari database sampai UI yang bisa diuji. **Satu tahap pada satu waktu**; tahap berikutnya tidak dimulai sebelum exit criteria tahap sebelumnya terpenuhi dan developer menyetujui.
-- Tahap yang bergantung pada requirement `NEEDS_CONFIRMATION` diblokir sampai pertanyaan terkait dijawab. Pemesanan lensa dan pelanggan tidak ada dalam rencana sampai Q-01 dan Q-04 dijawab.
+- Tahap yang bergantung pada requirement `NEEDS_CONFIRMATION` diblokir sampai pertanyaan terkait dijawab. Q-01 dan Q-04 sudah dijawab owner (PRD bagian 10): pelanggan dan resep masuk rencana (TASK-021, terblokir P-07); pemesanan lensa khusus tetap tidak ada dalam rencana sampai P-03 diputuskan.
 - Perubahan `schema.prisma`, migrasi, dependency baru, dan perubahan struktur memerlukan persetujuan eksplisit.
-- **Definition of Done (semua tahap):** acceptance criteria tahap terpenuhi; kode sesuai konvensi `PROJECT-CONTEXT.md` bagian 4 dan `standards/QUALITY-GATES.md`; test yang dipersyaratkan ditulis **dan benar-benar dijalankan** dengan output asli dilaporkan; tidak ada dependency/schema/struktur berubah tanpa persetujuan; `PROJECT-CONTEXT.md` (kontrak, data, keputusan) dan todo ini diperbarui; tidak ada secret/data pribadi di kode; developer sudah mereview dan menyetujui.
+- **Definition of Done (semua tahap):** acceptance criteria tahap terpenuhi; kode sesuai konvensi `PROJECT-CONTEXT.md` bagian 4 dan `.agents/skills/standards/QUALITY-GATES.md`; test yang dipersyaratkan ditulis **dan benar-benar dijalankan** dengan output asli dilaporkan; tidak ada dependency/schema/struktur berubah tanpa persetujuan; `PROJECT-CONTEXT.md` (kontrak, data, keputusan) dan todo ini diperbarui; tidak ada secret/data pribadi di kode; developer sudah mereview dan menyetujui.
 - **Jika tahap gagal:** hentikan; laporkan apa adanya (gejala, pesan error, yang sudah dicoba); cari akar masalah sebelum memperbaiki; bila menyentuh struktur/keputusan ikuti prosedur perubahan dan catat di `PROJECT-CONTEXT.md` bagian 9; bila test integritas gagal perbaiki kode, bukan test; tahap selesai hanya bila exit criteria terpenuhi, bukan karena "hampir".
 - Estimasi waktu tidak dicantumkan karena tidak ada dasar yang valid.
 - Jika waktu KP terbatas: prioritaskan Tahap 1 sampai 6; laporan dan dashboard dibuat sederhana dahulu (rencana dokumen lama, `git show 1b26217:IMPLEMENTATION_PLAN.md`).
@@ -42,29 +42,34 @@
 |---|---|---|---|---|---|---|
 | TASK-001 | Tahap 0: audit repo dan rekonsiliasi dokumentasi | P1 | DONE | Docs | Tidak ada | Versi dependency terverifikasi dari `package.json`; keputusan DEC-004, DEC-013, DEC-019 diputuskan. Sisa pertanyaan Q-01, Q-02, Q-03, Q-10, Q-12 masih terbuka (lihat Blockers) |
 | TASK-002 | Tahap 1: fondasi (config tervalidasi, error terpusat, health, koneksi Prisma, kerangka test, FE via proxy) | P1 | DONE | BE/FE | TASK-001 | Integration test health dan format error lulus (dilaporkan 24 Okt 2026) |
-| TASK-003 | Tahap 2: authentication dan RBAC (login/logout/me, proteksi route BE dan FE) | P1 | VERIFY | BE/FE | DEC-013 | `npm test` 33/33 lulus dua kali (dilaporkan 1 Nov 2026); HTTP via proxy diverifikasi. Sisa: pemeriksaan browser manual developer (TASK-004), cookie `Secure` di HTTPS, seed owner, persetujuan developer; matriks izin menunggu Q-03 |
+| TASK-003 | Tahap 2: authentication dan RBAC (login/logout/me, proteksi route BE dan FE) | P1 | VERIFY | BE/FE | DEC-013 | `npm test` 33/33 lulus dua kali (dilaporkan 1 Nov 2026); HTTP via proxy diverifikasi. Sisa: pemeriksaan browser manual developer (TASK-004), cookie `Secure` di HTTPS, seed owner, persetujuan developer; matriks izin: jawaban owner di PRD bagian 3, DEC-018 masih MENUNGGU |
 | TASK-004 | Verifikasi auth di browser: cookie tak terbaca JS, reload memulihkan sesi, redirect saat 401, logout | P1 | VERIFY | FE | TASK-003 | Otomatis: Chrome headless (skrip CDP di luar repo, build production + BE pada DB test) dilaporkan lulus 1 Nov 2026; tidak diulang. Sisa: developer mengulang secara manual di browser dengan akun hasil seed dan mencatat hasilnya |
-| TASK-005 | Tahap 3: CRUD kategori dan produk end-to-end sebagai **pola acuan** | P1 | BLOCKED | FE/BE/DB | Q-10; persetujuan schema dan migrasi; persetujuan TASK-003 | AC-03.1 sampai AC-03.4; pagination dan pencarian server-side; state loading/empty/error; integration test CRUD, validasi, otorisasi, penolakan hapus produk bertransaksi; developer dapat menjelaskan alur Page → Hook → Service → Axios → Route → Controller → Service → Prisma. Risiko: pola salah akan ditiru semua fitur, review ketat |
-| TASK-006 | Tahap 4: supplier mengikuti pola Tahap 3 | P2 | BACKLOG | FE/BE/DB | TASK-005 | AC-03.1 sampai AC-03.3 untuk supplier; tanpa penyimpangan dari pola |
-| TASK-007 | Tahap 5: ledger stok dan pembelian (stok masuk atomik, riwayat mutasi) | P1 | BACKLOG | BE/DB/FE | TASK-006; Q-07, Q-08, Q-09 (sebagian); DEC-011, DEC-012 | AC-06.1 sampai AC-06.4 (pembatalan hanya bila Q-07), AC-08.1 sampai AC-08.3; CHECK stok ≥ 0 aktif; test rollback, rekonsiliasi stok vs ledger, snapshot harga, otorisasi. Exit: stok masuk tidak mungkin tanpa mutasi |
-| TASK-008 | Tahap 6: penjualan (stok keluar atomik, riwayat, detail transaksi) | P1 | BACKLOG | BE/DB/FE | TASK-007; Q-02, Q-05, Q-08, Q-09, Q-17 | AC-07.1 sampai AC-07.5 (AC-07.6 bila Q-05); FE tidak mengirim harga/total; test konkurensi stok terakhir, stok tak cukup, rollback, snapshot, total di backend, otorisasi, kirim ganda; semua test integritas lulus tanpa kecuali. **Tidak boleh dikerjakan** sebelum model harga dan nomor transaksi jelas |
-| TASK-009 | Tahap 7: stock opname dengan penyesuaian tercatat | P2 | BACKLOG | BE/DB/FE | TASK-007; Q-06 | AC-09.1 sampai AC-09.3; selisih → mutasi, stok sistem terekam, rekonsiliasi utuh; opname tak pernah menimpa stok langsung |
-| TASK-010 | Tahap 8: isi dashboard dan laporan | P2 | BACKLOG | BE/FE | TASK-008; Q-11, Q-14 | AC-10.1, AC-10.2; angka dihitung backend, batas hari zona waktu toko; agregat dibandingkan dengan data uji yang diketahui; bisa direkonsiliasi dengan transaksi sumber |
-| TASK-011 | Tahap 9: hardening (Helmet/CSP/HSTS, `trust proxy`, rate limit umum, audit log, penanganan error production, backup terjadwal) | P1 | BACKLOG | BE/Ops | Tahap 2 sampai 8 | Seluruh test akses tidak sah (`PROJECT-CONTEXT.md` bagian 7) lulus; audit log merekam aksi yang disepakati dengan owner; tinjauan keamanan selesai, temuan ditangani atau dicatat |
-| TASK-012 | Tahap 10: landing page publik di `FE/src/Container/` | P3 | BLOCKED | FE | Isi dari owner (M-13) | AC-13.1, AC-13.2; hanya komponen yang dipakai; boleh paralel setelah Tahap 1 bila isi sudah ada |
-| TASK-013 | Tahap 11: deployment dan serah terima | P1 | BLOCKED | Ops | Q-13, DEC-014, DEC-015 | HTTPS aktif; variabel lingkungan di platform; **uji restore backup berhasil dan terdokumentasi**; akun hosting atas nama toko dengan 2FA; UAT dengan pegawai/owner; panduan deploy ulang dan restore. Verifikasi dulu: retensi backup, region, metode bayar, syarat komersial |
+| TASK-005 | Tahap 3: CRUD kategori dan produk end-to-end sebagai **pola acuan** | P1 | BLOCKED | FE/BE/DB | Review PRD/ERD; P-02 (lensa jadi), P-11 (stok awal); persetujuan schema dan migrasi (ERD bagian 9); persetujuan TASK-003. Foto produk: P-12 | AC-03.1 sampai AC-03.4; PRD FR-03.1 sampai FR-03.9, FR-04.1; pagination dan pencarian server-side; state loading/empty/error; integration test CRUD, validasi, otorisasi, penolakan hapus produk bertransaksi; developer dapat menjelaskan alur Page → Hook → Service → Axios → Route → Controller → Service → Prisma. Risiko: pola salah akan ditiru semua fitur, review ketat |
+| TASK-006 | Tahap 4: supplier mengikuti pola Tahap 3 | P2 | BACKLOG | FE/BE/DB | TASK-005 | AC-03.1 sampai AC-03.3 untuk supplier; PRD FR-05.1; tanpa penyimpangan dari pola |
+| TASK-007 | Tahap 5: ledger stok dan pembelian (stok masuk atomik, riwayat mutasi) | P1 | BACKLOG | BE/DB/FE | TASK-006; P-05 (harga pokok); DEC-011, DEC-012; persetujuan schema. Retur pembelian di TASK-019 | AC-06.1 sampai AC-06.3 (AC-06.4: PRD FR-06.5 mengusulkan pembelian tidak dibatalkan, koreksi lewat retur/opname), PRD FR-06.x dan FR-08.1 sampai FR-08.3, AC-08.1 sampai AC-08.3; CHECK stok ≥ 0 aktif; test rollback, rekonsiliasi stok vs ledger, snapshot harga, otorisasi. Exit: stok masuk tidak mungkin tanpa mutasi |
+| TASK-008 | Tahap 6: penjualan (stok keluar atomik, riwayat, detail transaksi) | P1 | BACKLOG | BE/DB/FE | TASK-007; TASK-020 (audit_logs); TASK-021 bila penjualan dikaitkan pelanggan/resep; P-01, P-08, P-09, P-14; persetujuan perubahan kontrak harga (`PROJECT-CONTEXT.md` bagian 6) | AC-07.2 sampai AC-07.5, PRD FR-07.1 sampai FR-07.15 (AC-07.1 digantikan FR-07.3 setelah kontrak disetujui; void: FR-07.13); total selalu dihitung backend, apakah FE mengirim harga satuan menunggu persetujuan kontrak; test konkurensi stok terakhir, stok tak cukup, rollback, snapshot, total di backend, otorisasi, kirim ganda; semua test integritas lulus tanpa kecuali. **Tidak boleh dikerjakan** sebelum P-01, P-08, P-09, P-14 diputuskan |
+| TASK-009 | Tahap 7: stock opname dengan penyesuaian tercatat | P2 | BACKLOG | BE/DB/FE | TASK-007; P-11 (stok awal lewat opname pertama) | AC-09.1 sampai AC-09.3, PRD FR-09.1 sampai FR-09.4; selisih → mutasi, stok sistem terekam, rekonsiliasi utuh; opname tak pernah menimpa stok langsung |
+| TASK-010 | Tahap 8: isi dashboard dan laporan | P2 | BACKLOG | BE/FE | TASK-008; P-04 (stok menipis), P-05 (laba) | AC-10.1, AC-10.2, PRD FR-10.1 sampai FR-10.6 dan FR-02.1 (tampil di layar, tanpa ekspor); angka dihitung backend, batas hari zona waktu toko; agregat dibandingkan dengan data uji yang diketahui; bisa direkonsiliasi dengan transaksi sumber |
+| TASK-011 | Tahap 9: hardening (Helmet/CSP/HSTS, `trust proxy`, rate limit umum, audit log, penanganan error production, backup terjadwal) | P1 | BACKLOG | BE/Ops | Tahap 2 sampai 8. Tabel audit log dan aksi inti dibuat lebih dulu di TASK-020; tahap ini melengkapi dan membahas pembatasan tambah-saja di database (ERD bagian 5) | Seluruh test akses tidak sah (`PROJECT-CONTEXT.md` bagian 7) lulus; audit log merekam aksi yang disepakati dengan owner; tinjauan keamanan selesai, temuan ditangani atau dicatat |
+| TASK-012 | Tahap 10: landing page publik di `FE/src/Container/` | P3 | BLOCKED | FE | Isi dari owner (M-13); DITUNDA menurut PRD bagian 4.2 | AC-13.1, AC-13.2; hanya komponen yang dipakai; boleh paralel setelah Tahap 1 bila isi sudah ada |
+| TASK-013 | Tahap 11: deployment dan serah terima | P1 | BLOCKED | Ops | Q-13 (P-16), DEC-014, DEC-015 | HTTPS aktif; variabel lingkungan di platform; **uji restore backup berhasil dan terdokumentasi**; akun hosting atas nama toko dengan 2FA; UAT dengan pegawai/owner; panduan deploy ulang dan restore. Verifikasi dulu: retensi backup, region, metode bayar, syarat komersial |
 | TASK-014 | Perbaiki masalah logout: token tersalin tetap valid sampai 8 jam | P2 | BLOCKED | BE/DB | Persetujuan perubahan schema (kolom versi sesi di `users`) | Usulan: naikkan versi saat logout, cek di `requireAuth`; test token lama ditolak setelah logout |
 | TASK-015 | Hapus `@fontsource-variable/montserrat` dari `FE/package.json` | P3 | BLOCKED | FE | Persetujuan dependency | `npm run build` FE lulus setelah dihapus |
-| TASK-016 | Catat jawaban owner (kuesioner chat) ke `PROJECT-CONTEXT.md` dengan sumber tertulis, lalu ubah status requirement/Q terkait | P1 | READY | Docs | Bukti tertulis dari developer | Q yang terjawab berpindah dari MENUNGGU ke CONFIRMED di bagian 2 dan 9 dengan rujukan sumber; tidak ada klaim persetujuan tanpa bukti |
+| TASK-016 | Catat jawaban owner (kuesioner chat) dengan sumber tertulis, lalu ubah status requirement/Q terkait | P1 | DONE (hanya bagian "jawaban owner dicatat") | Docs | Bukti tertulis dari developer | Bukti: 17 jawaban tercatat di `.agents/docs/PRD.md` Lampiran A; status Q di Blockers dan modul di `PROJECT-CONTEXT.md` bagian 2 merujuk PRD bagian 10. **Tidak termasuk:** perubahan status DEC-016, 017, 018, 028 (tetap MENUNGGU, keputusan developer) dan persetujuan PRD. Catatan: `.agents/` di-ignore git, jadi bukti ini belum ter-commit |
 | TASK-017 | Putuskan nasib `WhatsApp Image 2026-09-23 at 12.54.35.jpeg` di root repo (foto orang) | P2 | BLOCKED | Docs | Keputusan developer | Dipindahkan ke luar repo atau dipertahankan dengan sengaja; tidak dihapus tanpa persetujuan |
 | TASK-018 | Ganti `FE/README.md` bawaan template Vite dengan README proyek | P3 | BACKLOG | Docs | Tidak ada | README berisi perintah yang terkonfirmasi (`PROJECT-CONTEXT.md` bagian 8) |
+| TASK-019 | Tahap 5: retur pembelian ke supplier (M-14) | P2 | BLOCKED | BE/DB/FE | TASK-007; P-10 (penyelesaian retur); TASK-020; persetujuan schema | PRD FR-14.1, FR-14.2; jumlah retur tidak melebihi stok; stok keluar + mutasi `purchase_return_out` dalam satu transaksi; retur tercatat di audit log; test rollback, rekonsiliasi stok vs ledger, otorisasi (hanya owner) |
+| TASK-020 | Tabel `audit_logs` dan pencatatan aksi inti, sebelum Tahap 6 (M-15) | P1 | BACKLOG | BE/DB | Persetujuan schema dan migrasi; daftar aksi final dengan owner (Blockers) | PRD FR-15.1 sampai FR-15.3, ERD bagian 4.11 dan 9; tambah-saja; tanpa password, token, atau isi resep; hanya owner yang dapat melihat; test isi log dan otorisasi |
+| TASK-021 | Pelanggan dan resep (M-12, M-11), sebelum atau bersama Tahap 6 | P2 | BLOCKED | BE/DB/FE | P-07 (privasi data resep); TASK-020 (koreksi resep diaudit); persetujuan schema | PRD FR-12.1, FR-12.2, FR-11.1 sampai FR-11.3; resep baru tidak menimpa yang lama; data resep tidak muncul di log, nota, atau URL; test otorisasi. Garansi (P-06) dan pesanan lensa khusus (P-03) tidak termasuk |
+| TASK-022 | Pengelolaan akun pegawai oleh owner (M-01) | P2 | BACKLOG | BE/FE | Persetujuan TASK-003; TASK-020 (pembuatan, penonaktifan, reset akun diaudit) | PRD FR-01.6 sampai FR-01.9 (FR-01.9 USULAN); pegawai ditolak 403; password awal tidak ditulis di kode atau log, minimal 12 karakter (DEC-031); akun nonaktif langsung kehilangan akses (AC-01.4); test otorisasi |
+| TASK-023 | Tanyakan P-01 dan P-02 ke owner, catat jawabannya | P1 | READY | Docs | Developer menghubungi owner | Jawaban P-01 (batas harga yang boleh diketik pegawai; diskon nominal atau persen) dan P-02 (lensa jadi per ukuran atau per model) dicatat dengan sumber di PRD; status P-01/P-02 dan dependensi TASK-005/TASK-008 diperbarui |
 
 ## Frontend tasks
 
 | ID | Task | Priority | Status | Related modules | API dependency | Verification |
 |---|---|---|---|---|---|---|
 | FE-001 | Isi dashboard dari data backend (KPI, grafik, stok menipis) | P2 | BLOCKED | `pages/DashboardPage.tsx` | Endpoint laporan belum didesain (TASK-010) | Tidak memakai data dummy yang tampak nyata |
-| FE-002 | `RoleRoute.tsx` untuk route berbasis role | P3 | BLOCKED | `routes/` | Matriks izin (Q-03) | Dibuat saat ada route yang butuh role tertentu |
+| FE-002 | `RoleRoute.tsx` untuk route berbasis role | P3 | BLOCKED | `routes/` | Matriks izin (jawaban owner di PRD bagian 3; DEC-018 masih MENUNGGU) | Dibuat saat ada route yang butuh role tertentu |
 | FE-003 | Fungsi format Rupiah dan tanggal di `FE/src/utils/` | P2 | BACKLOG | `utils/format-currency.ts`, `utils/format-date.ts` | Tidak ada | Dibuat bersama halaman pertama yang menampilkan uang/tanggal; satu format di seluruh aplikasi |
 | FE-004 | Menyiapkan test FE | P3 | BACKLOG | FE | Persetujuan dependency | Belum ada test runner FE; keputusan terpisah |
 
@@ -83,33 +88,59 @@
 |---|---|---|---|---|---|---|---|
 | INT-001 | Login, logout, me | P1 | VERIFY | `/api/auth/*` | implemented | implemented | HTTP via proxy Vite diverifikasi; browser otomatis dilaporkan lulus, manual belum (TASK-004) |
 | INT-002 | Health | P3 | DONE | `GET /api/health` | n/a | implemented | Test `BE/tests/health.test.ts` dilaporkan lulus |
-| INT-003 | Endpoint domain (produk, kategori, supplier, pembelian, penjualan, opname, laporan) | P1 | BLOCKED | Belum didesain | pending | pending | Not designed; tambahkan kontrak di `PROJECT-CONTEXT.md` bagian 6 sebelum implementasi |
+| INT-003 | Endpoint domain (produk, kategori, supplier, pembelian, retur pembelian, penjualan, pelanggan, resep, opname, laporan, akun pegawai, audit log) | P1 | BLOCKED | Belum didesain | pending | pending | Not designed; tambahkan kontrak di `PROJECT-CONTEXT.md` bagian 6 sebelum implementasi |
 
 ## Blockers and decisions needed
 
-Pertanyaan terbuka dari dokumentasi awal. Jawaban owner yang sudah diterima developer lewat chat belum tercatat di repo (TASK-016); sampai dicatat dengan bukti tertulis, statusnya tetap MENUNGGU di sini.
+Pertanyaan dari dokumentasi awal (Q-xx) dan pertanyaan turunan PRD (P-xx). Jawaban owner atas kuesioner tercatat di `.agents/docs/PRD.md` Lampiran A; isi jawaban tidak disalin ke sini. Status Q: `OPEN`; `ANSWERED` = dijawab owner, dampak di PRD bagian 10; `PARTIAL` = sebagian dijawab, sisanya dilacak sebagai P-xx; `UNCLEAR` = jawaban tidak tegas, dilacak sebagai P-xx. Status keputusan DEC-016, 017, 018, 028 tidak berubah karena jawaban ini (`PROJECT-CONTEXT.md` bagian 9).
 
 | Item | Impact | What is needed | Status |
 |---|---|---|---|
-| Q-01 Pemesanan lensa tidak ada di judul final | Modul, tabel, status, alur baru | Apakah toko menerima pesanan custom (lensa/resep)? Alurnya: DP, status, pengambilan? (Owner, dosen) | OPEN |
-| Q-02 Harga grosir | Model harga di produk dan penjualan; memblokir Tahap 6 | Cara harga grosir ditentukan dan siapa boleh mengubah (Owner) | OPEN |
-| Q-03 Matriks hak akses | RBAC, tampilan, audit | Apa yang boleh/tidak untuk owner vs pegawai: harga beli, void, opname, kelola user (Owner) | OPEN |
-| Q-04 Data pelanggan | Tabel pelanggan, privasi | Apakah pelanggan dicatat, data apa, untuk apa (Owner) | OPEN |
-| Q-05 Pembatalan/retur penjualan | Alur void, mutasi pembalik | Boleh dibatalkan/diretur? Siapa berwenang, batas waktu (Owner) | OPEN |
-| Q-06 Persetujuan opname | Status dokumen opname | Siapa menyetujui penyesuaian, seberapa sering opname (Owner) | OPEN |
-| Q-07 Retur pembelian ke supplier | Mutasi dan dokumen retur | Apakah ada retur ke supplier (Owner) | OPEN |
-| Q-08 Pembayaran tempo, hutang/piutang, metode bayar | Status dan tabel pembayaran | Ada tempo/cicilan? Metode bayar apa saja (Owner) | OPEN |
-| Q-09 Nomor invoice dan bukti transaksi | Format nomor, cetak/struk | Format nomor, perlu cetak, printer apa (Owner) | OPEN |
-| Q-10 Varian produk dan satuan | Model produk (frame, warna, ukuran, lensa); memblokir Tahap 3 | Pengelompokan barang, stok per varian, format SKU (Owner) | OPEN |
-| Q-11 Jenis laporan | Query, tampilan, ekspor | Laporan apa, periode, format (layar/PDF/Excel) (Owner, dosen) | OPEN |
-| Q-12 Judul final tidak memuat pembelian/pemesanan | Konsistensi scope laporan KP | Apakah judul dan scope selaras menurut dosen (Dosen) | OPEN |
-| Q-13 Hosting | Biaya, backup, region | Siapa membayar dan dengan metode apa, budget bulanan (Owner) | OPEN |
-| Q-14 Stok menipis | Ambang per produk atau global | Cara menentukan batas minimum (Owner) | OPEN |
-| Q-15 Foto produk | Keamanan upload, penyimpanan file | Apakah produk perlu foto (Owner) | OPEN |
-| Q-16 Pengguna dan perangkat | Prioritas responsivitas, kapasitas | Jumlah pengguna dan perangkat di toko (Owner) | OPEN |
-| Q-17 Diskon dan pajak | Perhitungan total di backend | Ada diskon per item/transaksi atau pajak (Owner) | OPEN |
-| Daftar aksi yang diaudit | Cakupan audit log | Konfirmasi dengan owner | OPEN |
-| Persetujuan schema untuk Tahap 3 | Memblokir TASK-005 | Developer menyetujui perubahan `schema.prisma` dan migrasi setelah Q-10 | OPEN |
+| Q-01 Pemesanan lensa tidak ada di judul final | Modul, tabel, status, alur baru | Apakah toko menerima pesanan custom (lensa/resep)? Alurnya: DP, status, pengambilan? (Owner, dosen) | PARTIAL (PRD bagian 10; sisa P-03) |
+| Q-02 Harga grosir | Model harga di produk dan penjualan; memblokir Tahap 6 | Cara harga grosir ditentukan dan siapa boleh mengubah (Owner) | ANSWERED (PRD bagian 10; lanjutan P-01) |
+| Q-03 Matriks hak akses | RBAC, tampilan, audit | Apa yang boleh/tidak untuk owner vs pegawai: harga beli, void, opname, kelola user (Owner) | ANSWERED (PRD bagian 3 dan 10; lanjutan P-13) |
+| Q-04 Data pelanggan | Tabel pelanggan, privasi | Apakah pelanggan dicatat, data apa, untuk apa (Owner) | ANSWERED (PRD bagian 10; lanjutan P-06, P-07) |
+| Q-05 Pembatalan/retur penjualan | Alur void, mutasi pembalik | Boleh dibatalkan/diretur? Siapa berwenang, batas waktu (Owner) | ANSWERED (PRD bagian 10; lanjutan P-08) |
+| Q-06 Persetujuan opname | Status dokumen opname | Siapa menyetujui penyesuaian, seberapa sering opname (Owner) | ANSWERED (PRD bagian 10) |
+| Q-07 Retur pembelian ke supplier | Mutasi dan dokumen retur | Apakah ada retur ke supplier (Owner) | ANSWERED (PRD bagian 10; lanjutan P-10) |
+| Q-08 Pembayaran tempo, hutang/piutang, metode bayar | Status dan tabel pembayaran | Ada tempo/cicilan? Metode bayar apa saja (Owner) | ANSWERED (PRD bagian 10; lanjutan P-14) |
+| Q-09 Nomor invoice dan bukti transaksi | Format nomor, cetak/struk | Format nomor, perlu cetak, printer apa (Owner) | PARTIAL (PRD bagian 10; sisa P-09) |
+| Q-10 Varian produk dan satuan | Model produk (frame, warna, ukuran, lensa); memblokir Tahap 3 | Pengelompokan barang, stok per varian, format SKU (Owner) | ANSWERED (PRD bagian 10; lanjutan P-02) |
+| Q-11 Jenis laporan | Query, tampilan, ekspor | Laporan apa, periode, format (layar/PDF/Excel) (Owner, dosen) | ANSWERED (PRD bagian 10; lanjutan P-05) |
+| Q-12 Judul final tidak memuat pembelian/pemesanan | Konsistensi scope laporan KP | Apakah judul dan scope selaras menurut dosen (Dosen) | OPEN (P-15) |
+| Q-13 Hosting | Biaya, backup, region | Siapa membayar dan dengan metode apa, budget bulanan (Owner) | OPEN (P-16) |
+| Q-14 Stok menipis | Ambang per produk atau global | Cara menentukan batas minimum (Owner) | UNCLEAR (PRD bagian 10; dilacak P-04) |
+| Q-15 Foto produk | Keamanan upload, penyimpanan file | Apakah produk perlu foto (Owner) | ANSWERED (PRD bagian 10; lanjutan P-12) |
+| Q-16 Pengguna dan perangkat | Prioritas responsivitas, kapasitas | Jumlah pengguna dan perangkat di toko (Owner) | ANSWERED (PRD bagian 10) |
+| Q-17 Diskon dan pajak | Perhitungan total di backend | Ada diskon per item/transaksi atau pajak (Owner) | ANSWERED (PRD bagian 10; lanjutan P-01) |
+| Daftar aksi yang diaudit | Cakupan audit log (TASK-020) | Konfirmasi usulan PRD FR-15.1 dengan owner | OPEN |
+| Persetujuan schema untuk Tahap 3 | Memblokir TASK-005 | Developer menyetujui perubahan `schema.prisma` dan migrasi setelah P-02; rancangan di ERD bagian 9 | OPEN |
+| Review PRD dan ERD (DRAFT 0.1.0, USULAN) | Requirement berlabel OWNER/USULAN belum disahkan; ERD belum boleh dijadikan schema | Developer mereview dan menyetujui atau mengoreksi | OPEN |
+| Perubahan kontrak "FE tidak mengirim harga" | AC-07.1, TASK-008, `PROJECT-CONTEXT.md` bagian 6 | Persetujuan developer atas usulan PRD FR-07.2 sampai FR-07.4 | OPEN |
+| `.agents/` di `.gitignore` | PADS, PRD, dan ERD tidak ter-commit; dokumen ter-commit merujuk ke berkas yang tidak ada di clone baru | Keputusan developer: track `.agents/` atau tetap lokal | OPEN |
+
+### Pertanyaan turunan PRD (P-xx)
+
+Rincian, usulan penyusun, dan konteks: PRD bagian 9. Semua `OPEN`.
+
+| ID | Masalah | Tahap yang diblokir |
+|---|---|---|
+| P-01 | Harga yang boleh diketik pegawai bertabrakan dengan aturan diskon hanya oleh owner; bentuk diskon (nominal/persen) belum ditentukan | Tahap 6 (TASK-008); ditanyakan lewat TASK-023 |
+| P-02 | Belum jelas apakah lensa jadi dicatat per ukuran dioptri atau per model | Tahap 3 untuk lensa jadi (TASK-005); ditanyakan lewat TASK-023 |
+| P-03 | Belum pasti apakah ada lensa yang dipesan ke pihak lain (DP, status, pengambilan) | Modul pesanan lensa (belum ada task) |
+| P-04 | Ambang stok menipis tidak dipilih owner | Tahap 8, peringatan (TASK-010) |
+| P-05 | Definisi laba rugi (laba kotor) dan metode harga pokok belum diputuskan | Tahap 5 dan 8 (TASK-007, TASK-010) |
+| P-06 | Masa garansi dan pencatatan klaim garansi belum jelas | Tidak memblokir |
+| P-07 | Persetujuan pelanggan, retensi, akses, dan penghapusan data resep belum ditetapkan | Pelanggan dan resep (TASK-021) |
+| P-08 | Batas void "3 hari" (72 jam atau hari kalender) dan pengembalian uang belum jelas | Tahap 6 (TASK-008) |
+| P-09 | Format nomor nota dan kebutuhan barcode belum ditetapkan | Tahap 6 (TASK-008) |
+| P-10 | Penyelesaian retur ke supplier (uang kembali, kredit, tukar) belum jelas | Tahap 5, retur (TASK-019) |
+| P-11 | Cara memasukkan stok awal tanpa mengubah stok langsung belum disetujui | Tahap 3/7 (TASK-005, TASK-009) |
+| P-12 | Penyimpanan foto bergantung pada hosting yang belum dipilih | Foto produk (bagian TASK-005) |
+| P-13 | Perlu konfirmasi bahwa pegawai memang boleh melihat harga beli | Tidak memblokir |
+| P-14 | Pembayaran campuran dan kembalian tunai belum dijawab | Tahap 6 (TASK-008) |
+| P-15 | Resep dan laba rugi diminta padahal "rekam medis" dan "akuntansi" sebelumnya dikeluarkan; judul hanya "Penjualan" (Q-12) | Laporan KP (konfirmasi dosen) |
+| P-16 | Hosting, biaya, dan backup belum dijawab (Q-13) | Tahap 11 (TASK-013) |
 
 ## Recently completed
 
@@ -118,6 +149,7 @@ Pertanyaan terbuka dari dokumentasi awal. Jawaban owner yang sudah diterima deve
 | TASK-001 | Audit repo dan rekonsiliasi dokumentasi | Versi dari `package.json`; keputusan tercatat | 24 Okt 2026 (dokumen lama) |
 | TASK-002 | Fondasi BE/FE | Test health dan format error dilaporkan lulus | 24 Okt 2026 (dokumen lama) |
 | — | Shell dashboard (layout, sidebar, header, token warna, tema Light/Dark; DEC-023, DEC-024, DEC-033) | Chrome headless 50/50 dilaporkan (kontras, keyboard, responsif, tema, state error/loading); kode ter-commit di 1b26217 | 1 Nov 2026; belum ada test FE di repo |
+| TASK-016 | Jawaban owner atas kuesioner dicatat (bagian pencatatan saja; status DEC tidak berubah) | `.agents/docs/PRD.md` Lampiran A; status Q di Blockers merujuk PRD bagian 10 | 2 Nov 2026; `.agents/` di-ignore git |
 | — | Adopsi PADS dan rekonsiliasi dokumentasi: file PADS dipindah ke root, 12 dokumen lama dihapus, rujukan komentar kode diarahkan ke `PROJECT-CONTEXT.md`, fakta yang hilang dipulihkan | Hanya dokumentasi dan komentar kode berubah; pemeriksaan di `PROJECT-CONTEXT.md` bagian 11 | 2 Nov 2026 |
 
 ## Rules for updating

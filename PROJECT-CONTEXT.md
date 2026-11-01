@@ -1,15 +1,15 @@
 # Project Context — KP Optik Raihan
 
-> Fakta proyek ini saja. Dokumen ini menggantikan dokumen lama `PROJECT_CONTEXT`, `REQUIREMENTS`, `DECISIONS`, `ARCHITECTURE`, `STRUCTURE`, `DATABASE`, `API_CONTRACT`, `SECURITY`, `DESIGN_SYSTEM`, `CODING_STANDARDS`, dan `IMPLEMENTATION_PLAN` (versi 0.1.0, dihapus dari working tree; isi lengkap: `git show 1b26217:<NAMA>.md`). Aturan kerja AI ada di `AGENTS.md` dan `core/`, `workflows/`, `standards/`. Tugas dan status ada di `todo-list.md`.
+> Fakta proyek ini saja. Dokumen ini menggantikan dokumen lama `PROJECT_CONTEXT`, `REQUIREMENTS`, `DECISIONS`, `ARCHITECTURE`, `STRUCTURE`, `DATABASE`, `API_CONTRACT`, `SECURITY`, `DESIGN_SYSTEM`, `CODING_STANDARDS`, dan `IMPLEMENTATION_PLAN` (versi 0.1.0, dihapus dari working tree; isi lengkap: `git show 1b26217:<NAMA>.md`). Aturan kerja AI ada di `AGENTS.md` dan `.agents/skills/core/`, `.agents/skills/workflows/`, `.agents/skills/standards/`. Requirement di `.agents/docs/PRD.md`, rancangan data di `.agents/docs/ERD.md` (bagian 2). Tugas dan status ada di `todo-list.md`.
 >
 > **Label:** `FAKTA` terverifikasi di repo · `KEPUTUSAN` diputuskan developer (`ACCEPTED`) · `USULAN` belum disetujui (`PROPOSED`) · `MENUNGGU` butuh konfirmasi owner/dosen (`NEEDS_CONFIRMATION`). ID keputusan (`DEC-xxx`), pertanyaan (`Q-xx`), dan acceptance criteria (`AC-xx.x`) dipertahankan karena dirujuk dari kode dan test.
 
 ## 1. Project identity
 
 - **Project name:** KP Optik Raihan.
-- **Judul KP (DEC-010):** "Rancang Bangun Aplikasi Penjualan Kacamata Berbasis Web pada Toko Kacamata Raihan". Konflik: judul awal memuat "Penjualan, Pembelian, dan Pemesanan"; judul final hanya "Penjualan" sementara scope kerja tetap mencakup pembelian dan inventaris. Keselarasan menunggu dosen (Q-12).
+- **Judul KP (DEC-010):** "Rancang Bangun Aplikasi Penjualan Kacamata Berbasis Web pada Toko Kacamata Raihan". Konflik: judul awal memuat "Penjualan, Pembelian, dan Pemesanan"; judul final hanya "Penjualan" sementara scope kerja tetap mencakup pembelian dan inventaris. Keselarasan menunggu dosen (Q-12, PRD P-15).
 - **Purpose:** aplikasi web untuk operasional toko (penjualan, pembelian, inventaris) yang akan benar-benar dipakai toko, bukan prototype. Prioritas: akurasi data, keterlacakan transaksi, konsistensi stok. Masalah awal: pencatatan manual, stok fisik tidak sesuai catatan, perubahan stok tidak terlacak.
-- **Users / actors:** Owner dan Pegawai (role `owner`, `staff`); matriks hak akses MENUNGGU (Q-03). Pelanggan sebagai pengguna sistem: tidak ada bukti. Pengunjung publik hanya untuk landing page (M-13).
+- **Users / actors:** Owner dan Pegawai (role `owner`, `staff`); jawaban owner tentang hak akses ada di PRD bagian 3, keputusan matriks izin (DEC-018) tetap MENUNGGU. Pelanggan sebagai pengguna sistem: tidak ada bukti. Pengunjung publik hanya untuk landing page (M-13).
 - **Developer:** satu mahasiswa KP. Kuat di React/TS/Tailwind; masih belajar Express, Prisma, PostgreSQL, transaksi database (lihat `TECH-STACK-PROFILE.md`). Backend dijaga sederhana dan eksplisit; beri penjelasan alasan pada bagian penting Prisma/PostgreSQL.
 - **Project status:** implementation (Tahap 2 selesai ditulis, menunggu persetujuan developer; shell dashboard terimplementasi).
 - **Repository root:** `optik_raihan/` dengan `FE/` dan `BE/` dalam satu repo, tanpa workspace root `package.json`.
@@ -17,36 +17,47 @@
 
 ## 2. Requirements and scope
 
-**Prioritas sumber kebenaran:** hasil bimbingan dosen terbaru → hasil wawancara owner/pegawai → baseline requirement final → dokumen discovery lama → analisis/asumsi. Tiga sumber pertama **belum tersedia tertulis di repo**; jangan mengarang isinya, tandai MENUNGGU dan tanyakan. Jawaban owner yang diterima developer lewat chat belum dicatat di sini (lihat `todo-list.md`).
+**Prioritas sumber kebenaran:** hasil bimbingan dosen terbaru → hasil wawancara owner/pegawai → baseline requirement final → dokumen discovery lama → analisis/asumsi. Hasil bimbingan dosen dan baseline requirement final **belum tersedia tertulis**; jangan mengarang isinya, tandai MENUNGGU dan tanyakan. Jawaban owner atas kuesioner (disampaikan developer lewat chat, 1 Nov 2026) tercatat di PRD Lampiran A; tangkapan aslinya tidak diarsipkan di repo.
 
-**Status requirement:** `CONFIRMED` hanya untuk yang tertulis di judul/tujuan proyek atau dikonfirmasi tertulis oleh developer; `USULAN` = prasyarat teknis atau kebutuhan awal tanpa bukti persetujuan; `MENUNGGU` tidak boleh diimplementasikan sebelum dikonfirmasi; `OUT_OF_SCOPE` sengaja dikeluarkan.
+**Dokumen requirement dan data:**
+- `.agents/docs/PRD.md`: sumber requirement (FR-xx, BR-xx, NFR-xx, pertanyaan P-xx). Status DRAFT 0.1.0, menunggu review developer. Bagian ini merangkum status modul dan merujuk ke PRD; isi requirement tidak disalin ke sini.
+- `.agents/docs/ERD.md`: rancangan data untuk PRD. Status **USULAN**, bukan schema yang berlaku (schema aktual: bagian 7). Setiap tabel baru tetap butuh persetujuan schema dan migrasi.
+- Catatan: `.agents/` saat ini masuk `.gitignore`, sehingga PRD, ERD, dan PADS tidak ter-commit (bagian 10).
+
+**Status requirement:** `CONFIRMED` hanya untuk yang tertulis di judul/tujuan proyek atau dikonfirmasi tertulis oleh developer; `USULAN` = prasyarat teknis atau kebutuhan awal tanpa bukti persetujuan; `MENUNGGU` tidak boleh diimplementasikan sebelum dikonfirmasi; `OUT_OF_SCOPE` sengaja dikeluarkan. `OWNER` dan `DITUNDA` mengikuti arti di PRD bagian 2 (dijawab owner pada kuesioner; sengaja belum dikerjakan). Rincian per requirement mengikuti label FR di PRD bagian 6; requirement berlabel `PERLU KEPUTUSAN` tidak diimplementasikan sebelum P-xx terkait diputuskan.
 
 ### Modul
 
+Mengikuti PRD bagian 4.1. Requirement rinci per modul: PRD bagian 6. Pertanyaan yang memblokir: P-xx (PRD bagian 9, `todo-list.md`).
+
 | ID | Modul | Status | Catatan |
 |---|---|---|---|
-| M-01 | Authentication dan authorization | CONFIRMED | Dikonfirmasi developer 24 Okt 2026 bersama DEC-013. Matriks izin MENUNGGU (Q-03) |
-| M-02 | Dashboard | USULAN | Shell dashboard ada; isi data belum |
-| M-03 | Produk | USULAN | Prasyarat transaksi; struktur MENUNGGU (Q-10) |
+| M-01 | Autentikasi, otorisasi, dan pengelolaan akun pegawai | CONFIRMED (auth); OWNER (akun pegawai) | Auth dikonfirmasi developer 24 Okt 2026 bersama DEC-013 dan sudah ada (Tahap 2). Pengelolaan akun pegawai baru (FR-01.6 sampai FR-01.9). Jawaban owner tentang hak akses: PRD bagian 3; DEC-018 tetap MENUNGGU |
+| M-02 | Dashboard owner | USULAN | Shell dashboard ada; isi data belum (FR-02.1) |
+| M-03 | Barang: frame, lensa jadi, kacamata jadi, foto | OWNER | Stok per model, SKU otomatis. Lensa jadi: P-02. Penyimpanan foto: P-12 |
 | M-04 | Kategori | USULAN | |
 | M-05 | Supplier | USULAN | Prasyarat pembelian |
-| M-06 | Pembelian | CONFIRMED | Dasar: tujuan proyek. Aturan rinci masih USULAN |
-| M-07 | Penjualan | CONFIRMED | Dasar: judul KP. Aturan rinci masih USULAN |
-| M-08 | Inventaris dan riwayat mutasi stok | CONFIRMED | Dasar: tujuan proyek (pengelolaan inventaris, keterlacakan stok) |
-| M-09 | Stock opname | USULAN | |
-| M-10 | Laporan | USULAN | Jenis dan format MENUNGGU (Q-11) |
-| M-11 | Pemesanan lensa | MENUNGGU | Tidak ada di judul final (Q-01). Tidak ada folder/tabel |
-| M-12 | Data pelanggan | MENUNGGU | Q-04 (DEC-028) |
-| M-13 | Landing page publik | USULAN | Isi MENUNGGU; `FE/src/Container/` belum dibuat |
+| M-06 | Pembelian dari supplier | CONFIRMED | Dasar: tujuan proyek; dijawab owner (hanya owner, tanpa tempo). Aturan rinci USULAN (FR-06.x). Harga pokok: P-05 |
+| M-14 | Retur pembelian ke supplier | OWNER | Baru. Penyelesaian retur: P-10 |
+| M-07 | Penjualan, diskon, pembayaran, nota, void | CONFIRMED | Dasar: judul KP; dijawab owner. Rinci: P-01, P-08, P-09, P-14. Perubahan kontrak harga MENUNGGU persetujuan developer (bagian 6) |
+| M-08 | Inventaris: mutasi stok dan peringatan stok menipis | CONFIRMED | Dasar: tujuan proyek. Ambang stok menipis: P-04 |
+| M-09 | Stock opname harian | OWNER | Harian, oleh owner. Stok awal: P-11 |
+| M-10 | Laporan di layar | OWNER | Lima laporan, tanpa ekspor. Definisi laba: P-05 |
+| M-11 | Resep pelanggan | OWNER | Sebelumnya "Pemesanan lensa". Pencatatan resep saja; pemesanan lensa khusus tetap MENUNGGU (P-03, DEC-016). Data kesehatan: P-07 |
+| M-12 | Data pelanggan (untuk garansi) | OWNER | Garansi: P-06; privasi: P-07. DEC-028 tetap MENUNGGU |
+| M-13 | Landing page publik | DITUNDA | PRD bagian 4.2: owner tidak menyebutnya; `FE/src/Container/` belum dibuat |
+| M-15 | Audit log | USULAN | Baru. Daftar aksi final dengan owner (FR-15.1) |
 
-Dependensi: Auth → semua; Kategori → Produk; Produk + Supplier → Pembelian → stok masuk; Produk + stok → Penjualan → stok keluar; Inventaris → Opname; Pembelian + Penjualan + Inventaris → Laporan dan Dashboard. Stok harus bisa masuk sebelum keluar.
+Dependensi: Auth → semua; Kategori → Produk; Produk + Supplier → Pembelian → stok masuk → Retur pembelian; Pelanggan → Resep; Audit log sebelum Penjualan (void dan diskon wajib diaudit, ERD bagian 9); Produk + stok (+ pelanggan/resep opsional) → Penjualan → stok keluar; Inventaris → Opname; Pembelian + Penjualan + Inventaris → Laporan dan Dashboard. Stok harus bisa masuk sebelum keluar.
 
 ### Acceptance criteria (semua USULAN, diturunkan dari tujuan proyek)
+
+PRD merujuk daftar ini sebagai "tetap seperti dokumen sebelumnya"; jangan dihapus. Q-xx yang disebut di AC berikut sudah dijawab owner kecuali Q-12 dan Q-13; rincian penggantinya ada di FR terkait (PRD bagian 6) dan dampaknya di PRD bagian 10.
 
 - **M-01:** AC-01.1 login/logout, kredensial salah → pesan generik. AC-01.2 endpoint selain login/publik menolak tanpa autentikasi (401). AC-01.3 role tanpa izin ditolak backend (403). AC-01.4 akun nonaktif kehilangan akses pada request berikutnya. AC-01.5 password tak pernah tersimpan/dikembalikan asli.
 - **M-03/04/05:** AC-03.1 CRUD/nonaktif dengan validasi backend. AC-03.2 yang sudah punya transaksi tidak dihapus permanen. AC-03.3 pencarian dan pagination server-side. AC-03.4 SKU unik (format: Q-10).
 - **M-06:** AC-06.1 pembelian mencatat supplier, tanggal, item (jumlah, harga beli). AC-06.2 simpan = tambah stok + mutasi dalam satu transaksi atomik. AC-06.3 harga beli item adalah snapshot. AC-06.4 pembatalan (bila Q-07 mengizinkan) = mutasi pembalik.
-- **M-07:** AC-07.1 FE hanya kirim produk dan jumlah; harga/total dihitung backend. AC-07.2 jumlah > stok ditolak. AC-07.3 simpan = kurangi stok + mutasi atomik. AC-07.4 dua penjualan bersamaan atas stok terakhir: satu berhasil, stok tak negatif. AC-07.5 harga jual item snapshot. AC-07.6 void (bila Q-05 mengizinkan) = mutasi pembalik + jejak audit.
+- **M-07:** AC-07.1 FE hanya kirim produk dan jumlah; harga/total dihitung backend. **AC-07.1 digantikan FR-07.3 (PRD bagian 10); penggantian berlaku setelah developer menyetujui perubahan kontrak di bagian 6.** AC-07.2 jumlah > stok ditolak. AC-07.3 simpan = kurangi stok + mutasi atomik. AC-07.4 dua penjualan bersamaan atas stok terakhir: satu berhasil, stok tak negatif. AC-07.5 harga jual item snapshot. AC-07.6 void (bila Q-05 mengizinkan) = mutasi pembalik + jejak audit.
 - **M-08:** AC-08.1 tiap perubahan stok punya mutasi (produk, ±jumlah, jenis, dokumen asal, waktu, pelaku). AC-08.2 stok bisa direkonsiliasi dengan total mutasi. AC-08.3 tidak ada endpoint ubah stok langsung. AC-08.4 stok menipis (ambang: Q-14).
 - **M-09:** AC-09.1 bandingkan stok sistem vs fisik. AC-09.2 selisih = penyesuaian tercatat dengan alasan. AC-09.3 siapa menyetujui (Q-06).
 - **M-10/02:** AC-10.1 angka dihitung backend. AC-10.2 filter periode; jenis/format ekspor (Q-11).
@@ -54,19 +65,19 @@ Dependensi: Auth → semua; Kategori → Produk; Produk + Supplier → Pembelian
 
 ### Non-functional (USULAN kecuali dicatat)
 
-NFR-01 integritas data (atomik, stok ≥ 0, constraint DB sebagai lapis terakhir). NFR-02 keamanan (bagian 7). NFR-03 keterlacakan aksi penting. NFR-04 alur penjualan mudah dipakai (target kuantitatif belum ada). NFR-05 maintainability. NFR-06 backup terjadwal dan restore teruji. NFR-07 performa: pagination server-side; angka target MENUNGGU. NFR-08 responsif dan aksesibel. NFR-09 serah terima: dokumentasi operasional, akun hosting atas nama toko.
+NFR-01 integritas data (atomik, stok ≥ 0, constraint DB sebagai lapis terakhir). NFR-02 keamanan (bagian 7). NFR-03 keterlacakan aksi penting. NFR-04 alur penjualan mudah dipakai (target kuantitatif belum ada). NFR-05 maintainability. NFR-06 backup terjadwal dan restore teruji. NFR-07 performa: pagination server-side; angka target MENUNGGU. NFR-08 responsif dan aksesibel. NFR-09 serah terima: dokumentasi operasional, akun hosting atas nama toko. Catatan: PRD bagian 8 memakai penomoran NFR-01 sampai NFR-08 sendiri yang tidak sama dengan daftar ini (mis. NFR-03 PRD = perangkat); bila PRD disetujui, daftar ini diganti rujukan ke PRD.
 
 ### Out of scope (usulan, bukan keputusan owner)
 
-E-commerce/penjualan online, payment gateway, multi-cabang, aplikasi mobile native, akuntansi penuh/pajak/laporan keuangan resmi, rekam medis/refraksi pasien. Upload foto produk: MENUNGGU (Q-15).
+E-commerce/penjualan online, payment gateway, multi-cabang, aplikasi mobile native, akuntansi penuh/pajak/laporan keuangan resmi, rekam medis/refraksi pasien. Daftar yang diperbarui ada di PRD bagian 4.2 (antara lain piutang/hutang, ekspor PDF/Excel, printer thermal); "rekam medis" dan "akuntansi penuh" disesuaikan karena owner meminta resep dan laba rugi (P-15). Upload foto produk: dijawab owner (Q-15), penyimpanan menunggu P-12.
 
 ### Pertanyaan terbuka
 
-Daftar Q-01 sampai Q-17 beserta dampaknya ada di `todo-list.md` (Blockers and decisions needed).
+Daftar Q-01 sampai Q-17 (status setelah jawaban owner) dan P-01 sampai P-16 (pertanyaan turunan PRD bagian 9) ada di `todo-list.md` (Blockers and decisions needed).
 
 ### Asumsi (belum dikonfirmasi)
 
-A-01 satu toko satu cabang. A-02 pengguna internal < ±10 orang. A-03 tanpa payment gateway. A-04 satu mata uang (Rupiah), tanpa pajak khusus. A-05 produk dilacak per unit, varian belum diketahui (Q-10). A-06 dipakai terutama dari komputer toko, juga tablet/HP (Q-16).
+A-01 satu toko satu cabang. A-02 pengguna internal < ±10 orang. A-03 tanpa payment gateway. A-04 satu mata uang (Rupiah), tanpa pajak khusus. A-05 produk dilacak per unit, varian belum diketahui (Q-10). A-06 dipakai terutama dari komputer toko, juga tablet/HP (Q-16). Owner sudah menjawab hal terkait A-02, A-04, A-05, A-06 (PRD Lampiran A no. 2, 7, 9); asumsi ini dipertahankan sampai PRD disetujui.
 
 ### Business rules / constraints
 
@@ -104,7 +115,7 @@ FE: Page → Feature Component → Custom Hook (TanStack Query) → Service → 
 
 - **Backend layers:** Route (daftar endpoint+middleware, tanpa logic); Middleware (auth, role, validasi, origin, error); Validator (Zod, tanpa akses DB); Controller (ambil `req`, panggil service, kirim `res`; tanpa Prisma/aturan bisnis); Service (aturan bisnis, transaksi, Prisma; tanpa `req`/`res`); Prisma lewat satu instance `BE/src/lib/prisma.ts`, hanya dipakai service. Error lewat `AppError` (`BE/src/utils/app-error.ts`) dan `error.middleware.ts`.
 - **Frontend:** Page hanya menyusun komponen; feature component = UI + hook; hook membungkus `useQuery`/`useMutation`, query key, invalidasi; service satu fungsi per endpoint tanpa React; `services/api/axios.ts` hanya konfigurasi Axios. Props untuk data antar komponen; Context hanya untuk auth (`AuthContext` berisi user dan status login, **tanpa token**); server state hanya TanStack Query (DEC-005).
-- **Batas FE-BE:** FE mengirim niat (produk, jumlah); BE menentukan fakta (harga, total, stok, nomor transaksi, waktu). Validasi FE hanya UX. Pembatasan role di FE hanya tampilan. Tipe Prisma tidak pernah dipakai FE.
+- **Batas FE-BE:** FE mengirim niat (produk, jumlah); BE menentukan fakta (harga, total, stok, nomor transaksi, waktu). Untuk harga satuan penjualan, perubahan diusulkan PRD dan MENUNGGU persetujuan developer (bagian 6). Validasi FE hanya UX. Pembatasan role di FE hanya tampilan. Tipe Prisma tidak pernah dipakai FE.
 - **Config:** semua dari environment, divalidasi Zod saat start di `BE/src/config/env.ts` (gagal start bila tidak valid). `.env` dan `.env.test` tidak di-commit dan tidak boleh disentuh AI. FE hanya variabel publik `VITE_*`.
 - **Dev/production:** dev = `vite` (5173) dengan proxy `/api` → `http://localhost:4000` (satu origin); production (DEC-014 USULAN) = hasil `vite build` dilayani Express, satu origin, CORS tidak diperlukan.
 - **Penanganan error:** validasi 400 + `details` per field; belum login 401; role 403; data tidak ada 404; konflik data 409; error tak terduga dicatat lengkap, ke klien pesan generik tanpa stack trace. FE: 401 ditangani global, error domain per mutation.
@@ -130,7 +141,7 @@ Aktual (FAKTA): fitur FE yang ada hanya `features/auth`; `FE/src/Container/` dan
 
 **Import:** alias `@/` → `FE/src` (terkonfigurasi di `vite.config.ts`); `import type` untuk type; BE memakai import relatif dengan ekstensi `.js` (nodenext). Arah dependensi FE: `pages` → `features`/`components` → `hooks` → `services` → `services/api`; feature tidak mengimpor feature lain (naikkan ke `components/shared`, `types/`, atau `utils/`). Tidak ada barrel file tanpa alasan.
 
-**Memecah file:** berdasarkan tanggung jawab dan kompleksitas, bukan angka baris (lihat `core/MODULARIZATION.md`). Service BE yang membesar boleh menjadi `services/<domain>/` dengan service utama sebagai orkestrator, tetapi mulai dari satu file.
+**Memecah file:** berdasarkan tanggung jawab dan kompleksitas, bukan angka baris (lihat `.agents/skills/core/MODULARIZATION.md`). Service BE yang membesar boleh menjadi `services/<domain>/` dengan service utama sebagai orkestrator, tetapi mulai dari satu file.
 
 **Penyimpangan aktual dari pola dasar:** `features/auth/context/auth-context.ts` (createContext) terpisah dari `AuthContext.tsx` (AuthProvider) demi aturan lint `react-refresh/only-export-components`; rate limit login ada di `services/login-rate-limit.service.ts` (butuh hasil login); `RoleRoute.tsx` ditunda sampai ada route berbasis role; `validateBody` baru memvalidasi body (query/params ditambah saat dibutuhkan).
 
@@ -155,15 +166,19 @@ Aktual (FAKTA): fitur FE yang ada hanya `features/auth`; `FE/src/Container/` dan
 | Auth FE | form login, `AuthProvider`, `ProtectedRoute`, logout | implemented | `FE/src/features/auth/*`, `routes/ProtectedRoute.tsx`, `pages/LoginPage.tsx` | Alur login/me/logout lewat proxy Vite diverifikasi dengan HTTP (dokumen lama). Browser: dilaporkan lulus lewat Chrome headless otomatis 1 Nov 2026 (skrip CDP di luar repo, build production + BE pada DB test): `document.cookie` tanpa `access_token`, cookie `httpOnly`, storage tanpa token, redirect ke `/login`, logout, Back setelah logout, tanpa loop. **Belum diverifikasi:** pemeriksaan manual developer, cookie `Secure` di HTTPS, seed owner |
 | Shell dashboard | layout, sidebar, header, token warna, tema Light/Dark, state loading/error | implemented | `layouts/DashboardLayout.tsx`, `components/shared/*`, `hooks/use-theme.ts`, `index.css` | Chrome headless 1 Nov 2026 dilaporkan 50/50: kontras dua mode, keyboard dan collapse sidebar, 1280/768/375 px tanpa overflow, tema tanpa kilatan, error logout, ErrorState, skeleton tanpa geser layout. Tidak diulang; FE belum punya test otomatis di repo |
 | Dashboard (isi data) | KPI, grafik, stok menipis dari backend | not started | `pages/DashboardPage.tsx` (kerangka) | — |
-| Kategori, Produk | CRUD end-to-end sebagai pola acuan | not started | — | Blokir: Q-10 |
+| Pengelolaan akun pegawai | owner membuat, menonaktifkan, mereset akun pegawai | not started | — | FR-01.6 sampai FR-01.9 |
+| Kategori, Produk | CRUD end-to-end sebagai pola acuan | not started | — | Blokir: P-02 (lensa jadi), P-11, persetujuan schema; foto: P-12 |
 | Supplier | CRUD mengikuti pola produk | not started | — | |
-| Inventaris + Pembelian | ledger mutasi, stok masuk atomik | not started | — | Blokir sebagian: Q-07, Q-08, Q-09 |
-| Penjualan | stok keluar atomik, snapshot harga | not started | — | **Tidak boleh dikerjakan** sebelum Q-02, Q-17, Q-09 jelas |
-| Stock opname | selisih → mutasi penyesuaian | not started | — | Blokir: Q-06 |
-| Laporan | agregat dari backend | not started | — | Blokir: Q-11, Q-14 |
+| Inventaris + Pembelian | ledger mutasi, stok masuk atomik | not started | — | Blokir: P-05 |
+| Retur pembelian | stok keluar ke supplier atomik | not started | — | Blokir: P-10 |
+| Audit log | tabel tambah-saja, dipakai sebelum penjualan | not started | — | Daftar aksi final dengan owner (FR-15.1) |
+| Pelanggan dan resep | pelanggan untuk garansi, riwayat resep | not started | — | Blokir: P-07 |
+| Penjualan | stok keluar atomik, snapshot harga | not started | — | **Tidak boleh dikerjakan** sebelum P-01, P-08, P-09, P-14 diputuskan dan kontrak harga disetujui (bagian 6) |
+| Stock opname | selisih → mutasi penyesuaian | not started | — | Blokir: P-11 (stok awal) |
+| Laporan | agregat dari backend | not started | — | Blokir: P-04, P-05 |
 | Hardening | Helmet, `trust proxy`, rate limit umum, audit log, backup | not started | — | |
-| Landing page publik | `FE/src/Container/` | not started | — | Isi MENUNGGU (M-13) |
-| Deployment + serah terima | staging/production, backup, uji restore, UAT | not started | — | Blokir: Q-13, DEC-014, DEC-015 |
+| Landing page publik | `FE/src/Container/` | not started | — | DITUNDA (M-13) |
+| Deployment + serah terima | staging/production, backup, uji restore, UAT | not started | — | Blokir: P-16 (Q-13), DEC-014, DEC-015 |
 
 Urutan tahap, exit criteria, dan Definition of Done: `todo-list.md`.
 
@@ -185,6 +200,7 @@ Urutan tahap, exit criteria, dan Definition of Done: `todo-list.md`.
 - **Tiga jenis tipe:** tipe database (Prisma, tidak pernah ke FE), tipe API/DTO (BE memetakan di service; FE di `src/types/<domain>.ts`), tipe form (`schemas.ts` via `z.infer`). Jangan memakai satu tipe untuk tiga tujuan. Bila DTO berubah, ubah BE, tipe FE, dan dokumen ini dalam satu perubahan.
 - **Serialisasi:** uang = string desimal (`"1250000.00"`, DEC-011 USULAN); tanggal = ISO 8601 UTC; tanggal murni `YYYY-MM-DD`; ID = number (DEC-030); enum = string yang sama dengan constants FE/BE. Field tak dikenal dibuang oleh `z.object` sehingga `role`/`userId` di body tak pernah sampai ke service.
 - **FE tidak menghitung nilai backend:** request penjualan hanya memuat identitas produk dan jumlah (ditambah data terkonfirmasi: pelanggan, metode bayar, diskon: Q-02, Q-04, Q-08, Q-17). Total di layar adalah pratinjau; nilai resmi dari BE. Contoh ilustratif (bukan kontrak final): `POST /api/sales { items: [{ productId, quantity }] }` → `201 { data: { id, total, items } }` atau `409 INSUFFICIENT_STOCK`.
+- **Perubahan yang diusulkan, MENUNGGU persetujuan developer:** PRD FR-07.2 sampai FR-07.4 meminta harga satuan tiap baris boleh diketik di kasir. Akibatnya request penjualan akan memuat harga satuan; BE memvalidasi harga itu, menghitung sendiri jumlah baris dan total, dan menyimpan snapshot (PRD bagian 10, AC-07.1 digantikan FR-07.3). Batas harga oleh pegawai menunggu P-01. Sampai disetujui, prinsip di atas tetap kontrak yang berlaku; jangan mengimplementasikan versi baru.
 - **Axios:** satu instance `FE/src/services/api/axios.ts` (`baseURL: "/api"`, JSON, `withCredentials: true`), tanpa interceptor `Authorization: Bearer`, tanpa file `api.ts` raksasa. **401:** interceptor membuang cache query selain sesi dan mengosongkan state auth, lalu `ProtectedRoute` mengarahkan ke `/login` dengan tujuan semula; `/auth/login` dan `/auth/me` dikecualikan dan ditangani pemanggilnya (mencegah loop). **`GET /api/auth/me` gagal selain 401** (server mati/error): status auth `error`, `ProtectedRoute` menampilkan `ErrorState` dengan tombol "Coba lagi", bukan mengarahkan ke login. **403:** pesan "tidak berhak" pada konteksnya, sesi tetap.
 - **API base URL:** `/api` relatif (satu origin dev lewat proxy Vite, production lewat Express). **CORS:** tidak diaktifkan; bila origin dipisah kelak butuh keputusan baru (daftar putih origin, `SameSite`, CSRF).
 - **Perubahan kontrak:** breaking (hapus/ganti nama/ubah tipe field) dikerjakan terkoordinasi (BE + FE + dokumen + test); menambah field opsional bukan breaking. Riwayat 24 Okt 2026: health, format error, auth, kode 401/403/415/429, deny-by-default semua path `/api` selain `/health` dan `/auth/*`, Origin/Referer wajib = `APP_ORIGIN` untuk POST/PUT/PATCH/DELETE.
@@ -194,10 +210,10 @@ Urutan tahap, exit criteria, dan Definition of Done: `todo-list.md`.
 
 ### Data
 
-- **Sensitive data handled:** kredensial pengguna (hash argon2id), data transaksi toko. Data pelanggan MENUNGGU (Q-04): tidak ada tabel sampai dikonfirmasi.
+- **Sensitive data handled:** kredensial pengguna (hash argon2id), data transaksi toko. Data pelanggan dan resep (data kesehatan) diminta owner (PRD M-11, M-12, BR-11); tidak ada tabel sampai ERD dan migrasi disetujui; kebijakan privasi menunggu P-07.
 - **Schema aktual (FAKTA):** hanya `User` (tabel `users`, enum `user_role`: `owner`, `staff`; kolom `id`, `username` unik `VARCHAR(50)`, `name`, `password_hash`, `role`, `is_active`, `created_at`, `updated_at`). Migrasi: `20261024150000_create_users`, dengan CHECK manual `users_username_lowercase` (`username = lower(username)`). Komentar SQL di migrasi itu masih menyebut `DATABASE.md bagian 4` (kini: "Relasi dan constraint" di bagian ini); file sengaja tidak diedit karena migrasi yang sudah diterapkan tidak diubah. Dilaporkan diterapkan dengan `prisma migrate deploy` ke DB dev `optik_raihan` dan DB test `optik_raihan_test` (1 Nov 2026), tidak diperiksa ulang.
 - **Konvensi schema:** model `PascalCase` tunggal dengan `@@map` ke tabel snake_case jamak; field camelCase dengan `@map` snake_case; semua tabel punya `createdAt`/`updatedAt` (`@db.Timestamptz(3)`), tabel transaksi/master penting mencatat pelaku; PK `Int @id @default(autoincrement())` (DEC-030). Satu perubahan logis per migrasi dengan nama deskriptif; migrasi yang sudah dipakai tidak diedit; CHECK dan constraint yang tak bisa ditulis di `schema.prisma` ditambah manual di SQL migrasi dan dicatat di sini; production memakai `prisma migrate deploy`. Tidak ada perubahan schema untuk requirement MENUNGGU. Satu `PrismaClient` dengan `PrismaPg` di `BE/src/lib/prisma.ts`. `$queryRaw` hanya bentuk terparameter, dengan alasan di kode.
-- **Model konseptual kandidat (belum final, field menunggu requirement CONFIRMED):** User, Category, Product (stok saat ini), Supplier, Purchase/PurchaseItem, Sale/SaleItem, StockMovement (ledger), StockOpname/StockOpnameItem, AuditLog. Tidak ada entitas pemesanan lensa atau pelanggan.
+- **Model konseptual kandidat (belum final, field menunggu requirement CONFIRMED):** User, Category, Product (stok saat ini), Supplier, Purchase/PurchaseItem, Sale/SaleItem, StockMovement (ledger), StockOpname/StockOpnameItem, AuditLog. Rancangan lengkap berstatus USULAN di `.agents/docs/ERD.md` menambah Customer, Prescription, PurchaseReturn/PurchaseReturnItem, dan DocumentCounter, beserta usulan urutan migrasi (ERD bagian 9). Tidak ada entitas pemesanan lensa (P-03).
 - **Relasi dan constraint:** semua relasi FK sungguhan; hapus master yang sudah dipakai transaksi ditolak (`ON DELETE RESTRICT`), gunakan nonaktif/arsip; tabel transaksi tidak dihapus permanen; unique pada identitas bisnis (SKU, nomor transaksi, username; format menunggu Q-09/Q-10); CHECK stok ≥ 0, jumlah item > 0, uang ≥ 0 sebagai lapis terakhir; kolom `NOT NULL` kecuali ada alasan. Indeks dibuat berdasarkan query nyata, bukan menebak.
 - **Uang:** `Decimal` (`NUMERIC`), bukan Float atau Int 32-bit (total agregat bisa > ±2,1 miliar); presisi eksplisit `@db.Decimal(p, s)` (menunggu Q-17); total dihitung di backend dengan Decimal, bukan `number` JS (DEC-011 USULAN).
 - **Waktu:** simpan UTC (`timestamptz`); tampil dalam zona waktu toko (WIB kandidat, perlu konfirmasi); batas "hari" laporan mengikuti zona waktu toko dan dikonversi di backend.
@@ -238,7 +254,7 @@ Dari `package.json` (FAKTA). Hanya perintah ini yang dikonfirmasi; tidak ada skr
 
 Variabel environment BE (nama saja): `NODE_ENV`, `PORT`, `DATABASE_URL`, `JWT_SECRET`, `APP_ORIGIN`, `SEED_OWNER_USERNAME`, `SEED_OWNER_NAME`, `SEED_OWNER_PASSWORD`.
 
-**Standar verifikasi proyek ini:** alur kritis (penjualan, pembelian, stok, opname, auth, otorisasi) wajib punya integration test sebelum tahap dinyatakan selesai, dijalankan terhadap database test terpisah, tak pernah terhadap data production. Laporkan perintah dan output asli; jangan menyatakan test lulus bila tidak dijalankan (`standards/QUALITY-GATES.md`). Jika test integritas gagal, perbaiki kode, bukan test (ubah test hanya bila memang salah, dengan alasan tertulis).
+**Standar verifikasi proyek ini:** alur kritis (penjualan, pembelian, stok, opname, auth, otorisasi) wajib punya integration test sebelum tahap dinyatakan selesai, dijalankan terhadap database test terpisah, tak pernah terhadap data production. Laporkan perintah dan output asli; jangan menyatakan test lulus bila tidak dijalankan (`.agents/skills/standards/QUALITY-GATES.md`). Jika test integritas gagal, perbaiki kode, bukan test (ubah test hanya bila memang salah, dengan alasan tertulis).
 
 ## 9. Confirmed decisions
 
@@ -261,9 +277,9 @@ Status: `ACCEPTED` kecuali tertulis lain. Mengubah keputusan `ACCEPTED` butuh pe
 | DEC-013 | JWT di cookie HttpOnly (8 jam, tanpa refresh), cek Origin/Referer, status aktif dari DB tiap request | ACCEPTED (24 Okt 2026) | Alternatif: browser storage (terbaca saat XSS), sesi server-side (butuh tabel sesi) |
 | DEC-014 | PaaS berbayar + PostgreSQL managed berbayar, FE dilayani Express (satu origin), **tanpa tier gratis untuk production** | USULAN | Hasil riset 21 Okt 2026, harga/syarat harus dicek ulang; belum diverifikasi: retensi backup, region, metode bayar, syarat komersial |
 | DEC-015 | Backup penyedia + dump berkala + uji restore | USULAN | |
-| DEC-016 | Pemesanan lensa | MENUNGGU (Q-01) | Tidak diimplementasikan sebelum dikonfirmasi |
-| DEC-017 | Kebijakan harga grosir | MENUNGGU (Q-02) | Memblokir Tahap 6 |
-| DEC-018 | Matriks hak akses | MENUNGGU (Q-03) | Sementara deny-by-default, dua role |
+| DEC-016 | Pemesanan lensa | MENUNGGU (Q-01) | Tidak diimplementasikan sebelum dikonfirmasi. Q-01 sudah dijawab owner (sebagian); dampak di PRD bagian 10, sisa: P-03. Status menunggu keputusan developer |
+| DEC-017 | Kebijakan harga grosir | MENUNGGU (Q-02) | Memblokir Tahap 6. Q-02 sudah dijawab owner; dampak di PRD bagian 10, sisa: P-01. Status menunggu keputusan developer |
+| DEC-018 | Matriks hak akses | MENUNGGU (Q-03) | Sementara deny-by-default, dua role. Q-03 sudah dijawab owner (PRD bagian 3); dampak di PRD bagian 10. Status menunggu keputusan developer |
 | DEC-019 | Rename `prisma7.config.ts` → `prisma.config.ts` | REJECTED (24 Okt 2026) | Prisma CLI 7.10.1 memuat `prisma7.config.ts`; tinjau ulang bila versi berikutnya tak mendeteksinya |
 | DEC-020 | `@tanstack/react-table` untuk tabel | USULAN | Dependency baru, butuh persetujuan |
 | DEC-021 | Format response `{ data, meta }` dan error `{ error: { code, message, details } }` | ACCEPTED (24 Okt 2026) | |
@@ -273,7 +289,7 @@ Status: `ACCEPTED` kecuali tertulis lain. Mengubah keputusan `ACCEPTED` butuh pe
 | DEC-025 | Microservices | REJECTED | Tanpa alasan bisnis/teknis, beban developer tunggal |
 | DEC-026 | Shared package FE-BE / OpenAPI codegen | REJECTED (saat ini) | Over-engineering; kontrak dijaga dokumen ini + integration test; tinjau bila klien lain muncul |
 | DEC-027 | Next.js dan NestJS | REJECTED | Tanpa kebutuhan SSR; kurva belajar tambahan |
-| DEC-028 | Data pelanggan | MENUNGGU (Q-04) | |
+| DEC-028 | Data pelanggan | MENUNGGU (Q-04) | Q-04 sudah dijawab owner; dampak di PRD bagian 10, sisa: P-06, P-07. Status menunggu keputusan developer |
 | DEC-029 | Backend ES Modules (`"type": "module"`, `nodenext`, import relatif ber-ekstensi `.js`) | ACCEPTED (24 Okt 2026) | Prisma 7 ESM-first; build `tsc` → `dist/`, `node dist/server.js` |
 | DEC-030 | Primary key `Int` autoincrement | ACCEPTED (24 Okt 2026) | Sederhana untuk aplikasi internal; akses tetap dijaga RBAC |
 | DEC-031 | Login dengan `username` (unik, huruf kecil, CHECK DB), password argon2id (paket `argon2`) | ACCEPTED (24 Okt 2026) | Pegawai tidak wajib punya email; belum diverifikasi: biaya hash dan instalasi native addon di hosting |
@@ -290,13 +306,14 @@ Status: `ACCEPTED` kecuali tertulis lain. Mengubah keputusan `ACCEPTED` butuh pe
   - `FE/README.md` masih README bawaan template Vite.
   - Build FE memperingatkan chunk utama > 500 kB (2 Nov 2026: 526,56 kB, gzip 171,54 kB; isinya terutama react-dom, react-router, axios, TanStack Query). Halaman sudah lazy; pemecahan vendor chunk butuh perubahan `vite.config.ts` (belum disetujui).
   - Sheet sidebar mobile memuat teks sr-only berbahasa Inggris ("Sidebar", "Displays the mobile sidebar.") dari `components/ui/sidebar.tsx`; mengubahnya berarti menyentuh `ui/` (butuh persetujuan).
+  - `.gitignore` berisi `.agents/`, sehingga PADS (`.agents/skills/`), PRD, dan ERD (`.agents/docs/`) tidak ter-commit; dokumen ter-commit merujuk ke berkas yang tidak ada pada clone baru. Keputusan developer (lihat `todo-list.md`).
 - **Assumptions:** A-01 sampai A-06 (bagian 2). Angka benchmark argon2 dan retensi backup belum ada.
-- **Unknowns requiring investigation:** Q-01 sampai Q-17 (`todo-list.md`); perilaku cookie `Secure` di HTTPS; instalasi `argon2` di platform hosting; dukungan backup/PITR penyedia hosting; format laporan KP.
-- **Blocked items:** Tahap 3 (Q-10), Tahap 5 (Q-07, Q-08, Q-09), Tahap 6 (Q-02, Q-05, Q-08, Q-09, Q-17), Tahap 7 (Q-06), Tahap 8 (Q-11, Q-14), Tahap 11 (Q-13, DEC-014, DEC-015).
+- **Unknowns requiring investigation:** Q-12 dan Q-13 masih terbuka, Q lain sudah dijawab owner (`todo-list.md`, PRD bagian 10); P-01 sampai P-16 (PRD bagian 9, ringkasan di `todo-list.md`); PRD dan ERD masih DRAFT/USULAN; perilaku cookie `Secure` di HTTPS; instalasi `argon2` di platform hosting; dukungan backup/PITR penyedia hosting; format laporan KP.
+- **Blocked items (PRD bagian 9 dan 11):** Tahap 3 (P-02 untuk lensa jadi, P-11, persetujuan schema), Tahap 5 pembelian (P-05) dan retur (P-10), Tahap 6 (P-01, P-08, P-09, P-14, persetujuan kontrak harga), pelanggan dan resep (P-07), Tahap 7 (P-11), Tahap 8 (P-04, P-05), Tahap 11 (P-16/Q-13, DEC-014, DEC-015), foto produk (P-12), pesanan lensa khusus (P-03), laporan KP (P-15/Q-12). P-06 dan P-13 tidak memblokir tahap.
 
 ## 11. Current working state
 
-- **Current milestone:** menunggu persetujuan developer atas Tahap 2 (auth) setelah verifikasi; berikutnya Tahap 3 (kategori dan produk) setelah Q-10 terjawab.
+- **Current milestone:** menunggu persetujuan developer atas Tahap 2 (auth) setelah verifikasi; berikutnya Tahap 3 (kategori dan produk) setelah review PRD/ERD, P-02 (untuk lensa jadi), dan persetujuan schema.
 - **Last verified result (2 Nov 2026, setelah rekonsiliasi dokumentasi):**
   - BE `npm run typecheck`: lulus (exit 0).
   - BE `npm test`: `Test Files 5 passed (5)`, `Tests 33 passed (33)`, terhadap database test terpisah (`BE/.env.test`).
