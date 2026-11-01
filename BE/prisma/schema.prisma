@@ -30,5 +30,48 @@ model User {
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
+  createdProducts Product[]
+
   @@map("users")
+}
+
+// Nama unik tanpa membedakan huruf besar/kecil lewat indeks fungsional "categories_name_lower_key" (SQL migrasi),
+// karena indeks pada lower(name) tidak bisa ditulis di schema.prisma.
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(100)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  products Product[]
+
+  @@map("categories")
+}
+
+// Satu baris = satu model barang (stok per model, PRD FR-03.2). CHECK harga >= 0 dan stok >= 0 ada di SQL migrasi.
+model Product {
+  id          Int      @id @default(autoincrement())
+  // Dibuat database dari sequence "products_sku_seq" (ERD D-05); tidak pernah dikirim atau diubah aplikasi.
+  sku         String   @unique @default(dbgenerated("('P-'::text || lpad((nextval('products_sku_seq'::regclass))::text, 6, '0'::text))")) @db.VarChar(20)
+  name        String   @db.VarChar(150)
+  categoryId  Int      @map("category_id")
+  sellPrice   Decimal  @map("sell_price") @db.Decimal(14, 2)
+  costPrice   Decimal  @default(0) @map("cost_price") @db.Decimal(14, 2)
+  // Hanya berubah bersama mutasi stok (Tahap 5 dan seterusnya); tidak ada endpoint yang mengubahnya langsung.
+  stockQty    Int      @default(0) @map("stock_qty")
+  // Penyimpanan foto menunggu P-12; kolom disiapkan sesuai ERD 4.4, belum diisi aplikasi.
+  photoPath   String?  @map("photo_path") @db.VarChar(255)
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdById Int      @map("created_by_id")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  category  Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  createdBy User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([categoryId])
+  @@index([isActive])
+  @@map("products")
 }

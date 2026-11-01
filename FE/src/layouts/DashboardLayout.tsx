@@ -44,7 +44,7 @@ export function DashboardLayout() {
 
   return (
     <DashboardShell
-      sidebar={<AppSidebar />}
+      sidebar={<AppSidebar role={user.role} />}
       header={
         <AppHeader user={user}>
           <LogoutButton />

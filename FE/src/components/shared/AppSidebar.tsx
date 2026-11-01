@@ -10,11 +10,17 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import type { UserRole } from "@/constants/auth.constants"
 import { NAVIGATION_ITEMS } from "@/constants/navigation.constants"
 
-export function AppSidebar() {
+type AppSidebarProps = {
+  role: UserRole
+}
+
+export function AppSidebar({ role }: AppSidebarProps) {
   const { pathname } = useLocation()
   const { isMobile, setOpenMobile } = useSidebar()
+  const visibleItems = NAVIGATION_ITEMS.filter((item) => !item.roles || item.roles.includes(role))
 
   return (
     <Sidebar collapsible="icon">
@@ -34,7 +40,7 @@ export function AppSidebar() {
         <nav aria-label="Menu utama">
           <SidebarGroup>
             <SidebarMenu className="gap-1 group-data-[collapsible=icon]:items-center">
-              {NAVIGATION_ITEMS.map((item) => (
+              {visibleItems.map((item) => (
                 <SidebarMenuItem key={item.to}>
                   {/* Menu aktif: latar, tebal huruf, garis aksen, dan aria-current (tidak hanya warna). */}
                   <SidebarMenuButton

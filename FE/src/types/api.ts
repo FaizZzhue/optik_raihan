@@ -3,6 +3,18 @@ export type ApiSuccess<T> = {
   data: T
 }
 
+export type PaginationMeta = {
+  page: number
+  pageSize: number
+  totalItems: number
+  totalPages: number
+}
+
+export type ApiList<T> = {
+  data: T[]
+  meta: PaginationMeta
+}
+
 export type ApiErrorDetail = {
   field?: string
   message: string
