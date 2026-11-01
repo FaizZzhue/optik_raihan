@@ -5,7 +5,7 @@ import { app } from "../src/app.js";
 import { env } from "../src/config/env.js";
 import { USER_ROLES } from "../src/constants/auth.constants.js";
 import { prisma } from "../src/lib/prisma.js";
-import { apiAs, createSessionCookie, createTestUser, deleteAllCatalogData, deleteAllUsers } from "./helpers.js";
+import { apiAs, createSessionCookie, createTestUser, deleteAllBusinessData, deleteAllUsers } from "./helpers.js";
 
 const SKU_PATTERN = /^P-\d{6}$/;
 
@@ -25,7 +25,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await deleteAllCatalogData();
+  await deleteAllBusinessData();
   frameCategoryId = (await prisma.category.create({ data: { name: "Frame" } })).id;
   lensCategoryId = (await prisma.category.create({ data: { name: "Lensa jadi" } })).id;
 });

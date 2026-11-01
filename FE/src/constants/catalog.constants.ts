@@ -8,28 +8,12 @@ export const CATALOG_PERMISSIONS: Record<"MANAGE_CATEGORIES" | "WRITE_PRODUCTS" 
   DELETE_PRODUCTS: [USER_ROLES.OWNER],
 }
 
-export const STATUS_FILTERS = {
-  ALL: "all",
-  ACTIVE: "active",
-  INACTIVE: "inactive",
-} as const
-
-export type StatusFilter = (typeof STATUS_FILTERS)[keyof typeof STATUS_FILTERS]
-
-export const STATUS_FILTER_LABELS: Record<StatusFilter, string> = {
-  all: "Semua status",
-  active: "Aktif",
-  inactive: "Nonaktif",
-}
-
 export const CATALOG_QUERY_KEYS = {
   categories: ["categories"] as const,
   products: ["products"] as const,
   productList: (params: ProductListParams) => ["products", "list", params] as const,
+  stockMovements: (productId: number, page: number) => ["products", "stock-movements", productId, page] as const,
 }
 
 // Nilai Select tidak boleh string kosong (Radix), jadi filter "semua kategori" memakai nilai ini.
 export const ALL_CATEGORIES_VALUE = "all"
-
-// Jeda sebelum pencarian dikirim ke BE agar tidak satu request per ketikan.
-export const SEARCH_DEBOUNCE_MS = 300

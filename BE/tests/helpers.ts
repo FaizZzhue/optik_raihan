@@ -26,14 +26,19 @@ export async function createTestUser({ username, role, isActive = true }: TestUs
   });
 }
 
-// Barang dan kategori dihapus lebih dulu karena products menunjuk users dan categories dengan ON DELETE RESTRICT.
-export async function deleteAllCatalogData(): Promise<void> {
+// Semua data bisnis dihapus sebelum users. Urutan mengikuti FK ON DELETE RESTRICT: tabel yang menunjuk lebih dulu.
+export async function deleteAllBusinessData(): Promise<void> {
+  await prisma.stockMovement.deleteMany();
+  await prisma.purchaseItem.deleteMany();
+  await prisma.purchase.deleteMany();
+  await prisma.auditLog.deleteMany();
   await prisma.product.deleteMany();
   await prisma.category.deleteMany();
+  await prisma.supplier.deleteMany();
 }
 
 export async function deleteAllUsers(): Promise<void> {
-  await deleteAllCatalogData();
+  await deleteAllBusinessData();
   await prisma.user.deleteMany();
 }
 

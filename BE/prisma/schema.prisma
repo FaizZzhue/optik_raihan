@@ -31,8 +31,29 @@ model User {
   updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   createdProducts Product[]
+  auditLogs       AuditLog[]
+  purchases       Purchase[]
+  stockMovements  StockMovement[]
 
   @@map("users")
+}
+
+// ERD 4.11. Tambah-saja: aplikasi tidak pernah mengubah atau menghapus baris. details tanpa password, token, atau isi resep.
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  // Null untuk aksi tanpa pengguna yang dikenali.
+  actorId    Int?     @map("actor_id")
+  action     String   @db.VarChar(50)
+  entityType String?  @map("entity_type") @db.VarChar(50)
+  entityId   Int?     @map("entity_id")
+  details    Json?    @db.JsonB
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([createdAt])
+  @@index([entityType, entityId])
+  @@map("audit_logs")
 }
 
 // Nama unik tanpa membedakan huruf besar/kecil lewat indeks fungsional "categories_name_lower_key" (SQL migrasi),
@@ -68,10 +89,100 @@ model Product {
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  category  Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  createdBy User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  category       Category        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  createdBy      User            @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  purchaseItems  PurchaseItem[]
+  stockMovements StockMovement[]
 
   @@index([categoryId])
   @@index([isActive])
   @@map("products")
+}
+
+// ERD 4.5. Tidak dihapus permanen bila sudah dipakai pembelian; dinonaktifkan lewat is_active.
+model Supplier {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(150)
+  phone     String?  @db.VarChar(30)
+  address   String?  @db.VarChar(255)
+  notes     String?
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  purchases Purchase[]
+
+  @@index([isActive])
+  @@map("suppliers")
+}
+
+// ERD 4.8. Tidak ada pembatalan pembelian (PRD FR-06.5); koreksi lewat retur atau opname.
+// doc_number ERD belum dibuat karena format nomor dokumen menunggu P-09. CHECK total >= 0 ada di SQL migrasi.
+model Purchase {
+  id                Int      @id @default(autoincrement())
+  supplierId        Int      @map("supplier_id")
+  supplierInvoiceNo String?  @map("supplier_invoice_no") @db.VarChar(50)
+  purchasedAt       DateTime @default(now()) @map("purchased_at") @db.Timestamptz(3)
+  total             Decimal  @db.Decimal(14, 2)
+  notes             String?
+  createdById       Int      @map("created_by_id")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  supplier       Supplier        @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  createdBy      User            @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  items          PurchaseItem[]
+  stockMovements StockMovement[]
+
+  @@index([supplierId])
+  @@index([purchasedAt])
+  @@map("purchases")
+}
+
+// unit_cost adalah snapshot harga beli saat pembelian (PRD FR-06.3). CHECK jumlah dan line_total ada di SQL migrasi.
+model PurchaseItem {
+  id         Int      @id @default(autoincrement())
+  purchaseId Int      @map("purchase_id")
+  productId  Int      @map("product_id")
+  quantity   Int
+  unitCost   Decimal  @map("unit_cost") @db.Decimal(14, 2)
+  lineTotal  Decimal  @map("line_total") @db.Decimal(14, 2)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  purchase Purchase @relation(fields: [purchaseId], references: [id], onDelete: Restrict)
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@unique([purchaseId, productId])
+  @@index([productId])
+  @@map("purchase_items")
+}
+
+// Nilai lain (sale_out, sale_void_in, purchase_return_out, opname_adjustment; ERD 4.1) ditambahkan bersama fiturnya.
+enum MovementType {
+  purchase_in
+
+  @@map("movement_type")
+}
+
+// Ledger stok (ERD 4.9, DEC-012). Tambah-saja; setiap perubahan products.stock_qty punya satu baris di sini.
+// CHECK sumber/jenis/tanda dan stock_after >= 0 ada di SQL migrasi.
+model StockMovement {
+  id             Int          @id @default(autoincrement())
+  productId      Int          @map("product_id")
+  movementType   MovementType @map("movement_type")
+  quantityChange Int          @map("quantity_change")
+  stockAfter     Int          @map("stock_after")
+  purchaseId     Int?         @map("purchase_id")
+  note           String?
+  createdById    Int          @map("created_by_id")
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Restrict)
+  purchase  Purchase? @relation(fields: [purchaseId], references: [id], onDelete: Restrict)
+  createdBy User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([productId, createdAt])
+  @@index([purchaseId])
+  @@map("stock_movements")
 }

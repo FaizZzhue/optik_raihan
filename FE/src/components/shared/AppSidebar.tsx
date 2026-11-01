@@ -45,11 +45,11 @@ export function AppSidebar({ role }: AppSidebarProps) {
                   {/* Menu aktif: latar, tebal huruf, garis aksen, dan aria-current (tidak hanya warna). */}
                   <SidebarMenuButton
                     asChild
-                    isActive={matchPath({ path: item.to, end: true }, pathname) !== null}
+                    isActive={matchPath({ path: item.to, end: item.end ?? true }, pathname) !== null}
                     tooltip={item.label}
                     className="data-active:before:absolute data-active:before:inset-y-1.5 data-active:before:left-0 data-active:before:w-1 data-active:before:rounded-full data-active:before:bg-brand-accent"
                   >
-                    <NavLink to={item.to} end onClick={() => isMobile && setOpenMobile(false)}>
+                    <NavLink to={item.to} end={item.end ?? true} onClick={() => isMobile && setOpenMobile(false)}>
                       <item.icon aria-hidden />
                       <span>{item.label}</span>
                     </NavLink>

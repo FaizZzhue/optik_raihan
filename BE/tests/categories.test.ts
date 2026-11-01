@@ -4,7 +4,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { app } from "../src/app.js";
 import { USER_ROLES } from "../src/constants/auth.constants.js";
 import { prisma } from "../src/lib/prisma.js";
-import { apiAs, createSessionCookie, createTestUser, deleteAllCatalogData, deleteAllUsers } from "./helpers.js";
+import { apiAs, createSessionCookie, createTestUser, deleteAllBusinessData, deleteAllUsers } from "./helpers.js";
 
 let owner: ReturnType<typeof apiAs>;
 let staff: ReturnType<typeof apiAs>;
@@ -20,7 +20,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await deleteAllCatalogData();
+  await deleteAllBusinessData();
 });
 
 afterAll(async () => {

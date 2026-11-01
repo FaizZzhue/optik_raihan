@@ -1,4 +1,4 @@
-import { Pencil, Power, PowerOff, Trash2 } from "lucide-react"
+import { History, Pencil, Power, PowerOff, Trash2 } from "lucide-react"
 import { IconActionButton } from "@/components/shared/IconActionButton"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -12,6 +12,7 @@ type ProductTableProps = {
   onEdit: (product: Product) => void
   onToggleActive: (product: Product) => void
   onDelete: (product: Product) => void
+  onShowStock: (product: Product) => void
 }
 
 // Teks rata kiri, angka dan harga rata kanan (PROJECT-CONTEXT.md bagian 4, Aturan UI).
@@ -22,6 +23,7 @@ export function ProductTable({
   onEdit,
   onToggleActive,
   onDelete,
+  onShowStock,
 }: ProductTableProps) {
   return (
     <div className="rounded-xl border bg-card">
@@ -58,6 +60,12 @@ export function ProductTable({
                 </TableCell>
                 <TableCell className="pr-4">
                   <div className="flex justify-end gap-1">
+                    <IconActionButton
+                      icon={History}
+                      label="Riwayat stok"
+                      accessibleLabel={`Riwayat stok ${product.name}`}
+                      onClick={() => onShowStock(product)}
+                    />
                     <IconActionButton
                       icon={Pencil}
                       label="Ubah"

@@ -1,29 +1,26 @@
 import { useState } from "react"
 import { Package, Plus, SearchX } from "lucide-react"
+import { ActionNotice, type Notice } from "@/components/shared/ActionNotice"
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { ErrorState } from "@/components/shared/ErrorState"
+import { ListPagination } from "@/components/shared/ListPagination"
 import { TableSkeleton } from "@/components/shared/TableSkeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import type { UserRole } from "@/constants/auth.constants"
-import {
-  ALL_CATEGORIES_VALUE,
-  CATALOG_PERMISSIONS,
-  SEARCH_DEBOUNCE_MS,
-  STATUS_FILTERS,
-  type StatusFilter,
-} from "@/constants/catalog.constants"
-import { DEFAULT_PAGE_SIZE } from "@/constants/pagination.constants"
+import { ALL_CATEGORIES_VALUE, CATALOG_PERMISSIONS } from "@/constants/catalog.constants"
+import { DEFAULT_PAGE_SIZE, SEARCH_DEBOUNCE_MS } from "@/constants/pagination.constants"
+import { STATUS_FILTERS, type StatusFilter } from "@/constants/status-filter.constants"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import type { Product, ProductListParams } from "@/types/catalog"
 import { getApiErrorMessage } from "@/utils/api-error"
 import { useCategories } from "../hooks/use-categories"
 import { useDeleteProduct, useProducts, useUpdateProduct } from "../hooks/use-products"
-import { ListPagination } from "./ListPagination"
 import { ProductFilters } from "./ProductFilters"
 import { ProductFormDialog } from "./ProductFormDialog"
 import { ProductTable } from "./ProductTable"
+import { StockCardDialog } from "./StockCardDialog"
 
 type ProductsPanelProps = {
   role: UserRole
@@ -52,8 +49,9 @@ export function ProductsPanel({ role }: ProductsPanelProps) {
 
   const [formDialog, setFormDialog] = useState<FormDialogState>({ open: false, product: null })
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null)
+  const [stockTarget, setStockTarget] = useState<Product | null>(null)
   // Hasil aksi terakhir; sukses hanya ditulis setelah BE membalas.
-  const [notice, setNotice] = useState<{ type: "success" | "error"; message: string } | null>(null)
+  const [notice, setNotice] = useState<Notice | null>(null)
 
   const canDelete = CATALOG_PERMISSIONS.DELETE_PRODUCTS.includes(role)
   const isFiltered = Boolean(debouncedSearch) || categoryValue !== ALL_CATEGORIES_VALUE || status !== STATUS_FILTERS.ALL
@@ -146,6 +144,7 @@ export function ProductsPanel({ role }: ProductsPanelProps) {
           onEdit={openForm}
           onToggleActive={handleToggleActive}
           onDelete={openDeleteDialog}
+          onShowStock={setStockTarget}
         />
         <ListPagination meta={meta} itemLabel="barang" onPageChange={setPage} isFetching={productsQuery.isFetching} />
       </div>
@@ -175,11 +174,7 @@ export function ProductsPanel({ role }: ProductsPanelProps) {
           <AlertDescription>Daftar kategori gagal dimuat: {getApiErrorMessage(categoriesQuery.error)}</AlertDescription>
         </Alert>
       )}
-      {notice && (
-        <Alert variant={notice.type === "error" ? "destructive" : "default"} role={notice.type === "error" ? "alert" : "status"}>
-          <AlertDescription>{notice.message}</AlertDescription>
-        </Alert>
-      )}
+      <ActionNotice notice={notice} />
 
       {renderContent()}
 
@@ -190,6 +185,7 @@ export function ProductsPanel({ role }: ProductsPanelProps) {
         categories={categories}
         onSaved={handleSaved}
       />
+      <StockCardDialog product={stockTarget} onOpenChange={(open) => !open && setStockTarget(null)} />
       <ConfirmDialog
         open={deleteTarget !== null}
         onOpenChange={(open) => !open && setDeleteTarget(null)}

@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { AUDIT_ACTIONS, AUDIT_ENTITY_TYPES } from "../constants/audit.constants.js";
 import { ERROR_CODES } from "../constants/error.constants.js";
 import type { User } from "../generated/prisma/client.js";
 import { prisma } from "../lib/prisma.js";
@@ -7,6 +8,7 @@ import { AppError } from "../utils/app-error.js";
 import { signAccessToken } from "../utils/jwt.js";
 import { hashPassword, verifyPassword } from "../utils/password.js";
 import type { LoginInput } from "../validators/auth.validator.js";
+import { recordAudit } from "./audit-log.service.js";
 import { assertLoginAllowed, recordLoginFailure, resetLoginFailures } from "./login-rate-limit.service.js";
 
 // Satu pesan untuk semua kegagalan login agar tidak membocorkan apakah username ada (AC-01.1).
@@ -40,6 +42,13 @@ export async function login(input: LoginInput, clientIp: string): Promise<{ user
   }
 
   resetLoginFailures(attemptKey);
+  // Hanya login berhasil yang dicatat (FR-15.1); kegagalan sudah ditangani rate limit.
+  await recordAudit(prisma, {
+    actorId: user.id,
+    action: AUDIT_ACTIONS.LOGIN,
+    entityType: AUDIT_ENTITY_TYPES.USER,
+    entityId: user.id,
+  });
   const token = await signAccessToken(user.id);
   return { user: toAuthUser(user), token };
 }

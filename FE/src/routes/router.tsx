@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate } from "react-router-dom"
 import { CATALOG_PERMISSIONS } from "@/constants/catalog.constants"
+import { OWNER_ONLY } from "@/constants/owner.constants"
 import { DashboardLayout } from "@/layouts/DashboardLayout"
 import { ProtectedRoute } from "./ProtectedRoute"
 import { RoleRoute } from "./RoleRoute"
@@ -39,6 +40,35 @@ export const router = createBrowserRouter([
                   {
                     path: "/kategori",
                     lazy: async () => ({ Component: (await import("@/pages/CategoriesPage")).CategoriesPage }),
+                  },
+                ],
+              },
+              {
+                element: <RoleRoute allowedRoles={OWNER_ONLY} />,
+                children: [
+                  {
+                    path: "/supplier",
+                    lazy: async () => ({ Component: (await import("@/pages/SuppliersPage")).SuppliersPage }),
+                  },
+                  {
+                    path: "/pembelian",
+                    lazy: async () => ({ Component: (await import("@/pages/PurchasesPage")).PurchasesPage }),
+                  },
+                  {
+                    path: "/pembelian/baru",
+                    lazy: async () => ({ Component: (await import("@/pages/NewPurchasePage")).NewPurchasePage }),
+                  },
+                  {
+                    path: "/pembelian/:purchaseId",
+                    lazy: async () => ({ Component: (await import("@/pages/PurchaseDetailPage")).PurchaseDetailPage }),
+                  },
+                  {
+                    path: "/akun",
+                    lazy: async () => ({ Component: (await import("@/pages/AccountsPage")).AccountsPage }),
+                  },
+                  {
+                    path: "/log-aktivitas",
+                    lazy: async () => ({ Component: (await import("@/pages/AuditLogPage")).AuditLogPage }),
                   },
                 ],
               },

@@ -1,12 +1,8 @@
 import { Search } from "lucide-react"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {
-  ALL_CATEGORIES_VALUE,
-  STATUS_FILTER_LABELS,
-  STATUS_FILTERS,
-  type StatusFilter,
-} from "@/constants/catalog.constants"
+import { ALL_CATEGORIES_VALUE } from "@/constants/catalog.constants"
+import { STATUS_FILTER_LABELS, STATUS_FILTERS, type StatusFilter } from "@/constants/status-filter.constants"
 import type { Category } from "@/types/catalog"
 
 type ProductFiltersProps = {

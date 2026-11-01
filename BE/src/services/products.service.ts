@@ -1,6 +1,8 @@
+import { AUDIT_ACTIONS, AUDIT_ENTITY_TYPES } from "../constants/audit.constants.js";
 import { ERROR_CODES } from "../constants/error.constants.js";
-import type { Prisma } from "../generated/prisma/client.js";
+import { Prisma } from "../generated/prisma/client.js";
 import { prisma } from "../lib/prisma.js";
+import { recordAudit } from "./audit-log.service.js";
 import type { ProductDto } from "../types/catalog.js";
 import type { PaginationMeta } from "../types/pagination.js";
 import { AppError } from "../utils/app-error.js";
@@ -10,6 +12,7 @@ import { statusToIsActive } from "../utils/status-filter.js";
 import type { CreateProductInput, ProductListQuery, UpdateProductInput } from "../validators/products.validator.js";
 
 const NOT_FOUND_MESSAGE = "Barang tidak ditemukan.";
+const { Decimal } = Prisma;
 
 const productInclude = {
   category: { select: { id: true, name: true, isActive: true } },
@@ -110,9 +113,28 @@ export async function createProduct(input: CreateProductInput, actorId: number):
   return toProductDto(product);
 }
 
-// TODO(TASK-020): perubahan harga jual/beli wajib dicatat di audit log (PRD FR-15.1) setelah tabel audit_logs ada.
-export async function updateProduct(id: number, input: UpdateProductInput): Promise<ProductDto> {
-  const current = await prisma.product.findUnique({ where: { id }, select: { categoryId: true } });
+type PriceChange = { from: string; to: string };
+
+// Hanya harga yang benar-benar berubah yang dicatat; mengirim harga yang sama tidak menghasilkan entri audit.
+function getPriceChanges(
+  current: { sellPrice: Prisma.Decimal; costPrice: Prisma.Decimal },
+  input: UpdateProductInput,
+): { sellPrice?: PriceChange; costPrice?: PriceChange } {
+  const changes: { sellPrice?: PriceChange; costPrice?: PriceChange } = {};
+  if (input.sellPrice !== undefined && !current.sellPrice.equals(input.sellPrice)) {
+    changes.sellPrice = { from: current.sellPrice.toFixed(2), to: new Decimal(input.sellPrice).toFixed(2) };
+  }
+  if (input.costPrice !== undefined && !current.costPrice.equals(input.costPrice)) {
+    changes.costPrice = { from: current.costPrice.toFixed(2), to: new Decimal(input.costPrice).toFixed(2) };
+  }
+  return changes;
+}
+
+export async function updateProduct(id: number, input: UpdateProductInput, actorId: number): Promise<ProductDto> {
+  const current = await prisma.product.findUnique({
+    where: { id },
+    select: { categoryId: true, sku: true, name: true, sellPrice: true, costPrice: true },
+  });
   if (!current) {
     throw new AppError(404, ERROR_CODES.NOT_FOUND, NOT_FOUND_MESSAGE);
   }
@@ -120,9 +142,23 @@ export async function updateProduct(id: number, input: UpdateProductInput): Prom
   if (input.categoryId !== undefined && input.categoryId !== current.categoryId) {
     await assertCategoryAssignable(input.categoryId);
   }
+  const priceChanges = getPriceChanges(current, input);
 
   try {
-    const product = await prisma.product.update({ where: { id }, data: omitUndefined(input), include: productInclude });
+    // Perubahan harga dan entri audit-nya tersimpan bersama atau tidak sama sekali (PRD FR-15.1).
+    const product = await prisma.$transaction(async (tx) => {
+      const updated = await tx.product.update({ where: { id }, data: omitUndefined(input), include: productInclude });
+      if (Object.keys(priceChanges).length > 0) {
+        await recordAudit(tx, {
+          actorId,
+          action: AUDIT_ACTIONS.PRICE_CHANGE,
+          entityType: AUDIT_ENTITY_TYPES.PRODUCT,
+          entityId: id,
+          details: { sku: current.sku, name: updated.name, ...priceChanges },
+        });
+      }
+      return updated;
+    });
     return toProductDto(product);
   } catch (error) {
     if (isPrismaError(error, PRISMA_ERROR_CODES.RECORD_NOT_FOUND)) {

@@ -8,18 +8,3 @@ export const CATALOG_PERMISSIONS = {
   WRITE_PRODUCTS: [USER_ROLES.OWNER, USER_ROLES.STAFF],
   DELETE_PRODUCTS: [USER_ROLES.OWNER],
 } as const satisfies Record<string, readonly UserRole[]>;
-
-// Filter status untuk daftar kategori dan barang. Nilai sama dengan FE/src/constants/catalog.constants.ts.
-export const STATUS_FILTERS = {
-  ALL: "all",
-  ACTIVE: "active",
-  INACTIVE: "inactive",
-} as const;
-
-export type StatusFilter = (typeof STATUS_FILTERS)[keyof typeof STATUS_FILTERS];
-
-// Default dan batas pagination daftar (BE-004). Nilai sama dengan FE/src/constants/pagination.constants.ts.
-export const PAGINATION = {
-  DEFAULT_PAGE_SIZE: 20,
-  MAX_PAGE_SIZE: 100,
-} as const;

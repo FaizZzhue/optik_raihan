@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { moneySchema, paginationQuerySchema, statusFilterSchema } from "./common.validator.js";
+import { moneySchema, nullableTextSchema, paginationQuerySchema, statusFilterSchema } from "./common.validator.js";
 
 const productNameSchema = z
   .string({ error: "Nama barang wajib diisi." })
@@ -13,12 +13,7 @@ const categoryIdSchema = z
   .positive("Kategori tidak valid.");
 
 // String kosong berarti deskripsi dihapus.
-const descriptionSchema = z
-  .string({ error: "Deskripsi harus berupa teks." })
-  .trim()
-  .max(1000, "Deskripsi maksimal 1000 karakter.")
-  .transform((value) => (value === "" ? null : value))
-  .nullable();
+const descriptionSchema = nullableTextSchema("Deskripsi", 1000);
 
 // sku dan stockQty sengaja tidak ada: SKU dibuat database (FR-03.3) dan stok hanya berubah lewat mutasi (FR-03.9).
 // z.object membuang field tersebut bila dikirim.

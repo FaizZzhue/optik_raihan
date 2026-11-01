@@ -1,10 +1,10 @@
 import { useState } from "react"
 import { Plus, Tags } from "lucide-react"
+import { ActionNotice, type Notice } from "@/components/shared/ActionNotice"
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { ErrorState } from "@/components/shared/ErrorState"
 import { TableSkeleton } from "@/components/shared/TableSkeleton"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import type { Category } from "@/types/catalog"
 import { getApiErrorMessage } from "@/utils/api-error"
@@ -21,7 +21,7 @@ export function CategoriesPanel() {
   const [formDialog, setFormDialog] = useState<FormDialogState>({ open: false, category: null })
   const [deleteTarget, setDeleteTarget] = useState<Category | null>(null)
   // Hasil aksi terakhir; sukses hanya ditulis setelah BE membalas.
-  const [notice, setNotice] = useState<{ type: "success" | "error"; message: string } | null>(null)
+  const [notice, setNotice] = useState<Notice | null>(null)
 
   const openForm = (category: Category | null) => {
     setNotice(null)
@@ -111,11 +111,7 @@ export function CategoriesPanel() {
         </Button>
       </div>
 
-      {notice && (
-        <Alert variant={notice.type === "error" ? "destructive" : "default"} role={notice.type === "error" ? "alert" : "status"}>
-          <AlertDescription>{notice.message}</AlertDescription>
-        </Alert>
-      )}
+      <ActionNotice notice={notice} />
 
       {renderContent()}
 

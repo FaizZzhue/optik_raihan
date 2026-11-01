@@ -1,4 +1,4 @@
-import type { StatusFilter } from "@/constants/catalog.constants"
+import type { StatusFilter } from "@/constants/status-filter.constants"
 
 // DTO dari /api/categories dan /api/products. Uang berupa string desimal dari BE dan tidak dihitung ulang di FE.
 export type Category = {

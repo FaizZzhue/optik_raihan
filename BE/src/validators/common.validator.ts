@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PAGINATION, STATUS_FILTERS } from "../constants/catalog.constants.js";
+import { PAGINATION, STATUS_FILTERS } from "../constants/list.constants.js";
 
 // Parameter :id pada URL. Nilai bukan bilangan bulat positif = 400, bukan 404.
 export const idParamSchema = z.object({
@@ -23,6 +23,18 @@ export const paginationQuerySchema = z.object({
     .max(PAGINATION.MAX_PAGE_SIZE, `Ukuran halaman maksimal ${PAGINATION.MAX_PAGE_SIZE}.`)
     .default(PAGINATION.DEFAULT_PAGE_SIZE),
 });
+
+export type PaginationQuery = z.infer<typeof paginationQuerySchema>;
+
+// Teks opsional yang boleh dikosongkan: string kosong (setelah trim) disimpan sebagai null.
+export function nullableTextSchema(label: string, maxLength: number) {
+  return z
+    .string({ error: `${label} harus berupa teks.` })
+    .trim()
+    .max(maxLength, `${label} maksimal ${maxLength} karakter.`)
+    .transform((value) => (value === "" ? null : value))
+    .nullable();
+}
 
 // Uang dikirim sebagai string desimal (DEC-011): maksimal 12 digit bulat dan 2 desimal sesuai NUMERIC(14,2),
 // titik hanya sebagai pemisah desimal. "1.250.000" ditolak agar titik ribuan tidak terbaca sebagai desimal.
