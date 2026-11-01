@@ -21,10 +21,10 @@
 
 ## Current milestone
 
-- **Milestone:** Tahap 2 (Authentication dan RBAC) menunggu persetujuan developer; Tahap 3 (kategori dan produk) berikutnya.
-- **Goal:** fondasi dan auth terverifikasi di browser, lalu pola acuan CRUD end-to-end pada kategori dan produk.
+- **Milestone:** Tahap 3 (kategori dan barang) terimplementasi, status VERIFY menunggu review developer (branch `feat/tahap-3-kategori-produk`). Tahap 2 tetap menunggu persetujuan developer. Tahap 4 belum dimulai.
+- **Goal:** developer mereview pola acuan CRUD Tahap 3 dan mengonfirmasi DEC-034 sampai DEC-036 sebelum pola ini ditiru tahap berikutnya.
 - **Target date (if applicable):** tidak ada dasar tanggal; tidak ditetapkan.
-- **Last updated:** 2 November 2026 (sinkronisasi dengan `.agents/docs/PRD.md`, `.agents/docs/ERD.md`, dan lokasi PADS di `.agents/skills/`; sebelumnya rekonsiliasi dokumentasi setelah adopsi PADS, hasil pemeriksaan di `PROJECT-CONTEXT.md` bagian 11).
+- **Last updated:** 2 November 2026 (implementasi dan verifikasi Tahap 3; sebelumnya sinkronisasi dengan `.agents/docs/PRD.md`, `.agents/docs/ERD.md`, dan lokasi PADS di `.agents/skills/`; sebelumnya rekonsiliasi dokumentasi setelah adopsi PADS, hasil pemeriksaan di `PROJECT-CONTEXT.md` bagian 11).
 
 ## Aturan pengerjaan tahap (dari proyek ini)
 
@@ -43,8 +43,8 @@
 | TASK-001 | Tahap 0: audit repo dan rekonsiliasi dokumentasi | P1 | DONE | Docs | Tidak ada | Versi dependency terverifikasi dari `package.json`; keputusan DEC-004, DEC-013, DEC-019 diputuskan. Sisa pertanyaan Q-01, Q-02, Q-03, Q-10, Q-12 masih terbuka (lihat Blockers) |
 | TASK-002 | Tahap 1: fondasi (config tervalidasi, error terpusat, health, koneksi Prisma, kerangka test, FE via proxy) | P1 | DONE | BE/FE | TASK-001 | Integration test health dan format error lulus (dilaporkan 24 Okt 2026) |
 | TASK-003 | Tahap 2: authentication dan RBAC (login/logout/me, proteksi route BE dan FE) | P1 | VERIFY | BE/FE | DEC-013 | `npm test` 33/33 lulus dua kali (dilaporkan 1 Nov 2026); HTTP via proxy diverifikasi. Sisa: pemeriksaan browser manual developer (TASK-004), cookie `Secure` di HTTPS, seed owner, persetujuan developer; matriks izin: jawaban owner di PRD bagian 3, DEC-018 masih MENUNGGU |
-| TASK-004 | Verifikasi auth di browser: cookie tak terbaca JS, reload memulihkan sesi, redirect saat 401, logout | P1 | VERIFY | FE | TASK-003 | Otomatis: Chrome headless (skrip CDP di luar repo, build production + BE pada DB test) dilaporkan lulus 1 Nov 2026; tidak diulang. Sisa: developer mengulang secara manual di browser dengan akun hasil seed dan mencatat hasilnya |
-| TASK-005 | Tahap 3: CRUD kategori dan produk end-to-end sebagai **pola acuan** | P1 | BLOCKED | FE/BE/DB | Review PRD/ERD; P-02 (lensa jadi), P-11 (stok awal); persetujuan schema dan migrasi (ERD bagian 9); persetujuan TASK-003. Foto produk: P-12 | AC-03.1 sampai AC-03.4; PRD FR-03.1 sampai FR-03.9, FR-04.1; pagination dan pencarian server-side; state loading/empty/error; integration test CRUD, validasi, otorisasi, penolakan hapus produk bertransaksi; developer dapat menjelaskan alur Page → Hook → Service → Axios → Route → Controller → Service → Prisma. Risiko: pola salah akan ditiru semua fitur, review ketat |
+| TASK-004 | Verifikasi auth di browser: cookie tak terbaca JS, reload memulihkan sesi, redirect saat 401, logout | P1 | VERIFY | FE | TASK-003 | Otomatis, diulang 2 Nov 2026 di mesin developer (Chrome 156 headless via CDP, build produksi + BE pada DB test): login lewat form; cookie `access_token` `httpOnly=true`, `sameSite=Lax`, `document.cookie` kosong, token tidak ada di storage; reload di `/barang` memulihkan sesi; cookie dihapus lalu request API → diarahkan ke `/login` dengan `from=/barang`; logout menghapus cookie dan Back tetap di `/login`. Sisa: developer mengulang secara manual dengan akun hasil seed di DB dev; cookie `Secure` di HTTPS |
+| TASK-005 | Tahap 3: CRUD kategori dan produk end-to-end sebagai **pola acuan** | P1 | VERIFY | FE/BE/DB | Schema dan migrasi disetujui developer (chat 2 Nov 2026). Sisa di luar task ini: P-02 (lensa jadi), P-11 (stok awal), foto (TASK-024) | AC-03.1 sampai AC-03.4; PRD FR-03.1 sampai FR-03.9, FR-04.1; pagination dan pencarian server-side; state loading/empty/error; integration test CRUD, validasi, otorisasi, penolakan hapus produk bertransaksi; developer dapat menjelaskan alur Page → Hook → Service → Axios → Route → Controller → Service → Prisma. Risiko: pola salah akan ditiru semua fitur, review ketat. **Bukti 2 Nov 2026:** `npm test` 79/79 (16 kategori, 30 barang), typecheck dan build BE lulus, lint dan build FE lulus, tanpa drift DB dev/test, browser otomatis 31/31 (`PROJECT-CONTEXT.md` bagian 11). Penolakan hapus barang bertransaksi baru bisa diuji setelah tabel transaksi ada; hapus kategori yang dipakai barang sudah diuji (409). **Belum:** review developer, konfirmasi DEC-034 sampai DEC-036, pemeriksaan manual di DB dev |
 | TASK-006 | Tahap 4: supplier mengikuti pola Tahap 3 | P2 | BACKLOG | FE/BE/DB | TASK-005 | AC-03.1 sampai AC-03.3 untuk supplier; PRD FR-05.1; tanpa penyimpangan dari pola |
 | TASK-007 | Tahap 5: ledger stok dan pembelian (stok masuk atomik, riwayat mutasi) | P1 | BACKLOG | BE/DB/FE | TASK-006; P-05 (harga pokok); DEC-011, DEC-012; persetujuan schema. Retur pembelian di TASK-019 | AC-06.1 sampai AC-06.3 (AC-06.4: PRD FR-06.5 mengusulkan pembelian tidak dibatalkan, koreksi lewat retur/opname), PRD FR-06.x dan FR-08.1 sampai FR-08.3, AC-08.1 sampai AC-08.3; CHECK stok ≥ 0 aktif; test rollback, rekonsiliasi stok vs ledger, snapshot harga, otorisasi. Exit: stok masuk tidak mungkin tanpa mutasi |
 | TASK-008 | Tahap 6: penjualan (stok keluar atomik, riwayat, detail transaksi) | P1 | BACKLOG | BE/DB/FE | TASK-007; TASK-020 (audit_logs); TASK-021 bila penjualan dikaitkan pelanggan/resep; P-01, P-08, P-09, P-14; persetujuan perubahan kontrak harga (`PROJECT-CONTEXT.md` bagian 6) | AC-07.2 sampai AC-07.5, PRD FR-07.1 sampai FR-07.15 (AC-07.1 digantikan FR-07.3 setelah kontrak disetujui; void: FR-07.13); total selalu dihitung backend, apakah FE mengirim harga satuan menunggu persetujuan kontrak; test konkurensi stok terakhir, stok tak cukup, rollback, snapshot, total di backend, otorisasi, kirim ganda; semua test integritas lulus tanpa kecuali. **Tidak boleh dikerjakan** sebelum P-01, P-08, P-09, P-14 diputuskan |
@@ -62,6 +62,8 @@
 | TASK-020 | Tabel `audit_logs` dan pencatatan aksi inti, sebelum Tahap 6 (M-15) | P1 | BACKLOG | BE/DB | Persetujuan schema dan migrasi; daftar aksi final dengan owner (Blockers) | PRD FR-15.1 sampai FR-15.3, ERD bagian 4.11 dan 9; tambah-saja; tanpa password, token, atau isi resep; hanya owner yang dapat melihat; test isi log dan otorisasi |
 | TASK-021 | Pelanggan dan resep (M-12, M-11), sebelum atau bersama Tahap 6 | P2 | BLOCKED | BE/DB/FE | P-07 (privasi data resep); TASK-020 (koreksi resep diaudit); persetujuan schema | PRD FR-12.1, FR-12.2, FR-11.1 sampai FR-11.3; resep baru tidak menimpa yang lama; data resep tidak muncul di log, nota, atau URL; test otorisasi. Garansi (P-06) dan pesanan lensa khusus (P-03) tidak termasuk |
 | TASK-022 | Pengelolaan akun pegawai oleh owner (M-01) | P2 | BACKLOG | BE/FE | Persetujuan TASK-003; TASK-020 (pembuatan, penonaktifan, reset akun diaudit) | PRD FR-01.6 sampai FR-01.9 (FR-01.9 USULAN); pegawai ditolak 403; password awal tidak ditulis di kode atau log, minimal 12 karakter (DEC-031); akun nonaktif langsung kehilangan akses (AC-01.4); test otorisasi |
+| TASK-024 | Foto barang (PRD FR-03.4, FR-03.5) | P2 | BLOCKED | BE/FE | P-12 (penyimpanan menunggu hosting); kemungkinan butuh dependency upload (persetujuan) | Kolom `products.photo_path` sudah ada. Tipe dicek dari isi file, batas ukuran, nama acak, tidak dieksekusi; foto tampil di daftar, detail, dan pemilihan barang; test upload ditulis sebelum dibangun |
+| TASK-025 | Kunci line ending file migrasi (`.gitattributes` `*.sql text eol=lf`) | P3 | BACKLOG | Repo | Persetujuan developer | Clone baru di Windows (`core.autocrlf=true`) tidak mengubah migrasi ke CRLF; `migrate status` tetap "up to date" |
 | TASK-023 | Tanyakan P-01 dan P-02 ke owner, catat jawabannya | P1 | READY | Docs | Developer menghubungi owner | Jawaban P-01 (batas harga yang boleh diketik pegawai; diskon nominal atau persen) dan P-02 (lensa jadi per ukuran atau per model) dicatat dengan sumber di PRD; status P-01/P-02 dan dependensi TASK-005/TASK-008 diperbarui |
 
 ## Frontend tasks
@@ -69,18 +71,18 @@
 | ID | Task | Priority | Status | Related modules | API dependency | Verification |
 |---|---|---|---|---|---|---|
 | FE-001 | Isi dashboard dari data backend (KPI, grafik, stok menipis) | P2 | BLOCKED | `pages/DashboardPage.tsx` | Endpoint laporan belum didesain (TASK-010) | Tidak memakai data dummy yang tampak nyata |
-| FE-002 | `RoleRoute.tsx` untuk route berbasis role | P3 | BLOCKED | `routes/` | Matriks izin (jawaban owner di PRD bagian 3; DEC-018 masih MENUNGGU) | Dibuat saat ada route yang butuh role tertentu |
-| FE-003 | Fungsi format Rupiah dan tanggal di `FE/src/utils/` | P2 | BACKLOG | `utils/format-currency.ts`, `utils/format-date.ts` | Tidak ada | Dibuat bersama halaman pertama yang menampilkan uang/tanggal; satu format di seluruh aplikasi |
+| FE-002 | `RoleRoute.tsx` untuk route berbasis role | P3 | DONE | `routes/RoleRoute.tsx` | Izin kategori DEC-034 (USULAN) | Dipakai untuk `/kategori`; pegawai diarahkan ke `/` (browser 2 Nov 2026) |
+| FE-003 | Fungsi format Rupiah dan tanggal di `FE/src/utils/` | P2 | BACKLOG | `utils/format-currency.ts` (ada), `utils/format-date.ts` (belum) | Tidak ada | Rupiah selesai dan dipakai di daftar dan form barang (`Rp1.250.000`, browser 2 Nov 2026). Tanggal dibuat bersama halaman pertama yang menampilkan tanggal |
 | FE-004 | Menyiapkan test FE | P3 | BACKLOG | FE | Persetujuan dependency | Belum ada test runner FE; keputusan terpisah |
 
 ## Backend tasks
 
 | ID | Task | Priority | Status | Related modules | Contract / dependency | Verification |
 |---|---|---|---|---|---|---|
-| BE-001 | `validateQuery` dan `validateParams` | P2 | BACKLOG | `middlewares/validate.middleware.ts` | Route pertama yang butuh query/params (TASK-005) | Test validasi 400 per field |
-| BE-002 | Kode error `CONFLICT` dan `INSUFFICIENT_STOCK` | P2 | BACKLOG | `constants/error.constants.ts` | Dipakai saat benar-benar dibutuhkan (TASK-007/008) | Ditambah ke `PROJECT-CONTEXT.md` bagian 6 |
+| BE-001 | `validateQuery` dan `validateParams` | P2 | DONE | `middlewares/validate.middleware.ts` | TASK-005 | Dipakai route kategori/barang; test 400 untuk `status`, `page`, `pageSize`, `categoryId`, dan id bukan angka lulus (2 Nov 2026) |
+| BE-002 | Kode error `INSUFFICIENT_STOCK` | P2 | BACKLOG | `constants/error.constants.ts` | Dipakai saat benar-benar dibutuhkan (TASK-007/008) | `CONFLICT` sudah ditambah di TASK-005. Ditambah ke `PROJECT-CONTEXT.md` bagian 6 |
 | BE-003 | Benchmark biaya hash argon2 dan instalasi native addon di platform hosting | P2 | BACKLOG | `utils/password.ts` | Platform hosting dipilih (Q-13) | Hasil benchmark dicatat; parameter disesuaikan bila perlu |
-| BE-004 | Nilai default dan maksimum `pageSize` | P2 | BACKLOG | `FE/constants/pagination.constants.ts`, config BE | TASK-005 | Dicatat sekali dan konsisten FE-BE |
+| BE-004 | Nilai default dan maksimum `pageSize` | P2 | DONE | `FE/src/constants/pagination.constants.ts`, `BE/src/constants/catalog.constants.ts` | TASK-005 | Default 20, maksimum 100 (USULAN), dicatat di `PROJECT-CONTEXT.md` bagian 6; test default 20 dan 101 → 400 lulus |
 
 ## Client/API integration tasks
 
@@ -88,7 +90,8 @@
 |---|---|---|---|---|---|---|---|
 | INT-001 | Login, logout, me | P1 | VERIFY | `/api/auth/*` | implemented | implemented | HTTP via proxy Vite diverifikasi; browser otomatis dilaporkan lulus, manual belum (TASK-004) |
 | INT-002 | Health | P3 | DONE | `GET /api/health` | n/a | implemented | Test `BE/tests/health.test.ts` dilaporkan lulus |
-| INT-003 | Endpoint domain (produk, kategori, supplier, pembelian, retur pembelian, penjualan, pelanggan, resep, opname, laporan, akun pegawai, audit log) | P1 | BLOCKED | Belum didesain | pending | pending | Not designed; tambahkan kontrak di `PROJECT-CONTEXT.md` bagian 6 sebelum implementasi |
+| INT-004 | Kategori dan barang | P1 | VERIFY | `/api/categories`, `/api/products` (`PROJECT-CONTEXT.md` bagian 6) | implemented | implemented | Integration test BE 46 kasus dan browser otomatis 31/31 lewat build produksi satu origin (2 Nov 2026); review developer belum |
+| INT-003 | Endpoint domain lain (supplier, pembelian, retur pembelian, penjualan, pelanggan, resep, opname, laporan, akun pegawai, audit log) | P1 | BLOCKED | Belum didesain | pending | pending | Not designed; tambahkan kontrak di `PROJECT-CONTEXT.md` bagian 6 sebelum implementasi |
 
 ## Blockers and decisions needed
 
@@ -114,7 +117,10 @@ Pertanyaan dari dokumentasi awal (Q-xx) dan pertanyaan turunan PRD (P-xx). Jawab
 | Q-16 Pengguna dan perangkat | Prioritas responsivitas, kapasitas | Jumlah pengguna dan perangkat di toko (Owner) | ANSWERED (PRD bagian 10) |
 | Q-17 Diskon dan pajak | Perhitungan total di backend | Ada diskon per item/transaksi atau pajak (Owner) | ANSWERED (PRD bagian 10; lanjutan P-01) |
 | Daftar aksi yang diaudit | Cakupan audit log (TASK-020) | Konfirmasi usulan PRD FR-15.1 dengan owner | OPEN |
-| Persetujuan schema untuk Tahap 3 | Memblokir TASK-005 | Developer menyetujui perubahan `schema.prisma` dan migrasi setelah P-02; rancangan di ERD bagian 9 | OPEN |
+| Persetujuan schema untuk Tahap 3 | Memblokir TASK-005 | Developer menyetujui perubahan `schema.prisma` dan migrasi setelah P-02; rancangan di ERD bagian 9 | RESOLVED (disetujui developer di chat 2 Nov 2026: migrasi `20261102090000_create_categories_products`, diterapkan ke DB dev dan test) |
+| DEC-034 Izin katalog | Siapa boleh kelola kategori dan hapus barang | Developer/owner mengonfirmasi usulan di `PROJECT-CONTEXT.md` bagian 9 | OPEN |
+| DEC-035 SKU dari sequence database | Format dan cara pembuatan SKU | Developer mengonfirmasi | OPEN |
+| DEC-036 Hapus vs nonaktif | Kapan data boleh dihapus permanen | Developer mengonfirmasi | OPEN |
 | Review PRD dan ERD (DRAFT 0.1.0, USULAN) | Requirement berlabel OWNER/USULAN belum disahkan; ERD belum boleh dijadikan schema | Developer mereview dan menyetujui atau mengoreksi | OPEN |
 | Perubahan kontrak "FE tidak mengirim harga" | AC-07.1, TASK-008, `PROJECT-CONTEXT.md` bagian 6 | Persetujuan developer atas usulan PRD FR-07.2 sampai FR-07.4 | OPEN |
 | `.agents/` di `.gitignore` | PADS, PRD, dan ERD tidak ter-commit; dokumen ter-commit merujuk ke berkas yang tidak ada di clone baru | Keputusan developer: track `.agents/` atau tetap lokal | OPEN |
@@ -149,6 +155,7 @@ Rincian, usulan penyusun, dan konteks: PRD bagian 9. Semua `OPEN`.
 | TASK-001 | Audit repo dan rekonsiliasi dokumentasi | Versi dari `package.json`; keputusan tercatat | 24 Okt 2026 (dokumen lama) |
 | TASK-002 | Fondasi BE/FE | Test health dan format error dilaporkan lulus | 24 Okt 2026 (dokumen lama) |
 | — | Shell dashboard (layout, sidebar, header, token warna, tema Light/Dark; DEC-023, DEC-024, DEC-033) | Chrome headless 50/50 dilaporkan (kontras, keyboard, responsif, tema, state error/loading); kode ter-commit di 1b26217 | 1 Nov 2026; belum ada test FE di repo |
+| BE-001, BE-004, FE-002 | `validateQuery`/`validateParams`, default/maks `pageSize`, `RoleRoute` | Test BE 79/79 dan browser otomatis 31/31 | 2 Nov 2026, bagian dari TASK-005 |
 | TASK-016 | Jawaban owner atas kuesioner dicatat (bagian pencatatan saja; status DEC tidak berubah) | `.agents/docs/PRD.md` Lampiran A; status Q di Blockers merujuk PRD bagian 10 | 2 Nov 2026; `.agents/` di-ignore git |
 | — | Adopsi PADS dan rekonsiliasi dokumentasi: file PADS dipindah ke root, 12 dokumen lama dihapus, rujukan komentar kode diarahkan ke `PROJECT-CONTEXT.md`, fakta yang hilang dipulihkan | Hanya dokumentasi dan komentar kode berubah; pemeriksaan di `PROJECT-CONTEXT.md` bagian 11 | 2 Nov 2026 |
 
