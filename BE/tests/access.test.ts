@@ -8,6 +8,19 @@ import { env } from "../src/config/env.js";
 import { AUTH_COOKIE_NAME, USER_ROLES, type UserRole } from "../src/constants/auth.constants.js";
 import { errorHandler } from "../src/middlewares/error.middleware.js";
 import { requireRole } from "../src/middlewares/role.middleware.js";
+import { hashPassword, verifyPassword } from "../src/utils/password.js";
+
+describe("Penyimpanan password (AC-01.5)", () => {
+  it("hash berformat argon2id, tidak memuat teks asli, dan hanya cocok dengan password yang benar", async () => {
+    const password = "password-uji-coba-123";
+    const passwordHash = await hashPassword(password);
+
+    expect(passwordHash.startsWith("$argon2id$")).toBe(true);
+    expect(passwordHash).not.toContain(password);
+    expect(await verifyPassword(passwordHash, password)).toBe(true);
+    expect(await verifyPassword(passwordHash, "password-lain-sekali")).toBe(false);
+  });
+});
 
 function signToken(secret: string, expiresAt: number): Promise<string> {
   return new SignJWT({})

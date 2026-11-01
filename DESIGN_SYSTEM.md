@@ -2,12 +2,12 @@
 
 > **Tujuan:** single source of truth konsistensi UI/UX aplikasi, dari dashboard sampai halaman operasional.
 > **Status:** DRAFT, menunggu review developer. Nilai token berstatus PROPOSED sampai divalidasi pada UI nyata.
-> **Versi:** 0.1.0
-> **Tanggal penyusunan:** 22 Oktober 2026
+> **Versi:** 0.2.0
+> **Tanggal penyusunan:** 22 Oktober 2026. **Pembaruan:** 1 November 2026 (token terimplementasi, bagian 2.5, 3, 7).
 > **Ruang lingkup:** arah visual, token, komponen, state, aksesibilitas. Tidak mengubah konfigurasi proyek.
-> **Referensi:** `STRUCTURE.md`, `CODING_STANDARDS.md`, `REQUIREMENTS.md`, `DECISIONS.md` (DEC-022, DEC-023, DEC-024)
+> **Referensi:** `STRUCTURE.md`, `CODING_STANDARDS.md`, `REQUIREMENTS.md`, `DECISIONS.md` (DEC-022, DEC-023, DEC-024, DEC-033)
 
-**Keterbatasan:** repository kosong saat dokumen ini disusun, jadi versi Tailwind, konfigurasi shadcn/ui, library ikon, dan font yang terpasang **belum diverifikasi**. Referensi visual "Optical Luxury" yang disebut dalam prompt **tidak tersedia** untuk penyusun. Dokumen ini hanya memakai deskripsi tertulis. Nama produk, angka, dan konten pada mockup mana pun bukan data bisnis.
+**Keterbatasan:** dokumen awal disusun saat repository kosong. Per 1 November 2026 konfigurasi aktual sudah diverifikasi: Tailwind 4.3 (CSS-first, tanpa `tailwind.config`), shadcn/ui style `radix-nova`, ikon `lucide-react`, font Geist. Referensi visual "Optical Luxury" yang disebut dalam prompt **tidak tersedia** untuk penyusun. Dokumen ini hanya memakai deskripsi tertulis. Nama produk, angka, dan konten pada mockup mana pun bukan data bisnis.
 
 ## 1. Arah desain dan identitas visual (DEC-022, ACCEPTED)
 
@@ -19,7 +19,7 @@
 - **Mode:** Light dan Dark.
 - **Prioritas UX:** keterbacaan data, kecepatan operasional, navigasi intuitif, konsistensi antarhalaman.
 
-## 2. Design tokens (DEC-023, PROPOSED)
+## 2. Design tokens (keputusan DEC-023 ACCEPTED, nilai token PROPOSED)
 
 ### 2.1 Palet dasar
 
@@ -30,8 +30,8 @@
 | Text utama | Espresso `#342B25` | Warm Text `#F3EBDD` |
 | Primary | Olive `#66734A` | Soft Olive `#A8B58A` |
 | Accent sekunder | Burnt Orange `#C87545` | Terracotta `#D68A60` |
-| Surface lembut | Muted Sage `#DCE4D2` | (tentukan saat implementasi) |
-| Border | (tentukan, lihat 2.2) | `#49443A` |
+| Surface lembut | Muted Sage `#DCE4D2` | Dark Sage `#3A4030` (ditetapkan 1 Nov 2026) |
+| Border | `#E3DACA` (ditetapkan 1 Nov 2026) | `#49443A` |
 
 ### 2.2 Hasil pengecekan kontras (dihitung penyusun, rumus WCAG 2.x)
 
@@ -58,8 +58,8 @@ Konsekuensi untuk implementasi:
 
 - Burnt Orange **bukan warna teks** dan bukan latar tombol berteks terang. Pakai untuk ikon besar, aksen dekoratif, dan elemen non-teks yang tidak membawa informasi penting sendirian. Untuk teks beraksen, gunakan varian lebih gelap (kandidat `#A95A2E`: 4,45, masih tipis, perlu disesuaikan lagi).
 - Olive sebagai teks di atas Muted Sage tidak boleh dipakai. Pakai Espresso di atas Sage (10,59).
-- Olive sebagai warna teks di Light Mode lulus tipis. Opsi lebih aman: `#566239` (5,83 di atas Ivory) atau `#4E5A34` (7,23). Pilihan akhir menunggu keputusan visual.
-- Border input harus lebih kuat dari border dekoratif, terutama di Dark Mode.
+- Olive sebagai warna teks di Light Mode lulus tipis. Opsi lebih aman: `#566239` (5,83 di atas Ivory) atau `#4E5A34` (7,23). **Dipilih `#566239`** sebagai token terpisah `--primary-text` (DEC-023).
+- Border input harus lebih kuat dari border dekoratif, terutama di Dark Mode. Diterapkan lewat token `--input` terpisah dari `--border` (bagian 2.5).
 
 ### 2.3 Warna semantik (usulan penyusun, belum disepakati)
 
@@ -72,21 +72,74 @@ Warna semantik tidak boleh membawa makna sendirian. Selalu sertakan label teks a
 | Danger | `#A63A2B` (6,29) | `#EE8F80` (5,81) | Gagal, kondisi kritis |
 | Info | `#2F5F80` (6,68) | `#8DB9D6` (6,57) | Informasi netral |
 
-Angka dalam kurung adalah rasio kontras terhitung. Nilai ini usulan, bukan palet yang disetujui.
+Angka dalam kurung adalah rasio kontras terhitung. Warna semantik diterapkan sebagai token (DEC-023). Nilainya tetap PROPOSED sampai divalidasi pada UI yang memakainya.
 
 ### 2.4 Implementasi token
 
 - Satu sumber token untuk Light dan Dark (CSS variables), dikonsumsi Tailwind dan shadcn/ui.
-- Mekanisme (konfigurasi Tailwind vs direktif CSS-first) **bergantung versi Tailwind terpasang**. Periksa dulu `package.json` dan konfigurasi aktual sebelum menulis token.
+- Mekanisme terverifikasi: Tailwind 4.3 CSS-first. Token ditulis di `FE/src/index.css` (`:root` untuk Light, `.dark` untuk Dark) dan dipetakan ke utility lewat `@theme inline` (misalnya `--primary-text` menjadi `text-primary-text`).
+- Dark Mode memakai class `dark` di `<html>`. Rinciannya di bagian 7.
 - Jangan menulis nilai warna, spacing, radius, atau shadow yang sama berulang di komponen. Rujuk token.
 - Hindari arbitrary values Tailwind tanpa alasan.
 
+### 2.5 Nilai token terimplementasi (PROPOSED, 1 November 2026)
+
+Menggantikan token neutral bawaan shadcn. Token `--chart-1` sampai `--chart-5` sengaja belum diubah karena belum ada grafik.
+
+| Token CSS | Peran | Light | Dark |
+|---|---|---|---|
+| `--background` | latar halaman | `#F6F1E7` | `#211F1A` |
+| `--foreground` | teks utama | `#342B25` | `#F3EBDD` |
+| `--card`, `--popover`, `--sidebar` | permukaan | `#FFFCF6` | `#302D26` |
+| `--primary`, `--sidebar-primary` | tombol utama | `#66734A` | `#A8B58A` |
+| `--primary-foreground` | teks di atas tombol utama | `#FFFCF6` | `#211F1A` |
+| `--primary-text` | teks aksen Olive (token terpisah) | `#566239` | `#A8B58A` |
+| `--secondary`, `--accent`, `--sidebar-accent` | surface lembut, menu aktif/hover | `#DCE4D2` | `#3A4030` |
+| `--muted` | skeleton, hover netral | `#ECE5D8` | `#3A362E` |
+| `--muted-foreground` | teks sekunder | `#655A50` | `#B5AA98` |
+| `--brand-accent` | Burnt Orange, **non-teks saja** (garis indikator menu aktif) | `#C87545` | `#D68A60` |
+| `--destructive` | Danger | `#A63A2B` | `#EE8F80` |
+| `--success`, `--warning`, `--info` | semantik (bagian 2.3) | `#2F6B3F`, `#8A5A00`, `#2F5F80` | `#8FC79A`, `#E3B25C`, `#8DB9D6` |
+| `--border`, `--sidebar-border` | garis pemisah dekoratif | `#E3DACA` | `#49443A` |
+| `--input` | batas kontrol form (≥ 3:1) | `#857A6B` | `#857C6B` |
+| `--ring`, `--sidebar-ring` | focus ring | `#66734A` | `#A8B58A` |
+
+Kontras pasangan yang dipakai (dihitung dengan rumus WCAG 2.x, skrip tanpa dependency, 1 November 2026):
+
+| Pasangan | Light | Dark | Ambang |
+|---|---|---|---|
+| foreground / background | 12,29 | 13,91 | 4,5 |
+| foreground / card | 13,51 | 11,60 | 4,5 |
+| foreground / secondary (Sage) | 10,59 | 9,07 | 4,5 |
+| foreground / muted | 11,04 | 10,15 | 4,5 |
+| muted-foreground / background | 5,96 | 7,19 | 4,5 |
+| muted-foreground / card | 6,55 | 6,00 | 4,5 |
+| muted-foreground / muted | 5,35 | 5,25 | 4,5 |
+| muted-foreground / secondary (Sage) | 5,13 | 4,69 | 4,5 |
+| primary-foreground / primary | 4,98 | 7,56 | 4,5 |
+| primary-text / background | 5,83 | 7,56 | 4,5 |
+| primary-text / card | 6,40 | 6,31 | 4,5 |
+| primary-text / secondary (Sage) | 5,02 | 4,93 | 4,5 |
+| destructive / card | 6,29 | 5,81 | 4,5 |
+| destructive / background | 5,72 | 6,96 | 4,5 |
+| success / card | 6,22 | 7,07 | 4,5 |
+| warning / card | 5,79 | 7,06 | 4,5 |
+| info / card | 6,68 | 6,57 | 4,5 |
+| tooltip (background di atas foreground) | 12,29 | 13,91 | 4,5 |
+| input / background (non-teks) | 3,74 | 3,99 | 3 |
+| input / card (non-teks) | 4,11 | 3,33 | 3 |
+| ring / background (non-teks) | 4,53 | 7,56 | 3 |
+| ring / card (non-teks) | 4,98 | 6,31 | 3 |
+| border dekoratif / background, card | 1,23 / 1,35 | 1,70 / 1,42 | dekoratif, tidak membawa informasi |
+
+Pemindaian di browser (Chrome headless) atas semua teks yang terlihat di halaman login, dashboard, dan ErrorState pada kedua mode tidak menemukan pasangan di bawah ambang.
+
 ## 3. Tipografi
 
-- Kandidat font UI: **Plus Jakarta Sans** atau **Inter**. Keputusan: `NEEDS_CONFIRMATION` (DEC-024).
-- Pertimbangan: angka transaksi, stok, dan harga harus rata dan mudah dipindai, sehingga dukungan angka tabular (tabular numerals) penting. Dukungan fitur ini pada kedua font **belum diverifikasi** penyusun. Cek saat memilih.
+- Font UI: **Geist** (`@fontsource-variable/geist`, sudah terpasang). Keputusan: DEC-024 ACCEPTED. Kandidat awal Plus Jakarta Sans dan Inter tidak dipakai.
+- Angka tabular: **terverifikasi didukung**. Tabel GSUB file `geist-latin-wght-normal.woff2` (subset yang memuat glyph angka) memiliki fitur `tnum` (juga `pnum`, `frac`). Kolom angka transaksi, stok, dan harga memakai utility `tabular-nums` (`font-variant-numeric: tabular-nums`).
 - Serif editorial hanya untuk elemen branding atau heading dekoratif terbatas. **Tidak** untuk tabel, form, angka transaksi, atau informasi operasional.
-- Tetapkan skala untuk: page title, section title, card title, body, label, caption, angka KPI. Nilai ukuran ditetapkan saat implementasi dan dicatat di sini.
+- Skala yang sudah dipakai: page title `text-2xl` semibold (24 px), judul state/kartu `text-base` semibold (16 px), body `text-sm` (14 px), caption/label role `text-xs` (12 px). Section title dan angka KPI ditetapkan saat dipakai.
 - Hierarki lewat ukuran, ketebalan, warna, dan jarak, tidak hanya warna mencolok.
 
 ## 4. Layout, spacing, radius, elevation
@@ -125,6 +178,12 @@ Aturan:
 - Konten: page title, deskripsi singkat bila perlu, aksi utama mudah ditemukan.
 - Perubahan lebar sidebar tidak boleh membuat konten bertumpuk atau keluar viewport.
 
+**Implementasi (1 November 2026):**
+- Sidebar: komponen shadcn `components/ui/sidebar.tsx` (DEC-033), `collapsible="icon"`. Lebar 240/72 px lewat CSS variable `--sidebar-width`/`--sidebar-width-icon` di `layouts/DashboardLayout.tsx`, tanpa mengubah `components/ui/`. Di bawah 768 px sidebar menjadi Sheet. Status buka/ringkas disimpan komponen di cookie `sidebar_state` (state UI). Pintasan keyboard bawaan: Ctrl+B.
+- Menu aktif ditandai latar `--sidebar-accent`, huruf tebal, garis `--brand-accent`, dan `aria-current="page"`. Penanda tidak hanya warna.
+- Header: tombol menu, nama dan label role dari `GET /api/auth/me`, toggle tema, tombol Keluar.
+- Tema Light/Dark: hook `hooks/use-theme.ts` tanpa Context. Class `dark` dipasang di `<html>`. Selama pengguna belum memilih, tema mengikuti preferensi sistem. Pilihan disimpan di `localStorage` (dibungkus try/catch). `public/theme-init.js` dimuat di `<head>` sebelum halaman digambar sehingga tidak ada kilatan tema.
+
 **Publik (`Container/`):** gaya konsisten dengan brand, tidak memaksakan tampilan dashboard admin. Isi landing page `NEEDS_CONFIRMATION` (REQUIREMENTS M-13).
 
 ## 8. Dashboard owner dan pegawai
@@ -147,7 +206,7 @@ Visual identity sama. Isi dan navigasi mengikuti role yang benar-benar diterapka
 
 | State | Aturan |
 |---|---|
-| Loading | Indikator/skeleton yang tidak menggeser layout |
+| Loading | Indikator/skeleton yang tidak menggeser layout (`components/shared/LoadingState.tsx`) |
 | Empty | Jelaskan data belum ada dan aksi berikutnya bila relevan |
 | Error | Penjelasan singkat dan tindakan pemulihan bila mungkin |
 | Success | Umpan balik jelas setelah operasi **benar-benar** berhasil (setelah respons backend) |

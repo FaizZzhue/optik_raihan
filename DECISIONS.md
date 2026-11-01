@@ -43,8 +43,8 @@
 | DEC-020 | TanStack Table untuk tabel | PROPOSED |
 | DEC-021 | Format response/error API | ACCEPTED |
 | DEC-022 | Arah desain Optical Luxury — Vintage Modern | ACCEPTED |
-| DEC-023 | Token warna dan penyesuaian kontras | PROPOSED |
-| DEC-024 | Font UI | NEEDS_CONFIRMATION |
+| DEC-023 | Token warna dan penyesuaian kontras | ACCEPTED |
+| DEC-024 | Font UI | ACCEPTED |
 | DEC-025 | Microservices | REJECTED |
 | DEC-026 | Shared package FE-BE / OpenAPI codegen | REJECTED |
 | DEC-027 | Next.js dan NestJS | REJECTED |
@@ -53,6 +53,7 @@
 | DEC-030 | Primary key integer autoincrement | ACCEPTED |
 | DEC-031 | Login dengan username, hash argon2id | ACCEPTED |
 | DEC-032 | Library dan rate limit auth | ACCEPTED |
+| DEC-033 | Sidebar dashboard memakai komponen shadcn | ACCEPTED |
 
 ## Keputusan
 
@@ -192,14 +193,22 @@
 - **Catatan:** referensi visual tidak tersedia untuk penyusun dokumen. Hanya deskripsi tertulis yang dipakai.
 
 ### DEC-023 Token warna dan penyesuaian kontras
-- **Tanggal:** tidak tercatat. **Status:** PROPOSED.
+- **Tanggal:** diterima developer 1 November 2026. **Status:** ACCEPTED. Nilai token final tetap dicatat PROPOSED di `DESIGN_SYSTEM.md` sampai divalidasi pada UI nyata.
 - **Konteks:** palet awal dari developer. Pengecekan kontras menemukan Burnt Orange gagal sebagai teks normal, Olive di atas Sage gagal, dan Olive di atas Ivory lulus tipis (4,53:1).
-- **Keputusan (usulan):** pertahankan palet, batasi pemakaian Burnt Orange untuk non-teks, pertimbangkan varian Olive lebih gelap untuk teks. Warna semantik yang diusulkan perlu disetujui.
+- **Keputusan:** pertahankan palet `DESIGN_SYSTEM.md` 2.1. Burnt Orange hanya untuk elemen non-teks. Teks aksen Olive di Light Mode memakai `#566239` (5,83:1 di atas Ivory, dihitung penyusun dokumen), disediakan sebagai token terpisah. Warna semantik Success/Warning/Danger/Info dari bagian 2.3 diterapkan.
+- **Belum dikerjakan:** implementasi token (ditunda bersama shell dashboard, lihat `IMPLEMENTATION_PLAN.md`).
 - **Referensi:** `DESIGN_SYSTEM.md` bagian 2.
 
 ### DEC-024 Font UI
-- **Status:** NEEDS_CONFIRMATION.
-- **Pilihan:** Plus Jakarta Sans atau Inter. Dukungan angka tabular belum diverifikasi.
+- **Tanggal:** diterima developer 1 November 2026. **Status:** ACCEPTED.
+- **Keputusan:** pertahankan Geist (`@fontsource-variable/geist`, sudah terpasang). Tidak menambah font. Impor Montserrat yang tidak dipakai akan dihapus dari `FE/src/index.css` saat implementasi token.
+- **Alternatif:** Plus Jakarta Sans, Inter (keduanya butuh dependency baru).
+- **Belum diverifikasi:** dukungan angka tabular (`tnum`) pada Geist.
+
+### DEC-033 Sidebar dashboard memakai komponen shadcn
+- **Tanggal:** diterima developer 1 November 2026. **Status:** ACCEPTED.
+- **Keputusan:** shell dashboard memakai `FE/src/components/ui/sidebar.tsx` yang sudah terpasang. Lebar acuan 240/72 px diatur lewat CSS variable tanpa mengubah `components/ui/`.
+- **Trade-off:** komponen ini memakai React Context internal dan cookie `sidebar_state` untuk state UI. Ini dianggap bagian internal library UI, bukan state aplikasi, sehingga tidak bertentangan dengan DEC-005.
 
 ### DEC-025 Microservices
 - **Status:** REJECTED. Tidak ada alasan bisnis atau teknis. Menambah beban operasional developer tunggal. Dasar: arahan developer dan audit.

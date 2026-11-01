@@ -7,7 +7,7 @@ import { AuthContext } from "./auth-context"
 
 // Memulihkan sesi lewat GET /api/auth/me saat aplikasi dimuat (termasuk setelah reload).
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const meQuery = useQuery({
+  const { isPending, isError, isFetching, data, refetch } = useQuery({
     queryKey: AUTH_ME_QUERY_KEY,
     queryFn: getMe,
     retry: false,
@@ -15,15 +15,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   })
 
   const value = useMemo<AuthContextValue>(() => {
-    if (meQuery.isPending) {
-      return { status: "loading", user: null }
+    const retry = () => void refetch()
+
+    // Saat mencoba ulang setelah error, tampilkan loading lagi sebagai umpan balik.
+    if (isPending || (isError && isFetching)) {
+      return { status: "loading", user: null, retry }
     }
-    if (meQuery.data) {
-      return { status: "authenticated", user: meQuery.data }
+    if (data) {
+      return { status: "authenticated", user: data, retry }
     }
-    // Termasuk saat BE tidak terjangkau: pengguna diarahkan ke login dan melihat pesan error di sana.
-    return { status: "unauthenticated", user: null }
-  }, [meQuery.isPending, meQuery.data])
+    if (isError) {
+      return { status: "error", user: null, retry }
+    }
+    return { status: "unauthenticated", user: null, retry }
+  }, [isPending, isError, isFetching, data, refetch])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

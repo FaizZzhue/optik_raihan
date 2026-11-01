@@ -40,6 +40,7 @@ Rekomendasi: JWT di cookie dengan `HttpOnly`, `Secure` (produksi), `SameSite=Lax
 - Klaim minimal (identitas pengguna). Hindari data sensitif di payload.
 - Masa berlaku dibatasi (kandidat: satu shift kerja, nilai menunggu keputusan). Tidak ada token tanpa kedaluwarsa.
 - JWT murni tidak bisa dicabut sebelum kedaluwarsa. Mitigasinya adalah pengecekan status aktif pada tiap request (bagian 1). Pencabutan sesi per perangkat butuh mekanisme tambahan dan tidak dalam scope awal.
+- **Terbukti pada audit 1 Nov 2026:** logout hanya menghapus cookie di browser. Salinan token yang diambil sebelum logout tetap diterima `GET /api/auth/me` sampai kedaluwarsa (maksimal 8 jam). Menonaktifkan user langsung memutus token tersebut. Usulan perbaikan (butuh perubahan schema, belum disetujui): kolom versi sesi pada `users` yang dinaikkan saat logout dan dicek di `requireAuth`.
 - Jika cookie HttpOnly dipakai:
   - **Jangan** menyimpan token di `localStorage` atau `sessionStorage`.
   - **Jangan** menaruh token di `AuthContext`.
@@ -80,7 +81,7 @@ Berlaku karena autentikasi memakai cookie.
 - Penguncian akun permanen setelah beberapa gagal bisa dipakai untuk menyerang ketersediaan akun. Pilih backoff bertahap berdasarkan kombinasi IP dan username.
 - Penyimpanan counter in-memory cukup untuk satu instance. Jika instance lebih dari satu, butuh penyimpanan bersama.
 - Angka batas ditetapkan saat implementasi dan dicatat di sini.
-- **Diterapkan pada login (24 Okt 2026, `BE/src/services/login-rate-limit.service.ts`):** kunci = IP + username (huruf kecil). 5 kegagalan pertama bebas. Kegagalan ke-6 mengunci 30 detik, ke-7 60 detik, dan seterusnya berlipat dua sampai maksimal 15 menit. Selama terkunci, login ditolak `429 TOO_MANY_REQUESTS`, termasuk dengan password benar. Login sukses mengosongkan counter. Counter dilupakan setelah 15 menit tanpa kegagalan baru.
+- **Diterapkan pada login (24 Okt 2026, `BE/src/services/login-rate-limit.service.ts`):** kunci = IP + username (huruf kecil). 5 kegagalan pertama bebas. Kegagalan ke-6 mengunci 30 detik, ke-7 60 detik, dan seterusnya berlipat dua sampai maksimal 15 menit. Selama terkunci, login ditolak `429 TOO_MANY_REQUESTS`, termasuk dengan password benar. Login sukses mengosongkan counter. Counter dilupakan setelah 15 menit tanpa kegagalan baru, dan entri yang sudah terlupakan disapu saat jumlah kunci mencapai 1000 agar memori tidak tumbuh tanpa batas.
 - **Risiko terbuka (Tahap 9):** `trust proxy` belum diatur. Di balik proxy hosting, `req.ip` bisa berupa IP proxy, sehingga kunci praktis menjadi per username dan penyerang dapat mengunci sementara akun orang lain (maksimal 15 menit per siklus). Belum ada batas umum per IP untuk banyak username, dan belum ada rate limit umum untuk API lain.
 
 ## 9. Validasi input

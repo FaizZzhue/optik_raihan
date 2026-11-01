@@ -20,7 +20,9 @@ api.interceptors.response.use(undefined, (error: unknown) => {
     error.response?.status === 401 &&
     !AUTH_ENDPOINTS_HANDLED_BY_CALLER.includes(error.config?.url ?? "")
   ) {
-    // Mengosongkan state auth; ProtectedRoute lalu mengarahkan ke /login sambil menyimpan tujuan semula.
+    // Sama seperti logout: buang data sesi lama agar tidak terlihat oleh pengguna yang login berikutnya,
+    // lalu kosongkan state auth. ProtectedRoute mengarahkan ke /login sambil menyimpan tujuan semula.
+    queryClient.removeQueries({ predicate: (query) => query.queryKey[0] !== AUTH_ME_QUERY_KEY[0] })
     queryClient.setQueryData(AUTH_ME_QUERY_KEY, null)
   }
   return Promise.reject(error)

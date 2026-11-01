@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/montserrat";
 @import "@fontsource-variable/geist";
 
 @custom-variant dark (&:is(.dark *));
@@ -25,13 +24,18 @@
     --color-ring: var(--ring);
     --color-input: var(--input);
     --color-border: var(--border);
+    --color-info: var(--info);
+    --color-warning: var(--warning);
+    --color-success: var(--success);
     --color-destructive: var(--destructive);
+    --color-brand-accent: var(--brand-accent);
     --color-accent-foreground: var(--accent-foreground);
     --color-accent: var(--accent);
     --color-muted-foreground: var(--muted-foreground);
     --color-muted: var(--muted);
     --color-secondary-foreground: var(--secondary-foreground);
     --color-secondary: var(--secondary);
+    --color-primary-text: var(--primary-text);
     --color-primary-foreground: var(--primary-foreground);
     --color-primary: var(--primary);
     --color-popover-foreground: var(--popover-foreground);
@@ -49,73 +53,90 @@
     --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* Token warna DEC-023. Nilai dan rasio kontrasnya dicatat di DESIGN_SYSTEM.md bagian 2. */
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
+    color-scheme: light;
+    --background: #F6F1E7;
+    --foreground: #342B25;
+    --card: #FFFCF6;
+    --card-foreground: #342B25;
+    --popover: #FFFCF6;
+    --popover-foreground: #342B25;
+    --primary: #66734A;
+    --primary-foreground: #FFFCF6;
+    /* Teks beraksen Olive. Dipisah dari --primary agar bisa diganti tanpa mengubah warna tombol. */
+    --primary-text: #566239;
+    --secondary: #DCE4D2;
+    --secondary-foreground: #342B25;
+    --muted: #ECE5D8;
+    --muted-foreground: #655A50;
+    --accent: #DCE4D2;
+    --accent-foreground: #342B25;
+    /* Burnt Orange: hanya elemen non-teks (gagal kontras sebagai teks). */
+    --brand-accent: #C87545;
+    --destructive: #A63A2B;
+    --success: #2F6B3F;
+    --warning: #8A5A00;
+    --info: #2F5F80;
+    /* --border untuk garis pemisah dekoratif; --input untuk batas kontrol (>= 3:1). */
+    --border: #E3DACA;
+    --input: #857A6B;
+    --ring: #66734A;
+    /* Belum ada grafik; nilai bawaan shadcn dipertahankan sampai palet grafik ditentukan. */
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
     --chart-3: oklch(0.439 0 0);
     --chart-4: oklch(0.371 0 0);
     --chart-5: oklch(0.269 0 0);
     --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
+    --sidebar: #FFFCF6;
+    --sidebar-foreground: #342B25;
+    --sidebar-primary: #66734A;
+    --sidebar-primary-foreground: #FFFCF6;
+    --sidebar-accent: #DCE4D2;
+    --sidebar-accent-foreground: #342B25;
+    --sidebar-border: #E3DACA;
+    --sidebar-ring: #66734A;
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
+    color-scheme: dark;
+    --background: #211F1A;
+    --foreground: #F3EBDD;
+    --card: #302D26;
+    --card-foreground: #F3EBDD;
+    --popover: #302D26;
+    --popover-foreground: #F3EBDD;
+    --primary: #A8B58A;
+    --primary-foreground: #211F1A;
+    --primary-text: #A8B58A;
+    --secondary: #3A4030;
+    --secondary-foreground: #F3EBDD;
+    --muted: #3A362E;
+    --muted-foreground: #B5AA98;
+    --accent: #3A4030;
+    --accent-foreground: #F3EBDD;
+    --brand-accent: #D68A60;
+    --destructive: #EE8F80;
+    --success: #8FC79A;
+    --warning: #E3B25C;
+    --info: #8DB9D6;
+    --border: #49443A;
+    --input: #857C6B;
+    --ring: #A8B58A;
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
     --chart-3: oklch(0.439 0 0);
     --chart-4: oklch(0.371 0 0);
     --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+    --sidebar: #302D26;
+    --sidebar-foreground: #F3EBDD;
+    --sidebar-primary: #A8B58A;
+    --sidebar-primary-foreground: #211F1A;
+    --sidebar-accent: #3A4030;
+    --sidebar-accent-foreground: #F3EBDD;
+    --sidebar-border: #49443A;
+    --sidebar-ring: #A8B58A;
 }
 
 @layer base {

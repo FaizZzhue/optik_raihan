@@ -46,7 +46,7 @@
 
 Tidak ada entitas untuk pemesanan lensa atau pelanggan sampai Q-01 dan Q-04 dijawab. Field spesifik tiap entitas ditentukan setelah requirement terkait `CONFIRMED`.
 
-**Sudah di schema:** `User` (tabel `users`, enum `user_role`: `owner`, `staff`) dengan field `id`, `username` (unik, `VARCHAR(50)`), `name`, `password_hash`, `role`, `is_active`, `created_at`, `updated_at`. Migrasi: `prisma/migrations/20261024150000_create_users` (disetujui developer 24 Okt 2026). Constraint manual: `users_username_lowercase` (`CHECK (username = lower(username))`). **Status:** file migrasi dibuat, **belum dijalankan** di database mana pun.
+**Sudah di schema:** `User` (tabel `users`, enum `user_role`: `owner`, `staff`) dengan field `id`, `username` (unik, `VARCHAR(50)`), `name`, `password_hash`, `role`, `is_active`, `created_at`, `updated_at`. Migrasi: `prisma/migrations/20261024150000_create_users` (disetujui developer 24 Okt 2026). Constraint manual: `users_username_lowercase` (`CHECK (username = lower(username))`). **Status (1 Nov 2026):** diterapkan dengan `prisma migrate deploy` ke DB dev `optik_raihan` dan DB test `optik_raihan_test` (PostgreSQL 18, localhost). Constraint `users_pkey`, `users_username_key`, dan `users_username_lowercase` terverifikasi lewat `pg_constraint`/`pg_indexes`.
 
 ## 4. Relasi, foreign key, dan constraint
 

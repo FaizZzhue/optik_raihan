@@ -61,11 +61,13 @@
 - **Acceptance criteria:** AC-01.1 sampai AC-01.5. Token tidak ada di JavaScript FE. Matriks izin awal sesuai jawaban Q-03.
 - **Test:** seluruh daftar `SECURITY.md` bagian 15 yang berlaku pada tahap ini.
 - **Exit criteria:** test keamanan lulus. Perilaku cookie diuji pada kondisi mirip production.
-- **Status (24 Okt 2026):** kode, migrasi (file), seed, dan test ditulis. Test yang butuh database **belum dijalankan** karena DB development dan test belum tersedia. Tahap belum selesai.
+- **Status (24 Okt 2026):** kode, migrasi (file), seed, dan test ditulis. Test yang butuh database belum dijalankan karena DB development dan test belum tersedia.
+- **Status (1 Nov 2026, audit Prompt 5):** migrasi diterapkan ke DB dev dan DB test. `npm test` 33/33 lulus (dua kali berturut-turut) terhadap PostgreSQL nyata. Alur login, me, dan logout lewat proxy Vite terverifikasi dengan HTTP. Belum diverifikasi: perilaku di browser (cookie tidak terbaca JS, reload, redirect), cookie `Secure` di HTTPS, dan seed owner (dijalankan developer). Tahap menunggu persetujuan developer.
 - **Deviasi dari daftar file:**
   - `RoleRoute.tsx` ditunda sampai ada route berbasis role.
   - Rate limit login berada di `services/login-rate-limit.service.ts`, bukan middleware.
   - `validateBody` hanya memvalidasi body; query dan params ditambahkan saat route pertama membutuhkannya.
+- **Shell dashboard (layout, sidebar, header, token warna, tema Light/Dark):** diusulkan dikerjakan sebelum Tahap 3. Developer memutuskan (1 Nov 2026) menundanya sampai Tahap 2 terverifikasi dengan database, agar dashboard dapat diuji setelah login sungguhan. Keputusan desainnya sudah dicatat: DEC-023, DEC-024, DEC-033.
 
 ## Tahap 3: Master data, kategori dan produk (pola utama)
 
