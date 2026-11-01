@@ -2,7 +2,7 @@ import axios, { isAxiosError } from "axios"
 import { AUTH_ME_QUERY_KEY } from "@/constants/auth.constants"
 import { queryClient } from "@/lib/queryClient"
 
-// Satu-satunya instance Axios (API_CONTRACT.md bagian 10). Sesi berada di cookie HttpOnly,
+// Satu-satunya instance Axios (PROJECT-CONTEXT.md bagian 6, Axios). Sesi berada di cookie HttpOnly,
 // jadi tidak ada header Authorization: Bearer dan token tidak pernah disentuh JavaScript.
 export const api = axios.create({
   baseURL: "/api",

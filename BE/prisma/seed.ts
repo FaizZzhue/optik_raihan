@@ -1,4 +1,4 @@
-// Membuat akun owner awal dari environment (DATABASE.md bagian 13). Tidak ada kredensial di kode.
+// Membuat akun owner awal dari environment (PROJECT-CONTEXT.md bagian 7, Data: Seed). Tidak ada kredensial di kode.
 // Jika username sudah ada, seed tidak mengubah apa pun (password lama tidak ditimpa).
 import "dotenv/config";
 import { z } from "zod";

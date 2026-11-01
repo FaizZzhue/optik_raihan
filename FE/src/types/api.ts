@@ -1,4 +1,4 @@
-// Bentuk respons BE (API_CONTRACT.md bagian 2 dan 3).
+// Bentuk respons BE (PROJECT-CONTEXT.md bagian 6, Konvensi).
 export type ApiSuccess<T> = {
   data: T
 }

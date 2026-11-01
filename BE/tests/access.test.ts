@@ -1,4 +1,4 @@
-// Pengujian akses tidak sah yang tidak membutuhkan database (SECURITY.md bagian 15).
+// Pengujian akses tidak sah yang tidak membutuhkan database (PROJECT-CONTEXT.md bagian 7, test akses tidak sah).
 import express from "express";
 import { SignJWT } from "jose";
 import request from "supertest";

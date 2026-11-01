@@ -53,7 +53,7 @@
     --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Token warna DEC-023. Nilai dan rasio kontrasnya dicatat di DESIGN_SYSTEM.md bagian 2. */
+/* Token warna DEC-023. Aturan di PROJECT-CONTEXT.md bagian 4; tabel rasio kontras: git show 1b26217:DESIGN_SYSTEM.md (bagian 2.5). */
 :root {
     color-scheme: light;
     --background: #F6F1E7;

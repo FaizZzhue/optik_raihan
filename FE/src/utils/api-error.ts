@@ -3,7 +3,7 @@ import type { ApiErrorBody } from "@/types/api"
 
 const GENERIC_MESSAGE = "Terjadi kesalahan. Silakan coba lagi."
 
-// Pesan error untuk ditampilkan dekat konteksnya. 403 tidak mengeluarkan sesi (API_CONTRACT.md bagian 11).
+// Pesan error untuk ditampilkan dekat konteksnya. 403 tidak mengeluarkan sesi (PROJECT-CONTEXT.md bagian 6, Axios).
 export function getApiErrorMessage(error: unknown): string {
   if (!isAxiosError<ApiErrorBody>(error)) {
     return GENERIC_MESSAGE

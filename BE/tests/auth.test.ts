@@ -1,4 +1,4 @@
-// Alur autentikasi yang membutuhkan database test (SECURITY.md bagian 15, AC-01.1 sampai AC-01.5).
+// Alur autentikasi yang membutuhkan database test (PROJECT-CONTEXT.md bagian 7, test akses tidak sah; AC-01.1 sampai AC-01.5).
 import cookieParser from "cookie-parser";
 import express from "express";
 import request from "supertest";

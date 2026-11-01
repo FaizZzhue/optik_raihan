@@ -24,7 +24,7 @@ function hasNonEmptyBody(req: Request): boolean {
   return req.get("transfer-encoding") !== undefined || Number(req.get("content-length") ?? 0) > 0;
 }
 
-// Mitigasi CSRF untuk autentikasi berbasis cookie (SECURITY.md bagian 5): request yang mengubah data
+// Mitigasi CSRF untuk autentikasi berbasis cookie (PROJECT-CONTEXT.md bagian 7, CSRF): request yang mengubah data
 // harus berasal dari origin aplikasi dan, bila membawa body, berformat JSON.
 export function requireSameOriginJson(req: Request, _res: Response, next: NextFunction): void {
   if (!STATE_CHANGING_METHODS.has(req.method)) {

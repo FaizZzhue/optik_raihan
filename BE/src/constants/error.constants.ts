@@ -1,4 +1,4 @@
-// Kode error stabil untuk FE (API_CONTRACT.md bagian 3). Tambahkan kode baru saat benar-benar dipakai.
+// Kode error stabil untuk FE (PROJECT-CONTEXT.md bagian 6, Konvensi). Tambahkan kode baru saat benar-benar dipakai.
 export const ERROR_CODES = {
   VALIDATION_ERROR: "VALIDATION_ERROR",
   UNAUTHENTICATED: "UNAUTHENTICATED",

@@ -1,7 +1,7 @@
 import { ERROR_CODES } from "../constants/error.constants.js";
 import { AppError } from "../utils/app-error.js";
 
-// Backoff bertahap per kombinasi IP + username (SECURITY.md bagian 8). Penyimpanan in-memory
+// Backoff bertahap per kombinasi IP + username (PROJECT-CONTEXT.md bagian 7, Rate limit login). Penyimpanan in-memory
 // cukup untuk satu instance BE; hilang saat server restart.
 const FREE_ATTEMPTS = 5;
 const BASE_LOCK_MS = 30 * 1000;

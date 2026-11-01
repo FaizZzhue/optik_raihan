@@ -45,7 +45,7 @@ export async function login(input: LoginInput, clientIp: string): Promise<{ user
 }
 
 // Dipanggil auth.middleware di setiap request: user nonaktif atau terhapus langsung kehilangan akses,
-// dan perubahan role langsung berlaku (SECURITY.md bagian 1).
+// dan perubahan role langsung berlaku (PROJECT-CONTEXT.md bagian 7, Authorization).
 export async function findActiveUserById(userId: number): Promise<AuthUser | null> {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   return user && user.isActive ? toAuthUser(user) : null;

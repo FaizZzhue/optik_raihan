@@ -9,7 +9,7 @@ export const app = express();
 app.disable("x-powered-by");
 app.use(cookieParser());
 app.use("/api", requireSameOriginJson);
-// Batas eksplisit ukuran body (SECURITY.md bagian 9). Melebihi batas = 413 PAYLOAD_TOO_LARGE.
+// Batas eksplisit ukuran body (PROJECT-CONTEXT.md bagian 7, Validasi). Melebihi batas = 413 PAYLOAD_TOO_LARGE.
 app.use(express.json({ limit: "100kb" }));
 
 app.use("/api", apiRouter);

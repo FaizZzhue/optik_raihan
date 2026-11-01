@@ -7,7 +7,7 @@ import { sendSuccess } from "../utils/api-response.js";
 import { AppError } from "../utils/app-error.js";
 import type { LoginInput } from "../validators/auth.validator.js";
 
-// API_CONTRACT.md bagian 9. Opsi yang sama dipakai saat menghapus cookie agar browser mencocokkannya.
+// Cookie sesi (PROJECT-CONTEXT.md bagian 7, Sesi). Opsi yang sama dipakai saat menghapus cookie agar browser mencocokkannya.
 const authCookieOptions: CookieOptions = {
   httpOnly: true,
   secure: env.NODE_ENV === "production",

@@ -5,7 +5,7 @@ import { healthRouter } from "./health.routes.js";
 
 export const apiRouter = Router();
 
-// Route publik (pengecualian eksplisit, SECURITY.md bagian 2).
+// Route publik (pengecualian eksplisit, PROJECT-CONTEXT.md bagian 7, Authorization).
 apiRouter.use("/health", healthRouter);
 apiRouter.use("/auth", authRouter);
 

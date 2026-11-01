@@ -6,7 +6,7 @@ export type ErrorDetail = {
 };
 
 // Error yang sengaja dilempar service. error.middleware mengubahnya menjadi respons
-// berformat API_CONTRACT.md bagian 3. Error lain dianggap tak terduga (500).
+// berformat PROJECT-CONTEXT.md bagian 6 (Konvensi). Error lain dianggap tak terduga (500).
 export class AppError extends Error {
   readonly statusCode: number;
   readonly code: ErrorCode;
