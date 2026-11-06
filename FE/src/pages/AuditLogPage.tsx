@@ -4,7 +4,11 @@ import { AuditLogPanel } from "@/features/administration/components/AuditLogPane
 export function AuditLogPage() {
   return (
     <>
-      <PageHeader title="Log aktivitas" description="Catatan aksi penting yang tidak bisa diubah atau dihapus." />
+      <PageHeader
+        eyebrow="Administrasi & Keamanan"
+        title="Log aktivitas"
+        description="Jejak audit permanen atas autentikasi, perubahan harga acuan barang, dan manajemen akun pengguna."
+      />
       <AuditLogPanel />
     </>
   )

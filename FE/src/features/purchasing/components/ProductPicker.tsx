@@ -7,6 +7,7 @@ import { SEARCH_DEBOUNCE_MS } from "@/constants/pagination.constants"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import type { Product } from "@/types/catalog"
 import { getApiErrorMessage } from "@/utils/api-error"
+import { formatRupiah } from "@/utils/format-currency"
 import { useActiveProductSearch } from "../hooks/use-purchases"
 
 type ProductPickerProps = {
@@ -36,7 +37,7 @@ export function ProductPicker({ selectedProductIds, onSelect, disabled = false }
           Tambah barang
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[min(24rem,calc(100vw-2rem))] p-0" align="start">
+      <PopoverContent className="w-[min(28rem,calc(100vw-2rem))] p-0" align="end">
         {/* Pencarian di server, jadi penyaringan bawaan cmdk dimatikan. */}
         <Command shouldFilter={false}>
           <CommandInput
@@ -65,10 +66,27 @@ export function ProductPicker({ selectedProductIds, onSelect, disabled = false }
                       value={String(product.id)}
                       disabled={isSelected}
                       onSelect={() => handleSelect(product)}
+                      className="flex flex-col items-start gap-0.5 py-2"
                     >
-                      <span className="tabular-nums text-muted-foreground">{product.sku}</span>
-                      <span className="truncate">{product.name}</span>
-                      {isSelected && <span className="ml-auto text-xs text-muted-foreground">Sudah dipilih</span>}
+                      <div className="flex w-full items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 truncate">
+                          <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs tabular-nums text-foreground">
+                            {product.sku}
+                          </span>
+                          <span className="truncate font-medium">{product.name}</span>
+                        </div>
+                        {isSelected ? (
+                          <span className="shrink-0 text-xs text-muted-foreground">Sudah dipilih</span>
+                        ) : (
+                          <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
+                            Stok: {product.stockQty} pcs
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex w-full items-center justify-between pl-1 text-[11px] text-muted-foreground">
+                        <span>{product.category.name}</span>
+                        <span className="tabular-nums">Acuan beli: {formatRupiah(product.costPrice)}</span>
+                      </div>
                     </CommandItem>
                   )
                 })}

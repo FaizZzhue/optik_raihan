@@ -3,10 +3,10 @@ import { CATALOG_QUERY_KEYS } from "@/constants/catalog.constants"
 import { OWNER_QUERY_KEYS } from "@/constants/owner.constants"
 import { createPurchase, getPurchase, getPurchases, searchActiveProducts } from "../services/purchase.service"
 
-export function usePurchases(page: number) {
+export function usePurchases(page: number, supplierId?: number) {
   return useQuery({
-    queryKey: OWNER_QUERY_KEYS.purchaseList(page),
-    queryFn: () => getPurchases(page),
+    queryKey: OWNER_QUERY_KEYS.purchaseList(page, supplierId),
+    queryFn: () => getPurchases(page, supplierId),
     placeholderData: keepPreviousData,
   })
 }

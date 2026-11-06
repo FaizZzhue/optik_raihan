@@ -4,7 +4,11 @@ import { AccountsPanel } from "@/features/administration/components/AccountsPane
 export function AccountsPage() {
   return (
     <>
-      <PageHeader title="Akun pegawai" description="Buat akun pegawai, reset password, dan nonaktifkan akses." />
+      <PageHeader
+        eyebrow="Administrasi Sistem"
+        title="Akun pegawai"
+        description="Kelola akses operasional pegawai toko, atur ulang password, dan nonaktifkan akun yang sudah tidak bertugas."
+      />
       <AccountsPanel />
     </>
   )

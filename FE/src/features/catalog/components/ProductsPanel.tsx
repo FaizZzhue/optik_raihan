@@ -152,21 +152,66 @@ export function ProductsPanel({ role }: ProductsPanelProps) {
   }
 
   return (
-    <section className="flex flex-col gap-4" aria-label="Daftar barang">
-      <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-        <ProductFilters
-          search={search}
-          onSearchChange={changeFilter(setSearch)}
-          categoryValue={categoryValue}
-          onCategoryChange={changeFilter(setCategoryValue)}
-          status={status}
-          onStatusChange={changeFilter(setStatus)}
-          categories={categories}
-        />
-        <Button onClick={() => openForm(null)} disabled={categoriesQuery.isPending} className="self-start lg:self-auto">
-          <Plus data-icon="inline-start" aria-hidden />
-          Tambah barang
-        </Button>
+    <section className="flex flex-col gap-5" aria-label="Daftar barang">
+      <div className="rounded-xl border border-border/80 bg-card/60 px-4 py-3 text-xs text-muted-foreground">
+        <span className="font-medium text-foreground">Identitas SKU & Buku Besar Stok:</span> SKU internal (
+        <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px] text-foreground">P-XXXXXX</code>) diterbitkan
+        otomatis oleh sistem dan terpisah dari kode item supplier pada faktur. Saldo stok tidak dapat diubah dari form
+        master barang—klik <span className="font-medium text-foreground">Riwayat stok</span> pada baris barang untuk
+        memeriksa kartu stok inventaris.
+      </div>
+
+      <div className="flex flex-col gap-3 rounded-xl border bg-card p-4 shadow-xs">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <ProductFilters
+            search={search}
+            onSearchChange={changeFilter(setSearch)}
+            categoryValue={categoryValue}
+            onCategoryChange={changeFilter(setCategoryValue)}
+            status={status}
+            onStatusChange={changeFilter(setStatus)}
+            categories={categories}
+          />
+          <Button onClick={() => openForm(null)} disabled={categoriesQuery.isPending} className="self-start lg:self-auto">
+            <Plus data-icon="inline-start" aria-hidden />
+            Tambah barang
+          </Button>
+        </div>
+
+        {categories.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5 border-t border-border/60 pt-3">
+            <span className="mr-1 text-xs font-medium text-muted-foreground">Kategori cepat:</span>
+            <button
+              type="button"
+              onClick={() => changeFilter(setCategoryValue)(ALL_CATEGORIES_VALUE)}
+              className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                categoryValue === ALL_CATEGORIES_VALUE
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}
+            >
+              Semua kategori
+            </button>
+            {categories.map((cat) => {
+              const valueStr = String(cat.id)
+              const active = categoryValue === valueStr
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => changeFilter(setCategoryValue)(valueStr)}
+                  className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                    active
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  {cat.name}
+                </button>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       {categoriesQuery.isError && (

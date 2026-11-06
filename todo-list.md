@@ -70,10 +70,11 @@
 
 | ID | Task | Priority | Status | Related modules | API dependency | Verification |
 |---|---|---|---|---|---|---|
-| FE-001 | Isi dashboard dari data backend (KPI, grafik, stok menipis) | P2 | BLOCKED | `pages/DashboardPage.tsx` | Endpoint laporan belum didesain (TASK-010) | Tidak memakai data dummy yang tampak nyata |
+| FE-001 | Isi dashboard dari data backend (KPI, grafik, stok menipis) | P2 | BLOCKED (analitik penjualan/laba); VERIFY (ringkasan katalog & pengadaan) | `pages/DashboardPage.tsx` | Ringkasan katalog (`/api/products`, `/api/categories`) dan pembelian terbaru (`/api/purchases`) sudah terhubung *real-time* (6 Nov 2026); metrik penjualan & stok menipis menunggu TASK-008 & TASK-010 | Tidak memakai data dummy yang tampak nyata |
 | FE-002 | `RoleRoute.tsx` untuk route berbasis role | P3 | DONE | `routes/RoleRoute.tsx` | Izin kategori DEC-034 (USULAN) | Dipakai untuk `/kategori`; pegawai diarahkan ke `/` (browser 2 Nov 2026) |
-| FE-003 | Fungsi format Rupiah dan tanggal di `FE/src/utils/` | P2 | BACKLOG | `utils/format-currency.ts` (ada), `utils/format-date.ts` (belum) | Tidak ada | Rupiah selesai dan dipakai di daftar dan form barang (`Rp1.250.000`, browser 2 Nov 2026). Tanggal dibuat bersama halaman pertama yang menampilkan tanggal |
+| FE-003 | Fungsi format Rupiah dan tanggal di `FE/src/utils/` | P2 | DONE | `utils/format-currency.ts`, `utils/format-date.ts` (`formatDateTime`, `formatDateShort`) | Tidak ada | Dipakai di seluruh tabel dan form katalog, pembelian, akun, dan log aktivitas (`npm run lint` & `npm run build` lulus, 6 Nov 2026) |
 | FE-004 | Menyiapkan test FE | P3 | BACKLOG | FE | Persetujuan dependency | Belum ada test runner FE; keputusan terpisah |
+| FE-005 | Redesign UI/UX *Optical Luxury — Vintage Modern* & penyelarasan form faktur pembelian supplier | P1 | VERIFY | Seluruh halaman `FE/src/pages/*`, `components/shared/*`, `features/{catalog,purchasing,administration}/*` | Menggunakan endpoint yang sudah tersedia (termasuk filter `supplierId` pada `GET /api/purchases`) | `npm run lint` dan `npm run build` FE lulus (6 Nov 2026); test BE skenario faktur 42 baris / 940 pcs / Rp9.270.000 lulus (`117/117`) |
 
 ## Backend tasks
 

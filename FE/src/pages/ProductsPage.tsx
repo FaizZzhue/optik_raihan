@@ -7,7 +7,11 @@ export function ProductsPage() {
 
   return (
     <>
-      <PageHeader title="Barang" description="Kelola frame, lensa jadi, dan kacamata jadi beserta harga jualnya." />
+      <PageHeader
+        eyebrow="Katalog & Inventaris"
+        title="Barang"
+        description="Kelola master frame, lensa jadi, dan kacamata jadi beserta harga acuan dan kartu stok inventaris."
+      />
       <ProductsPanel role={user.role} />
     </>
   )

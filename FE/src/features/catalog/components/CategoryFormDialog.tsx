@@ -45,6 +45,8 @@ export function CategoryFormDialog({ open, onOpenChange, category, onSaved }: Ca
 
 type CategoryFormProps = Pick<CategoryFormDialogProps, "category" | "onSaved">
 
+const SUGGESTED_CATEGORIES = ["Frame", "Lensa jadi", "Kacamata jadi"] as const
+
 function CategoryForm({ category, onSaved }: CategoryFormProps) {
   const createMutation = useCreateCategory()
   const updateMutation = useUpdateCategory()
@@ -53,6 +55,7 @@ function CategoryForm({ category, onSaved }: CategoryFormProps) {
     register,
     handleSubmit,
     setError,
+    setValue,
     formState: { errors },
   } = useForm<CategoryFormValues>({
     resolver: zodResolver(categoryFormSchema),
@@ -84,9 +87,30 @@ function CategoryForm({ category, onSaved }: CategoryFormProps) {
           <AlertDescription>{formError}</AlertDescription>
         </Alert>
       )}
-      <FormField id="category-name" label="Nama kategori" error={errors.name?.message}>
+      <FormField
+        id="category-name"
+        label="Nama kategori"
+        error={errors.name?.message}
+        hint="Kategori standar optik: Frame, Lensa jadi, atau Kacamata jadi."
+      >
         {(aria) => <Input id="category-name" autoFocus maxLength={100} {...aria} {...register("name")} />}
       </FormField>
+      {!category && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-xs text-muted-foreground">Isi cepat:</span>
+          {SUGGESTED_CATEGORIES.map((preset) => (
+            <Button
+              key={preset}
+              type="button"
+              variant="outline"
+              size="xs"
+              onClick={() => setValue("name", preset, { shouldValidate: true, shouldDirty: true })}
+            >
+              {preset}
+            </Button>
+          ))}
+        </div>
+      )}
       <DialogFooter>
         <DialogClose asChild>
           <Button type="button" variant="outline" disabled={isPending}>

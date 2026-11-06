@@ -5,9 +5,9 @@ import type { ApiList, ApiSuccess } from "@/types/api"
 import type { Product } from "@/types/catalog"
 import type { PurchaseDetail, PurchasePayload, PurchaseSummary } from "@/types/purchasing"
 
-export async function getPurchases(page: number): Promise<ApiList<PurchaseSummary>> {
+export async function getPurchases(page: number, supplierId?: number): Promise<ApiList<PurchaseSummary>> {
   const response = await api.get<ApiList<PurchaseSummary>>("/purchases", {
-    params: { page, pageSize: DEFAULT_PAGE_SIZE },
+    params: { page, pageSize: DEFAULT_PAGE_SIZE, supplierId },
   })
   return response.data
 }

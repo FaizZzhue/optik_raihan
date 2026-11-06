@@ -3,6 +3,7 @@ import { IconActionButton } from "@/components/shared/IconActionButton"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import type { Category } from "@/types/catalog"
+import { formatDateShort } from "@/utils/format-date"
 
 type CategoryTableProps = {
   categories: Category[]
@@ -11,6 +12,20 @@ type CategoryTableProps = {
   onEdit: (category: Category) => void
   onToggleActive: (category: Category) => void
   onDelete: (category: Category) => void
+}
+
+function describeCategoryPurpose(name: string): string | null {
+  const lower = name.trim().toLowerCase()
+  if (lower.includes("frame")) {
+    return "Pencatatan stok per model/tipe bingkai"
+  }
+  if (lower.includes("lensa")) {
+    return "Pencatatan lensa jadi per jenis & ukuran"
+  }
+  if (lower.includes("kacamata")) {
+    return "Kacamata siap pakai / paket lengkap"
+  }
+  return null
 }
 
 export function CategoryTable({ categories, pendingCategoryId, onEdit, onToggleActive, onDelete }: CategoryTableProps) {
@@ -22,18 +37,26 @@ export function CategoryTable({ categories, pendingCategoryId, onEdit, onToggleA
             <TableHead className="pl-4">Nama</TableHead>
             <TableHead className="text-right">Jumlah barang</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead className="hidden sm:table-cell">Diperbarui</TableHead>
             <TableHead className="pr-4 text-right">Aksi</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {categories.map((category) => {
             const isPending = pendingCategoryId === category.id
+            const purpose = describeCategoryPurpose(category.name)
             return (
               <TableRow key={category.id}>
-                <TableCell className="pl-4 font-medium">{category.name}</TableCell>
+                <TableCell className="pl-4">
+                  <div className="font-medium">{category.name}</div>
+                  {purpose && <div className="text-xs text-muted-foreground">{purpose}</div>}
+                </TableCell>
                 <TableCell className="text-right tabular-nums">{category.productCount}</TableCell>
                 <TableCell>
                   <StatusBadge isActive={category.isActive} />
+                </TableCell>
+                <TableCell className="hidden text-xs text-muted-foreground tabular-nums sm:table-cell">
+                  {formatDateShort(category.updatedAt)}
                 </TableCell>
                 <TableCell className="pr-4">
                   <div className="flex justify-end gap-1">

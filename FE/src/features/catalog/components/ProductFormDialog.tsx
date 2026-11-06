@@ -104,6 +104,21 @@ function ProductForm({ product, categories, onSaved }: ProductFormProps) {
 
   return (
     <form onSubmit={onSubmit} noValidate className="grid gap-4">
+      <div className="grid grid-cols-2 gap-3 rounded-lg border border-border/80 bg-muted/30 p-3 text-xs">
+        <div>
+          <span className="text-muted-foreground">SKU Internal</span>
+          <p className="mt-0.5 font-mono font-semibold text-foreground">
+            {product ? product.sku : "Otomatis (P-XXXXXX)"}
+          </p>
+        </div>
+        <div>
+          <span className="text-muted-foreground">Saldo Stok Saat Ini</span>
+          <p className="mt-0.5 font-semibold tabular-nums text-foreground">
+            {product ? `${product.stockQty} pcs (hanya-baca)` : "0 pcs (stok awal)"}
+          </p>
+        </div>
+      </div>
+
       {formError && (
         <Alert variant="destructive">
           <AlertDescription>{formError}</AlertDescription>
@@ -115,7 +130,12 @@ function ProductForm({ product, categories, onSaved }: ProductFormProps) {
         </Alert>
       )}
 
-      <FormField id="product-name" label="Nama barang" error={errors.name?.message}>
+      <FormField
+        id="product-name"
+        label="Nama barang"
+        hint="Contoh: Frame Metal Oval Hitam, Lensa Minus -1.50 CRMC, atau Kacamata Baca +1.50"
+        error={errors.name?.message}
+      >
         {(aria) => <Input id="product-name" autoFocus maxLength={150} {...aria} {...register("name")} />}
       </FormField>
 
@@ -161,7 +181,12 @@ function ProductForm({ product, categories, onSaved }: ProductFormProps) {
         />
       </div>
 
-      <FormField id="product-description" label="Deskripsi (opsional)" error={errors.description?.message}>
+      <FormField
+        id="product-description"
+        label="Deskripsi / Kode Referensi Supplier (opsional)"
+        hint="Catat spesifikasi model, ukuran dioptri, atau kode barang dari faktur supplier sebagai referensi."
+        error={errors.description?.message}
+      >
         {(aria) => (
           <Textarea id="product-description" rows={3} maxLength={1000} {...aria} {...register("description")} />
         )}

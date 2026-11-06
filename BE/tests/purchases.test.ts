@@ -184,6 +184,49 @@ describe("POST /api/purchases", () => {
     await expectLedgerReconciles(frameId);
     await expectLedgerReconciles(lensId);
   });
+
+  it("skenario perhitungan faktur supplier 42 baris, 940 pcs, total Rp9.270.000 (0019/JL/RBT/0525)", async () => {
+    const category = await prisma.category.create({ data: { name: "Katalog Uji Faktur" } });
+    const createdProducts = await Promise.all(
+      Array.from({ length: 42 }, (_, idx) =>
+        prisma.product.create({
+          data: {
+            name: `Barang Uji Faktur #${String(idx + 1).padStart(2, "0")}`,
+            categoryId: category.id,
+            sellPrice: "50000",
+            createdById: ownerId,
+          },
+        }),
+      ),
+    );
+
+    // Komposisi 42 baris = 940 pcs dengan total Rp9.270.000:
+    // - 35 baris @ 20 pcs × Rp9.000  = 700 pcs, Rp6.300.000
+    // -  5 baris @ 36 pcs × Rp10.500 = 180 pcs, Rp1.890.000
+    // -  2 baris @ 30 pcs × Rp18.000 =  60 pcs, Rp1.080.000
+    const invoiceItems = createdProducts.map((p, idx) => {
+      if (idx < 35) return { productId: p.id, quantity: 20, unitCost: "9000" };
+      if (idx < 40) return { productId: p.id, quantity: 36, unitCost: "10500" };
+      return { productId: p.id, quantity: 30, unitCost: "18000" };
+    });
+
+    const res = await owner.post("/api/purchases", {
+      supplierId,
+      supplierInvoiceNo: "0019/JL/RBT/0525",
+      notes: "Pengujian skenario faktur 42 baris (940 pcs)",
+      items: invoiceItems,
+    });
+
+    expect(res.status).toBe(201);
+    expect(res.body.data.supplierInvoiceNo).toBe("0019/JL/RBT/0525");
+    expect(res.body.data.items).toHaveLength(42);
+    const totalQty = res.body.data.items.reduce((acc: number, item: { quantity: number }) => acc + item.quantity, 0);
+    expect(totalQty).toBe(940);
+    expect(res.body.data.total).toBe("9270000.00");
+
+    await expectLedgerReconciles(createdProducts[0]!.id);
+    await expectLedgerReconciles(createdProducts[41]!.id);
+  });
 });
 
 describe("Daftar, detail, dan kartu stok", () => {

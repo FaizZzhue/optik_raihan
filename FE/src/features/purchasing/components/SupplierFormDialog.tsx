@@ -86,7 +86,12 @@ function SupplierForm({ supplier, onSaved }: Pick<SupplierFormDialogProps, "supp
           <AlertDescription>{formError}</AlertDescription>
         </Alert>
       )}
-      <FormField id="supplier-name" label="Nama supplier" error={errors.name?.message}>
+      <FormField
+        id="supplier-name"
+        label="Nama supplier"
+        hint="Nama perusahaan atau grosir optik sesuai kop faktur."
+        error={errors.name?.message}
+      >
         {(aria) => <Input id="supplier-name" autoFocus maxLength={150} {...aria} {...register("name")} />}
       </FormField>
       <FormField id="supplier-phone" label="Telepon (opsional)" error={errors.phone?.message}>
@@ -95,7 +100,12 @@ function SupplierForm({ supplier, onSaved }: Pick<SupplierFormDialogProps, "supp
       <FormField id="supplier-address" label="Alamat (opsional)" error={errors.address?.message}>
         {(aria) => <Input id="supplier-address" maxLength={255} {...aria} {...register("address")} />}
       </FormField>
-      <FormField id="supplier-notes" label="Catatan (opsional)" error={errors.notes?.message}>
+      <FormField
+        id="supplier-notes"
+        label="Catatan (opsional)"
+        hint="Nama kontak sales, jadwal pengiriman, atau keterangan produk unggulan."
+        error={errors.notes?.message}
+      >
         {(aria) => <Textarea id="supplier-notes" rows={3} maxLength={1000} {...aria} {...register("notes")} />}
       </FormField>
       <DialogFooter>

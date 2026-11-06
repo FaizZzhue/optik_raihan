@@ -7,12 +7,14 @@ export const OWNER_ONLY: readonly UserRole[] = [USER_ROLES.OWNER]
 export const OWNER_QUERY_KEYS = {
   suppliers: ["suppliers"] as const,
   purchases: ["purchases"] as const,
-  purchaseList: (page: number) => ["purchases", "list", page] as const,
+  purchaseList: (page: number, supplierId?: number) => ["purchases", "list", page, supplierId ?? "all"] as const,
   purchaseDetail: (id: number) => ["purchases", "detail", id] as const,
   productOptions: (search: string) => ["purchases", "product-options", search] as const,
   accounts: ["accounts"] as const,
   auditLogs: (page: number, action: string) => ["audit-logs", page, action] as const,
 }
+
+export const ALL_SUPPLIERS_VALUE = "all"
 
 // Nilai sama dengan BE/src/constants/audit.constants.ts.
 export const AUDIT_ACTION_LABELS: Record<string, string> = {

@@ -24,7 +24,11 @@ export function PurchaseDetailPage() {
             Kembali ke daftar pembelian
           </Link>
         </Button>
-        <PageHeader title={`Pembelian #${purchaseId ?? ""}`} description="Rincian barang, jumlah, dan harga beli saat pembelian." />
+        <PageHeader
+          eyebrow="Arsip Faktur Pengadaan"
+          title={`Pembelian #${purchaseId ?? ""}`}
+          description="Dokumen rincian barang, kuantitas masuk, dan harga beli aktual saat transaksi dicatat."
+        />
       </div>
       <ActionNotice
         notice={isJustCreated(location.state) ? { type: "success", message: "Pembelian tersimpan dan stok sudah bertambah." } : null}

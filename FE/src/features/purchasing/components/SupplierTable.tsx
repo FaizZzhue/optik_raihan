@@ -14,13 +14,14 @@ type SupplierTableProps = {
 
 export function SupplierTable({ suppliers, pendingSupplierId, onEdit, onToggleActive, onDelete }: SupplierTableProps) {
   return (
-    <div className="rounded-xl border bg-card">
+    <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead className="pl-4">Nama</TableHead>
+          <TableRow className="bg-muted/40 hover:bg-muted/40">
+            <TableHead className="pl-4">Nama Supplier</TableHead>
             <TableHead>Telepon</TableHead>
             <TableHead>Alamat</TableHead>
+            <TableHead>Catatan / Kontak</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="pr-4 text-right">Aksi</TableHead>
           </TableRow>
@@ -31,10 +32,13 @@ export function SupplierTable({ suppliers, pendingSupplierId, onEdit, onToggleAc
             const toggleLabel = supplier.isActive ? "Nonaktifkan" : "Aktifkan"
             return (
               <TableRow key={supplier.id}>
-                <TableCell className="pl-4 font-medium">{supplier.name}</TableCell>
-                <TableCell className="tabular-nums">{supplier.phone ?? "—"}</TableCell>
-                <TableCell className="max-w-64 truncate" title={supplier.address ?? undefined}>
+                <TableCell className="pl-4 font-medium text-foreground">{supplier.name}</TableCell>
+                <TableCell className="tabular-nums text-muted-foreground">{supplier.phone ?? "—"}</TableCell>
+                <TableCell className="max-w-56 truncate text-muted-foreground" title={supplier.address ?? undefined}>
                   {supplier.address ?? "—"}
+                </TableCell>
+                <TableCell className="max-w-56 truncate text-xs text-muted-foreground" title={supplier.notes ?? undefined}>
+                  {supplier.notes ?? "—"}
                 </TableCell>
                 <TableCell>
                   <StatusBadge isActive={supplier.isActive} />

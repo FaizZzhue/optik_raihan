@@ -42,23 +42,40 @@ export function AuditLogPanel() {
     }
     return (
       <div className="flex flex-col gap-3" aria-busy={logsQuery.isFetching}>
-        <div className="rounded-xl border bg-card">
+        <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="bg-muted/40 hover:bg-muted/40">
                 <TableHead className="pl-4">Waktu</TableHead>
                 <TableHead>Pelaku</TableHead>
-                <TableHead>Aksi</TableHead>
-                <TableHead className="min-w-64 pr-4">Keterangan</TableHead>
+                <TableHead>Jenis Aksi</TableHead>
+                <TableHead className="min-w-64 pr-4">Keterangan Rinci</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {logs.map((log) => (
                 <TableRow key={log.id}>
-                  <TableCell className="pl-4 tabular-nums">{formatDateTime(log.createdAt)}</TableCell>
-                  <TableCell>{log.actor ? `${log.actor.name} (${log.actor.username})` : "—"}</TableCell>
-                  <TableCell>{AUDIT_ACTION_LABELS[log.action] ?? log.action}</TableCell>
-                  <TableCell className="min-w-64 pr-4 whitespace-normal">{describeAuditEntry(log)}</TableCell>
+                  <TableCell className="pl-4 tabular-nums text-muted-foreground">
+                    {formatDateTime(log.createdAt)}
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    {log.actor ? (
+                      <span>
+                        {log.actor.name}{" "}
+                        <span className="font-mono text-xs text-muted-foreground">({log.actor.username})</span>
+                      </span>
+                    ) : (
+                      "—"
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <span className="inline-flex items-center rounded-md border border-border/80 bg-muted/60 px-2 py-0.5 text-xs font-medium text-foreground">
+                      {AUDIT_ACTION_LABELS[log.action] ?? log.action}
+                    </span>
+                  </TableCell>
+                  <TableCell className="min-w-64 pr-4 whitespace-normal text-foreground">
+                    {describeAuditEntry(log)}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -70,26 +87,32 @@ export function AuditLogPanel() {
   }
 
   return (
-    <section className="flex flex-col gap-4" aria-label="Log aktivitas">
-      <Select
-        value={action}
-        onValueChange={(value) => {
-          setAction(value)
-          setPage(1)
-        }}
-      >
-        <SelectTrigger className="w-full sm:w-56" aria-label="Filter jenis aksi">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ALL_ACTIONS_VALUE}>Semua aksi</SelectItem>
-          {Object.entries(AUDIT_ACTION_LABELS).map(([value, label]) => (
-            <SelectItem key={value} value={value}>
-              {label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+    <section className="flex flex-col gap-5" aria-label="Log aktivitas">
+      <div className="flex flex-col gap-3 rounded-xl border bg-card p-4 shadow-xs sm:flex-row sm:items-center sm:justify-between">
+        <Select
+          value={action}
+          onValueChange={(value) => {
+            setAction(value)
+            setPage(1)
+          }}
+        >
+          <SelectTrigger className="w-full sm:w-60" aria-label="Filter jenis aksi">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL_ACTIONS_VALUE}>Semua aksi</SelectItem>
+            {Object.entries(AUDIT_ACTION_LABELS).map(([value, label]) => (
+              <SelectItem key={value} value={value}>
+                {label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground">
+          Rekaman ini bersifat <span className="font-medium text-foreground">append-only</span> dan tidak dapat disunting
+          maupun dihapus.
+        </p>
+      </div>
       {renderContent()}
     </section>
   )
