@@ -6,6 +6,7 @@ export type Category = {
   name: string
   isActive: boolean
   productCount: number
+  totalStock?: number
   createdAt: string
   updatedAt: string
 }

@@ -9,6 +9,7 @@ import "dotenv/config";
 import { z } from "zod";
 import { PASSWORD_MIN_LENGTH, USER_ROLES } from "../src/constants/auth.constants.js";
 import { prisma } from "../src/lib/prisma.js";
+import { seedInvoiceDatasetToDatabase } from "../src/services/product-import.service.js";
 import { hashPassword } from "../src/utils/password.js";
 
 const usernameSchema = z
@@ -189,6 +190,12 @@ if (isDevEnvironment && seedEnv.SEED_DEV_MASTER_DATA !== "false") {
       console.log(`Barang contoh "${productData.name}" dibuat (stok awal 0).`);
     }
   }
+
+  // Seed dataset referensi faktur supplier 42 barang secara idempoten
+  const invoiceSeedResult = await seedInvoiceDatasetToDatabase(ownerUser.id);
+  console.log(
+    `Dataset faktur: ${invoiceSeedResult.createdProductsCount} barang baru dibuat, ${invoiceSeedResult.existingProductsCount} barang sudah ada.`,
+  );
 }
 
 await prisma.$disconnect();

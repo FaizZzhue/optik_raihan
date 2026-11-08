@@ -44,6 +44,7 @@ export function ProductTable({
           {products.map((product) => {
             const isPending = pendingProductId === product.id
             const toggleLabel = product.isActive ? "Nonaktifkan" : "Aktifkan"
+            const supplierCodeMatch = product.description?.match(/\[Kode Supplier:\s*([^\]]+)\]/i)
             return (
               <TableRow key={product.id}>
                 <TableCell className="pl-4 align-top">
@@ -53,6 +54,13 @@ export function ProductTable({
                 </TableCell>
                 <TableCell className="max-w-xs align-top">
                   <div className="font-medium text-foreground">{product.name}</div>
+                  {supplierCodeMatch && (
+                    <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                      <span className="inline-flex items-center rounded bg-secondary/80 px-1.5 py-0.5 font-mono text-[11px] font-medium text-secondary-foreground" title="Kode barang dari supplier">
+                        Ref: {supplierCodeMatch[1]}
+                      </span>
+                    </div>
+                  )}
                   {product.description && (
                     <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground" title={product.description}>
                       {product.description}
@@ -66,10 +74,22 @@ export function ProductTable({
                   {!product.category.isActive && <span className="ml-1 text-xs text-muted-foreground">(nonaktif)</span>}
                 </TableCell>
                 <TableCell className="align-top text-right font-medium tabular-nums">
-                  {formatRupiah(product.sellPrice)}
+                  {Number(product.sellPrice) === 0 ? (
+                    <span className="inline-block rounded bg-muted/60 px-1.5 py-0.5 text-xs font-normal text-muted-foreground italic" title="Harga jual belum ditentukan oleh owner">
+                      Belum diatur
+                    </span>
+                  ) : (
+                    formatRupiah(product.sellPrice)
+                  )}
                 </TableCell>
                 <TableCell className="align-top text-right tabular-nums text-muted-foreground">
-                  {formatRupiah(product.costPrice)}
+                  {Number(product.costPrice) === 0 ? (
+                    <span className="text-xs text-muted-foreground italic" title="Harga modal belum disahkan">
+                      Rp0
+                    </span>
+                  ) : (
+                    formatRupiah(product.costPrice)
+                  )}
                 </TableCell>
                 <TableCell className="align-top text-right tabular-nums">
                   <span

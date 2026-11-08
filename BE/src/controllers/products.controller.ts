@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import * as productImportService from "../services/product-import.service.js";
 import * as productsService from "../services/products.service.js";
 import * as stockMovementsService from "../services/stock-movements.service.js";
 import { sendList, sendSuccess } from "../utils/api-response.js";
@@ -12,6 +13,11 @@ export async function listProducts(req: Request, res: Response): Promise<void> {
   const query = req.query as unknown as ProductListQuery;
   const { items, meta } = await productsService.listProducts(query);
   sendList(res, items, meta);
+}
+
+export async function getImportPreview(_req: Request, res: Response): Promise<void> {
+  const preview = await productImportService.getInvoiceDatasetPreview();
+  sendSuccess(res, preview);
 }
 
 export async function getProduct(req: Request, res: Response): Promise<void> {

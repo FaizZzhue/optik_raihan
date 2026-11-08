@@ -37,8 +37,12 @@ export function DashboardPage() {
 
   const activeCategories = (categoriesQuery.data ?? []).filter((category) => category.isActive)
   const totalCatalogModels = (categoriesQuery.data ?? []).reduce((sum, category) => sum + category.productCount, 0)
+  const totalStock = (categoriesQuery.data ?? []).reduce((sum, category) => sum + (category.totalStock ?? 0), 0)
   const recentProducts = activeProductsQuery.data?.data ?? []
   const zeroStockSampleCount = recentProducts.filter((product) => product.stockQty === 0).length
+
+  const kacamataBacaCategory = (categoriesQuery.data ?? []).find((c) => c.name.toLowerCase() === "kacamata baca")
+  const kacamataMinusCategory = (categoriesQuery.data ?? []).find((c) => c.name.toLowerCase() === "kacamata minus")
 
   return (
     <div className="flex flex-col gap-6">
@@ -67,7 +71,7 @@ export function DashboardPage() {
       />
 
       {/* Indikator metrik langsung dari data katalog dan kategori aktual di database. */}
-      <section aria-label="Metrik kesiapan operasional" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <section aria-label="Metrik kesiapan operasional" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <div className="flex flex-col justify-between gap-2 rounded-xl border bg-card p-4">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>Model Barang Aktif</span>
@@ -88,7 +92,24 @@ export function DashboardPage() {
 
         <div className="flex flex-col justify-between gap-2 rounded-xl border bg-card p-4">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>Kategori Katalog Aktif</span>
+            <span>Total Stok Barang</span>
+            <Boxes className="size-4 text-primary-text" aria-hidden />
+          </div>
+          {categoriesQuery.isPending ? (
+            <Skeleton className="h-8 w-20" />
+          ) : (
+            <p className="font-serif text-2xl font-semibold tabular-nums">
+              {totalStock} <span className="text-sm font-normal text-muted-foreground">pcs</span>
+            </p>
+          )}
+          <p className="text-xs text-muted-foreground">
+            Akumulasi stok fisik dari seluruh kategori
+          </p>
+        </div>
+
+        <div className="flex flex-col justify-between gap-2 rounded-xl border bg-card p-4">
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>Kategori Katalog</span>
             <Tags className="size-4 text-primary-text" aria-hidden />
           </div>
           {categoriesQuery.isPending ? (
@@ -97,9 +118,9 @@ export function DashboardPage() {
             <p className="font-serif text-2xl font-semibold tabular-nums">{activeCategories.length}</p>
           )}
           <p className="truncate text-xs text-muted-foreground">
-            {activeCategories.length > 0
-              ? activeCategories.map((c) => c.name).join(" · ")
-              : "Belum ada kategori aktif"}
+            {kacamataBacaCategory && kacamataMinusCategory
+              ? `Baca: ${kacamataBacaCategory.productCount} · Minus: ${kacamataMinusCategory.productCount}`
+              : activeCategories.map((c) => c.name).slice(0, 2).join(" · ")}
           </p>
         </div>
 
@@ -123,9 +144,9 @@ export function DashboardPage() {
             <span>Ringkasan Penjualan</span>
             <ChartColumn className="size-4 text-primary-text" aria-hidden />
           </div>
-          <p className="text-sm font-semibold text-foreground">Ringkasan belum tersedia</p>
+          <p className="text-sm font-semibold text-foreground">Belum ada transaksi</p>
           <p className="text-xs leading-relaxed text-muted-foreground">
-            Ringkasan penjualan harian &amp; laba kotor akan tampil setelah modul penjualan dan stok selesai.
+            Ringkasan omzet &amp; laba kotor akan tampil setelah transaksi POS penjualan dicatat.
           </p>
         </div>
       </section>
@@ -183,21 +204,37 @@ export function DashboardPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {recentProducts.map((product) => (
-                    <TableRow key={product.id}>
-                      <TableCell className="font-mono text-xs tabular-nums text-muted-foreground">
-                        {product.sku}
-                      </TableCell>
-                      <TableCell className="font-medium">{product.name}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{product.category.name}</TableCell>
-                      <TableCell className="text-right tabular-nums">{formatRupiah(product.sellPrice)}</TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        <Badge variant={product.stockQty > 0 ? "secondary" : "outline"} className="tabular-nums">
-                          {product.stockQty} pcs
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {recentProducts.map((product) => {
+                    const supplierCodeMatch = product.description?.match(/\[Kode Supplier:\s*([^\]]+)\]/i)
+                    return (
+                      <TableRow key={product.id}>
+                        <TableCell className="font-mono text-xs tabular-nums text-muted-foreground">
+                          {product.sku}
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          <div>{product.name}</div>
+                          {supplierCodeMatch && (
+                            <span className="font-mono text-[11px] text-muted-foreground">
+                              Ref: {supplierCodeMatch[1]}
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{product.category.name}</TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {Number(product.sellPrice) === 0 ? (
+                            <span className="text-xs text-muted-foreground italic">Belum diatur</span>
+                          ) : (
+                            formatRupiah(product.sellPrice)
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          <Badge variant={product.stockQty > 0 ? "secondary" : "outline"} className="tabular-nums">
+                            {product.stockQty} pcs
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
                 </TableBody>
               </Table>
             </div>
@@ -311,21 +348,24 @@ export function DashboardPage() {
           <div className="flex items-center justify-between border-b pb-3">
             <div>
               <h2 id="dashboard-categories-heading" className="font-serif text-base font-semibold">
-                Struktur Kategori Katalog Optik
+                Struktur Kategori &amp; Distribusi Stok Optik
               </h2>
               <p className="text-xs text-muted-foreground">
-                Distribusi jumlah model barang terdaftar pada setiap kategori.
+                Distribusi jumlah model barang terdaftar dan posisi stok fisik pada setiap kategori.
               </p>
             </div>
           </div>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
             {categoriesQuery.data.map((category) => (
-              <div key={category.id} className="flex items-center justify-between rounded-lg border bg-background/60 p-3">
-                <div className="min-w-0">
+              <div key={category.id} className="flex flex-col justify-between gap-2 rounded-lg border bg-background/60 p-3">
+                <div className="flex items-center justify-between">
                   <p className="truncate text-sm font-medium">{category.name}</p>
-                  <p className="text-xs text-muted-foreground tabular-nums">{category.productCount} model barang</p>
+                  <StatusBadge isActive={category.isActive} />
                 </div>
-                <StatusBadge isActive={category.isActive} />
+                <div className="flex flex-col gap-0.5">
+                  <p className="text-xs font-semibold tabular-nums text-foreground">{category.productCount} model barang</p>
+                  <p className="text-xs tabular-nums text-muted-foreground">Stok: {category.totalStock ?? 0} pcs</p>
+                </div>
               </div>
             ))}
           </div>

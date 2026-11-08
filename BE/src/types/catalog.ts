@@ -4,6 +4,7 @@ export type CategoryDto = {
   name: string;
   isActive: boolean;
   productCount: number;
+  totalStock: number;
   createdAt: string;
   updatedAt: string;
 };

@@ -62,6 +62,7 @@ export async function listProducts(query: ProductListQuery): Promise<{ items: Pr
       OR: [
         { name: { contains: search, mode: "insensitive" } },
         { sku: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
       ],
     }),
   };

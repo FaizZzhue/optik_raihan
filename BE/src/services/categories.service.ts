@@ -10,17 +10,22 @@ import type { CategoryListQuery, CreateCategoryInput, UpdateCategoryInput } from
 
 const NOT_FOUND_MESSAGE = "Kategori tidak ditemukan.";
 
-// Jumlah barang dipakai FE untuk menjelaskan kenapa kategori tidak bisa dihapus.
-const categoryInclude = { _count: { select: { products: true } } } satisfies Prisma.CategoryInclude;
+// Jumlah barang dan total stok dipakai FE untuk ringkasan operasional dan inventaris.
+const categoryInclude = {
+  _count: { select: { products: true } },
+  products: { select: { stockQty: true } },
+} satisfies Prisma.CategoryInclude;
 
 type CategoryWithCount = Prisma.CategoryGetPayload<{ include: typeof categoryInclude }>;
 
 function toCategoryDto(category: CategoryWithCount): CategoryDto {
+  const totalStock = category.products.reduce((sum, p) => sum + p.stockQty, 0);
   return {
     id: category.id,
     name: category.name,
     isActive: category.isActive,
     productCount: category._count.products,
+    totalStock,
     createdAt: category.createdAt.toISOString(),
     updatedAt: category.updatedAt.toISOString(),
   };

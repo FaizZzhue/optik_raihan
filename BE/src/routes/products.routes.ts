@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   createProduct,
   deleteProduct,
+  getImportPreview,
   getProduct,
   listProductStockMovements,
   listProducts,
@@ -20,6 +21,8 @@ const canWrite = requireRole(...CATALOG_PERMISSIONS.WRITE_PRODUCTS);
 const canDelete = requireRole(...CATALOG_PERMISSIONS.DELETE_PRODUCTS);
 
 productsRouter.get("/", canRead, validateQuery(productListQuerySchema), listProducts);
+// Preview dataset faktur 42 barang untuk verifikasi owner sebelum import
+productsRouter.get("/import-preview", canRead, getImportPreview);
 productsRouter.get("/:id", canRead, validateParams(idParamSchema), getProduct);
 // Kartu stok (PRD FR-08.3). Hanya baca; mutasi ditulis oleh transaksi sumbernya, tidak pernah lewat endpoint ini.
 productsRouter.get(
