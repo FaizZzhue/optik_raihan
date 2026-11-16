@@ -14,7 +14,7 @@ type SupplierTableProps = {
 
 export function SupplierTable({ suppliers, pendingSupplierId, onEdit, onToggleActive, onDelete }: SupplierTableProps) {
   return (
-    <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
+    <div className="overflow-hidden rounded-2xl border border-border/80 bg-card shadow-2xs">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/40 hover:bg-muted/40">

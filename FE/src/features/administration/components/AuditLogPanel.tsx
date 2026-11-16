@@ -7,10 +7,10 @@ import { TableSkeleton } from "@/components/shared/TableSkeleton"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ALL_ACTIONS_VALUE, AUDIT_ACTION_LABELS } from "@/constants/owner.constants"
-import { getApiErrorMessage } from "@/utils/api-error"
-import { formatDateTime } from "@/utils/format-date"
-import { describeAuditEntry } from "../audit-description"
-import { useAuditLogs } from "../hooks/use-administration"
+import { getApiErrorMessage } from "@/utils/common/api-error"
+import { formatDateTime } from "@/utils/formatting/format-date"
+import { describeAuditEntry } from "@/utils/administration/audit-description"
+import { useAuditLogs } from "@/hooks/administration/use-administration"
 
 export function AuditLogPanel() {
   const [page, setPage] = useState(1)
@@ -42,7 +42,7 @@ export function AuditLogPanel() {
     }
     return (
       <div className="flex flex-col gap-3" aria-busy={logsQuery.isFetching}>
-        <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
+        <div className="overflow-hidden rounded-2xl border border-border/80 bg-card shadow-2xs">
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/40 hover:bg-muted/40">
@@ -88,7 +88,7 @@ export function AuditLogPanel() {
 
   return (
     <section className="flex flex-col gap-5" aria-label="Log aktivitas">
-      <div className="flex flex-col gap-3 rounded-xl border bg-card p-4 shadow-xs sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 rounded-2xl border border-border/80 bg-card p-4.5 shadow-2xs sm:flex-row sm:items-center sm:justify-between">
         <Select
           value={action}
           onValueChange={(value) => {

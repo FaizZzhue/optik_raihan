@@ -7,10 +7,10 @@ import { TableSkeleton } from "@/components/shared/TableSkeleton"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import type { Product } from "@/types/catalog"
-import { getApiErrorMessage } from "@/utils/api-error"
-import { formatRupiah } from "@/utils/format-currency"
-import { formatDateTime } from "@/utils/format-date"
-import { useStockMovements } from "../hooks/use-products"
+import { getApiErrorMessage } from "@/utils/common/api-error"
+import { formatRupiah } from "@/utils/formatting/format-currency"
+import { formatDateTime } from "@/utils/formatting/format-date"
+import { useStockMovements } from "@/hooks/catalog/use-products"
 
 // Nilai sama dengan enum movement_type di BE. Jenis lain ditambahkan bersama fiturnya (penjualan, retur, opname).
 const MOVEMENT_TYPE_LABELS: Record<string, string> = {
@@ -28,8 +28,8 @@ export function StockCardDialog({ product, onOpenChange }: StockCardDialogProps)
     <Dialog open={product !== null} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90svh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="font-serif text-xl">Riwayat stok {product?.sku ?? ""}</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="font-sans text-xl font-bold tracking-tight text-foreground">Riwayat stok {product?.sku ?? ""}</DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground">
             {product ? `${product.name}. Stok saat ini ${product.stockQty}.` : ""}
           </DialogDescription>
         </DialogHeader>

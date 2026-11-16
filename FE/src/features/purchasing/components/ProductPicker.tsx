@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button"
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { SEARCH_DEBOUNCE_MS } from "@/constants/pagination.constants"
-import { useDebouncedValue } from "@/hooks/use-debounced-value"
+import { useDebouncedValue } from "@/hooks/common/use-debounced-value"
 import type { Product } from "@/types/catalog"
-import { getApiErrorMessage } from "@/utils/api-error"
-import { formatRupiah } from "@/utils/format-currency"
-import { useActiveProductSearch } from "../hooks/use-purchases"
+import { getApiErrorMessage } from "@/utils/common/api-error"
+import { formatRupiah } from "@/utils/formatting/format-currency"
+import { useActiveProductSearch } from "@/hooks/purchasing/use-purchases"
 
 type ProductPickerProps = {
   // Barang yang sudah ada di daftar tidak bisa dipilih lagi (satu barang satu baris).

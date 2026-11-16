@@ -1,7 +1,7 @@
 import { CircleAlert, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { getApiErrorMessage } from "@/utils/api-error"
-import { useLogout } from "../hooks/use-auth"
+import { getApiErrorMessage } from "@/utils/common/api-error"
+import { useLogout } from "@/hooks/auth/use-auth"
 
 const LOGOUT_ERROR_ID = "logout-error"
 

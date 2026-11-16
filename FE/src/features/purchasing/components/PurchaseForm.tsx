@@ -11,12 +11,12 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Textarea } from "@/components/ui/textarea"
-import { getApiErrorMessage } from "@/utils/api-error"
-import { formatRupiah } from "@/utils/format-currency"
-import { formatDateShort } from "@/utils/format-date"
-import { applyApiFieldErrors } from "@/utils/form-errors"
-import { useCreatePurchase } from "../hooks/use-purchases"
-import { useSuppliers } from "../hooks/use-suppliers"
+import { getApiErrorMessage } from "@/utils/common/api-error"
+import { formatRupiah } from "@/utils/formatting/format-currency"
+import { formatDateShort } from "@/utils/formatting/format-date"
+import { applyApiFieldErrors } from "@/utils/common/form-errors"
+import { useCreatePurchase } from "@/hooks/purchasing/use-purchases"
+import { useSuppliers } from "@/hooks/purchasing/use-suppliers"
 import { EMPTY_PURCHASE_FORM, purchaseFormSchema, toPurchasePayload, type PurchaseFormValues } from "../schemas"
 import { ProductPicker } from "./ProductPicker"
 
@@ -83,17 +83,17 @@ export function PurchaseForm() {
       )}
 
       {/* Bagian Header Faktur Pembelian */}
-      <div className="rounded-xl border bg-card p-5 shadow-xs">
+      <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-2xs">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-border/70 pb-3">
           <div>
-            <h2 className="font-serif text-lg font-medium">Header Faktur Pembelian</h2>
+            <h2 className="font-sans text-base font-bold text-foreground">Header Faktur Pembelian</h2>
             <p className="text-xs text-muted-foreground">
               Gunakan informasi pada bagian atas faktur dari supplier sebagai referensi pencatatan.
             </p>
           </div>
           <div className="rounded-lg border border-border/80 bg-muted/40 px-3 py-1.5 text-right text-xs">
             <span className="text-muted-foreground">Tanggal Pembelian: </span>
-            <span className="font-medium tabular-nums text-foreground">{todayLabel} (Otomatis)</span>
+            <span className="font-semibold tabular-nums text-foreground">{todayLabel} (Otomatis)</span>
           </div>
         </div>
 
@@ -164,7 +164,7 @@ export function PurchaseForm() {
       <section className="flex flex-col gap-3 rounded-xl border bg-card p-5 shadow-xs" aria-labelledby="purchase-items-title">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/70 pb-3">
           <div>
-            <h2 id="purchase-items-title" className="font-serif text-lg font-medium">
+            <h2 id="purchase-items-title" className="font-sans text-base font-bold text-foreground">
               Barang dibeli
             </h2>
             <p className="text-xs text-muted-foreground">
@@ -283,23 +283,23 @@ export function PurchaseForm() {
       </section>
 
       {/* Bagian Ringkasan (Summary) Faktur Pembelian */}
-      <div className="rounded-xl border bg-card p-5 shadow-xs">
+      <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-2xs">
         <div className="grid gap-4 border-b border-border/70 pb-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <span className="text-xs text-muted-foreground">Jumlah Baris Barang</span>
-            <p className="mt-0.5 font-serif text-xl font-semibold tabular-nums">{fields.length} baris</p>
+            <span className="text-xs font-medium text-muted-foreground">Jumlah Baris Barang</span>
+            <p className="mt-0.5 font-sans text-2xl font-bold tracking-tight text-foreground tabular-nums">{fields.length} baris</p>
           </div>
           <div>
-            <span className="text-xs text-muted-foreground">Total Kuantitas</span>
-            <p className="mt-0.5 font-serif text-xl font-semibold tabular-nums">{totalQuantity} pcs</p>
+            <span className="text-xs font-medium text-muted-foreground">Total Kuantitas</span>
+            <p className="mt-0.5 font-sans text-2xl font-bold tracking-tight text-foreground tabular-nums">{totalQuantity} pcs</p>
           </div>
           <div>
-            <span className="text-xs text-muted-foreground">Subtotal Barang</span>
-            <p className="mt-0.5 font-serif text-xl font-semibold tabular-nums">{formatRupiah(previewTotal.toString())}</p>
+            <span className="text-xs font-medium text-muted-foreground">Subtotal Barang</span>
+            <p className="mt-0.5 font-sans text-2xl font-bold tracking-tight text-foreground tabular-nums">{formatRupiah(previewTotal.toString())}</p>
           </div>
           <div>
-            <span className="text-xs text-muted-foreground">Perkiraan Total Pembelian</span>
-            <p className="mt-0.5 font-serif text-xl font-semibold tabular-nums text-primary">
+            <span className="text-xs font-medium text-muted-foreground">Perkiraan Total Pembelian</span>
+            <p className="mt-0.5 font-sans text-2xl font-bold tracking-tight tabular-nums text-primary-text">
               {formatRupiah(previewTotal.toString())}
             </p>
           </div>

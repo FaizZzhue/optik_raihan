@@ -1,10 +1,10 @@
 import { ErrorState } from "@/components/shared/ErrorState"
 import { TableSkeleton } from "@/components/shared/TableSkeleton"
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { getApiErrorMessage } from "@/utils/api-error"
-import { formatRupiah } from "@/utils/format-currency"
-import { formatDateTime } from "@/utils/format-date"
-import { usePurchase } from "../hooks/use-purchases"
+import { getApiErrorMessage } from "@/utils/common/api-error"
+import { formatRupiah } from "@/utils/formatting/format-currency"
+import { formatDateTime } from "@/utils/formatting/format-date"
+import { usePurchase } from "@/hooks/purchasing/use-purchases"
 
 type PurchaseDetailViewProps = {
   purchaseId: number
@@ -31,16 +31,16 @@ export function PurchaseDetailView({ purchaseId }: PurchaseDetailViewProps) {
   return (
     <div className="flex flex-col gap-5">
       {/* Header Dokumen Faktur */}
-      <dl className="grid gap-4 rounded-xl border bg-card p-5 text-sm shadow-xs sm:grid-cols-2 lg:grid-cols-4">
+      <dl className="grid gap-4 rounded-2xl border border-border/80 bg-card p-5 text-sm shadow-2xs sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <dt className="text-xs font-medium text-muted-foreground">Supplier</dt>
-          <dd className="mt-1 font-serif text-base font-semibold text-foreground">{purchase.supplier.name}</dd>
+          <dd className="mt-1 font-sans text-base font-bold text-foreground">{purchase.supplier.name}</dd>
         </div>
         <div>
           <dt className="text-xs font-medium text-muted-foreground">No. faktur supplier</dt>
           <dd className="mt-1">
             {purchase.supplierInvoiceNo ? (
-              <span className="rounded bg-muted px-2 py-0.5 font-mono text-xs font-medium text-foreground">
+              <span className="rounded-md bg-secondary px-2.5 py-1 font-mono text-xs font-semibold text-secondary-foreground">
                 {purchase.supplierInvoiceNo}
               </span>
             ) : (
@@ -66,21 +66,21 @@ export function PurchaseDetailView({ purchaseId }: PurchaseDetailViewProps) {
 
       {/* Ringkasan Faktur (Summary) */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-xl border bg-card p-4 shadow-xs">
-          <span className="text-xs text-muted-foreground">Jumlah Baris Barang</span>
-          <p className="mt-1 font-serif text-xl font-semibold tabular-nums">{purchase.items.length} baris</p>
+        <div className="rounded-2xl border border-border/80 bg-card p-4.5 shadow-2xs">
+          <span className="text-xs font-medium text-muted-foreground">Jumlah Baris Barang</span>
+          <p className="mt-1 font-sans text-2xl font-bold tracking-tight text-foreground tabular-nums">{purchase.items.length} baris</p>
         </div>
-        <div className="rounded-xl border bg-card p-4 shadow-xs">
-          <span className="text-xs text-muted-foreground">Total Kuantitas Masuk</span>
-          <p className="mt-1 font-serif text-xl font-semibold tabular-nums">{totalQuantity} pcs</p>
+        <div className="rounded-2xl border border-border/80 bg-card p-4.5 shadow-2xs">
+          <span className="text-xs font-medium text-muted-foreground">Total Kuantitas Masuk</span>
+          <p className="mt-1 font-sans text-2xl font-bold tracking-tight text-foreground tabular-nums">{totalQuantity} pcs</p>
         </div>
-        <div className="rounded-xl border bg-card p-4 shadow-xs">
-          <span className="text-xs text-muted-foreground">Subtotal</span>
-          <p className="mt-1 font-serif text-xl font-semibold tabular-nums">{formatRupiah(purchase.total)}</p>
+        <div className="rounded-2xl border border-border/80 bg-card p-4.5 shadow-2xs">
+          <span className="text-xs font-medium text-muted-foreground">Subtotal</span>
+          <p className="mt-1 font-sans text-2xl font-bold tracking-tight text-foreground tabular-nums">{formatRupiah(purchase.total)}</p>
         </div>
-        <div className="rounded-xl border bg-card p-4 shadow-xs">
-          <span className="text-xs text-muted-foreground">Total Pembelian</span>
-          <p className="mt-1 font-serif text-xl font-semibold tabular-nums text-primary">
+        <div className="rounded-2xl border border-primary/20 bg-secondary/35 p-4.5 shadow-2xs">
+          <span className="text-xs font-medium text-muted-foreground">Total Pembelian</span>
+          <p className="mt-1 font-sans text-2xl font-bold tracking-tight tabular-nums text-primary-text">
             {formatRupiah(purchase.total)}
           </p>
         </div>

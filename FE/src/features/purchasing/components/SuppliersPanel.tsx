@@ -10,8 +10,8 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/in
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { STATUS_FILTER_LABELS, STATUS_FILTERS, type StatusFilter } from "@/constants/status-filter.constants"
 import type { Supplier } from "@/types/purchasing"
-import { getApiErrorMessage } from "@/utils/api-error"
-import { useDeleteSupplier, useSuppliers, useUpdateSupplier } from "../hooks/use-suppliers"
+import { getApiErrorMessage } from "@/utils/common/api-error"
+import { useDeleteSupplier, useSuppliers, useUpdateSupplier } from "@/hooks/purchasing/use-suppliers"
 import { SupplierFormDialog } from "./SupplierFormDialog"
 import { SupplierTable } from "./SupplierTable"
 
@@ -135,17 +135,17 @@ export function SuppliersPanel() {
     <section className="flex flex-col gap-5" aria-label="Daftar supplier">
       {!suppliersQuery.isPending && !suppliersQuery.isError && (
         <div className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border bg-card p-4 shadow-xs">
+          <div className="rounded-2xl border border-border/80 bg-card p-4.5 shadow-2xs">
             <p className="text-xs font-medium text-muted-foreground">Total Pemasok Terdaftar</p>
-            <p className="mt-1 font-serif text-2xl font-semibold tabular-nums">{suppliers.length}</p>
+            <p className="mt-1 font-sans text-2xl font-bold tracking-tight text-foreground tabular-nums">{suppliers.length}</p>
           </div>
-          <div className="rounded-xl border bg-card p-4 shadow-xs">
+          <div className="rounded-2xl border border-border/80 bg-card p-4.5 shadow-2xs">
             <p className="text-xs font-medium text-muted-foreground">Supplier Aktif</p>
-            <p className="mt-1 font-serif text-2xl font-semibold tabular-nums text-primary">{activeCount}</p>
+            <p className="mt-1 font-sans text-2xl font-bold tracking-tight text-primary-text tabular-nums">{activeCount}</p>
           </div>
-          <div className="rounded-xl border bg-card p-4 shadow-xs">
+          <div className="rounded-2xl border border-border/80 bg-card p-4.5 shadow-2xs">
             <p className="text-xs font-medium text-muted-foreground">Supplier Nonaktif</p>
-            <p className="mt-1 font-serif text-2xl font-semibold tabular-nums text-muted-foreground">
+            <p className="mt-1 font-sans text-2xl font-bold tracking-tight text-muted-foreground tabular-nums">
               {inactiveCount}
             </p>
           </div>

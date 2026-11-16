@@ -10,8 +10,8 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/in
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { STATUS_FILTER_LABELS, STATUS_FILTERS, type StatusFilter } from "@/constants/status-filter.constants"
 import type { Category } from "@/types/catalog"
-import { getApiErrorMessage } from "@/utils/api-error"
-import { useCategories, useDeleteCategory, useUpdateCategory } from "../hooks/use-categories"
+import { getApiErrorMessage } from "@/utils/common/api-error"
+import { useCategories, useDeleteCategory, useUpdateCategory } from "@/hooks/catalog/use-categories"
 import { CategoryFormDialog } from "./CategoryFormDialog"
 import { CategoryTable } from "./CategoryTable"
 
@@ -134,20 +134,20 @@ export function CategoriesPanel() {
     <section className="flex flex-col gap-4" aria-label="Daftar kategori">
       {!categoriesQuery.isPending && !categoriesQuery.isError && allCategories.length > 0 && (
         <div className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border bg-card px-4 py-3">
-            <p className="text-xs text-muted-foreground">Total Kategori</p>
-            <p className="font-serif text-xl font-semibold tabular-nums">{allCategories.length}</p>
+          <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-2xs">
+            <p className="text-xs font-medium text-muted-foreground">Total Kategori</p>
+            <p className="font-sans text-2xl font-bold tracking-tight text-foreground tabular-nums mt-0.5">{allCategories.length}</p>
           </div>
-          <div className="rounded-xl border bg-card px-4 py-3">
-            <p className="text-xs text-muted-foreground">Status Kategori</p>
-            <p className="text-sm font-medium tabular-nums">
+          <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-2xs">
+            <p className="text-xs font-medium text-muted-foreground">Status Kategori</p>
+            <p className="text-sm font-semibold tabular-nums mt-1">
               <span className="text-success">{activeCount} aktif</span>
               <span className="text-muted-foreground"> · {allCategories.length - activeCount} nonaktif</span>
             </p>
           </div>
-          <div className="rounded-xl border bg-card px-4 py-3">
-            <p className="text-xs text-muted-foreground">Total Barang Terhubung</p>
-            <p className="font-serif text-xl font-semibold tabular-nums">{totalProducts} model</p>
+          <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-2xs">
+            <p className="text-xs font-medium text-muted-foreground">Total Barang Terhubung</p>
+            <p className="font-sans text-2xl font-bold tracking-tight text-foreground tabular-nums mt-0.5">{totalProducts} model</p>
           </div>
         </div>
       )}

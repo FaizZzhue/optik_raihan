@@ -9,11 +9,11 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ALL_SUPPLIERS_VALUE } from "@/constants/owner.constants"
-import { getApiErrorMessage } from "@/utils/api-error"
-import { formatRupiah } from "@/utils/format-currency"
-import { formatDateTime } from "@/utils/format-date"
-import { usePurchases } from "../hooks/use-purchases"
-import { useSuppliers } from "../hooks/use-suppliers"
+import { getApiErrorMessage } from "@/utils/common/api-error"
+import { formatRupiah } from "@/utils/formatting/format-currency"
+import { formatDateTime } from "@/utils/formatting/format-date"
+import { usePurchases } from "@/hooks/purchasing/use-purchases"
+import { useSuppliers } from "@/hooks/purchasing/use-suppliers"
 
 export function PurchasesPanel() {
   const [page, setPage] = useState(1)
@@ -60,7 +60,7 @@ export function PurchasesPanel() {
     }
     return (
       <div className="flex flex-col gap-3" aria-busy={purchasesQuery.isFetching}>
-        <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
+        <div className="overflow-hidden rounded-2xl border border-border/80 bg-card shadow-2xs">
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/40 hover:bg-muted/40">

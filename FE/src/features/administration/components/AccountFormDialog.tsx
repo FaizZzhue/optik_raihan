@@ -1,7 +1,8 @@
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { FormField } from "@/components/shared/FormField"
+import { PasswordInput } from "@/components/shared/PasswordInput"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,10 +15,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { MANAGED_USER_ROLES, PASSWORD_HINT, USER_ROLE_LABELS, USER_ROLES } from "@/constants/auth.constants"
 import type { UserAccount } from "@/types/administration"
-import { getApiErrorMessage } from "@/utils/api-error"
-import { applyApiFieldErrors } from "@/utils/form-errors"
-import { useCreateAccount } from "../hooks/use-administration"
+import { getApiErrorMessage } from "@/utils/common/api-error"
+import { applyApiFieldErrors } from "@/utils/common/form-errors"
+import { useCreateAccount } from "@/hooks/administration/use-administration"
 import { createAccountSchema, type CreateAccountFormValues } from "../schemas"
 
 type AccountFormDialogProps = {
@@ -31,9 +34,10 @@ export function AccountFormDialog({ open, onOpenChange, onSaved }: AccountFormDi
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90svh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Tambah akun pegawai</DialogTitle>
+          <DialogTitle>Tambah akun</DialogTitle>
           <DialogDescription>
-            Akun baru selalu berperan pegawai. Sampaikan password langsung kepada pegawai; sistem tidak menampilkannya lagi.
+            Pilih peran Pegawai (dashboard back-office) atau Kasir (hanya halaman kasir). Sampaikan password langsung
+            kepada pemilik akun; sistem tidak menampilkannya lagi.
           </DialogDescription>
         </DialogHeader>
         <AccountForm onSaved={onSaved} />
@@ -47,22 +51,23 @@ function AccountForm({ onSaved }: Pick<AccountFormDialogProps, "onSaved">) {
   const [formError, setFormError] = useState<string | null>(null)
   const {
     register,
+    control,
     handleSubmit,
     setError,
     formState: { errors },
   } = useForm<CreateAccountFormValues>({
     resolver: zodResolver(createAccountSchema),
-    defaultValues: { username: "", name: "", password: "", confirmPassword: "" },
+    defaultValues: { username: "", name: "", role: USER_ROLES.STAFF, password: "", confirmPassword: "" },
   })
 
-  const onSubmit = handleSubmit(({ username, name, password }) => {
+  const onSubmit = handleSubmit(({ username, name, role, password }) => {
     setFormError(null)
     createMutation.mutate(
-      { username, name, password },
+      { username, name, role, password },
       {
         onSuccess: onSaved,
         onError: (error) => {
-          if (!applyApiFieldErrors(error, setError, ["username", "name", "password"])) {
+          if (!applyApiFieldErrors(error, setError, ["username", "name", "role", "password"])) {
             setFormError(getApiErrorMessage(error))
           }
         },
@@ -85,16 +90,37 @@ function AccountForm({ onSaved }: Pick<AccountFormDialogProps, "onSaved">) {
       <FormField id="account-name" label="Nama" error={errors.name?.message}>
         {(aria) => <Input id="account-name" maxLength={100} {...aria} {...register("name")} />}
       </FormField>
-      <FormField id="account-password" label="Password" error={errors.password?.message} hint="Minimal 12 karakter.">
+      <FormField id="account-role" label="Peran" error={errors.role?.message}>
         {(aria) => (
-          <Input id="account-password" type="password" autoComplete="new-password" {...aria} {...register("password")} />
+          <Controller
+            control={control}
+            name="role"
+            render={({ field }) => (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger id="account-role" className="w-full" onBlur={field.onBlur} {...aria}>
+                  <SelectValue placeholder="Pilih peran" />
+                </SelectTrigger>
+                <SelectContent>
+                  {MANAGED_USER_ROLES.map((role) => (
+                    <SelectItem key={role} value={role}>
+                      {USER_ROLE_LABELS[role]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+        )}
+      </FormField>
+      <FormField id="account-password" label="Password" error={errors.password?.message} hint={PASSWORD_HINT}>
+        {(aria) => (
+          <PasswordInput id="account-password" autoComplete="new-password" {...aria} {...register("password")} />
         )}
       </FormField>
       <FormField id="account-confirm-password" label="Ulangi password" error={errors.confirmPassword?.message}>
         {(aria) => (
-          <Input
+          <PasswordInput
             id="account-confirm-password"
-            type="password"
             autoComplete="new-password"
             {...aria}
             {...register("confirmPassword")}

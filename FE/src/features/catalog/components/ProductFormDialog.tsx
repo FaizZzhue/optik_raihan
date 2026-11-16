@@ -18,10 +18,10 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import type { Category, Product } from "@/types/catalog"
-import { getApiErrorMessage } from "@/utils/api-error"
-import { formatRupiah } from "@/utils/format-currency"
-import { applyApiFieldErrors } from "@/utils/form-errors"
-import { useCreateProduct, useUpdateProduct } from "../hooks/use-products"
+import { getApiErrorMessage } from "@/utils/common/api-error"
+import { formatRupiah } from "@/utils/formatting/format-currency"
+import { applyApiFieldErrors } from "@/utils/common/form-errors"
+import { useCreateProduct, useUpdateProduct } from "@/hooks/catalog/use-products"
 import {
   EMPTY_PRODUCT_FORM,
   productFormSchema,

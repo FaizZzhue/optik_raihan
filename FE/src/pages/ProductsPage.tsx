@@ -1,5 +1,5 @@
 import { PageHeader } from "@/components/shared/PageHeader"
-import { useCurrentUser } from "@/features/auth/hooks/use-auth"
+import { useCurrentUser } from "@/hooks/auth/use-auth"
 import { ProductsPanel } from "@/features/catalog/components/ProductsPanel"
 
 export function ProductsPage() {

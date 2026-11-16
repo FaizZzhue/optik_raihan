@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { FormField } from "@/components/shared/FormField"
+import { PasswordInput } from "@/components/shared/PasswordInput"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,11 +14,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
+import { PASSWORD_HINT } from "@/constants/auth.constants"
 import type { UserAccount } from "@/types/administration"
-import { getApiErrorMessage } from "@/utils/api-error"
-import { applyApiFieldErrors } from "@/utils/form-errors"
-import { useResetAccountPassword } from "../hooks/use-administration"
+import { getApiErrorMessage } from "@/utils/common/api-error"
+import { applyApiFieldErrors } from "@/utils/common/form-errors"
+import { useResetAccountPassword } from "@/hooks/administration/use-administration"
 import { resetPasswordSchema, type ResetPasswordFormValues } from "../schemas"
 
 type ResetPasswordDialogProps = {
@@ -78,16 +79,15 @@ function ResetPasswordForm({ account, onDone }: { account: UserAccount; onDone: 
           <AlertDescription>{formError}</AlertDescription>
         </Alert>
       )}
-      <FormField id="reset-password" label="Password baru" error={errors.password?.message} hint="Minimal 12 karakter.">
+      <FormField id="reset-password" label="Password baru" error={errors.password?.message} hint={PASSWORD_HINT}>
         {(aria) => (
-          <Input id="reset-password" type="password" autoFocus autoComplete="new-password" {...aria} {...register("password")} />
+          <PasswordInput id="reset-password" autoFocus autoComplete="new-password" {...aria} {...register("password")} />
         )}
       </FormField>
       <FormField id="reset-confirm-password" label="Ulangi password baru" error={errors.confirmPassword?.message}>
         {(aria) => (
-          <Input
+          <PasswordInput
             id="reset-confirm-password"
-            type="password"
             autoComplete="new-password"
             {...aria}
             {...register("confirmPassword")}

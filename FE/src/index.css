@@ -7,8 +7,8 @@
 
 @theme inline {
     --font-heading: var(--font-sans);
-    --font-sans: 'Geist Variable', sans-serif;
-    --font-serif: 'Georgia', 'Cambria', 'Times New Roman', Times, serif;
+    --font-sans: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-serif: var(--font-sans);
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -26,6 +26,19 @@
     --color-input: var(--input);
     --color-border: var(--border);
     --color-info: var(--info);
+    --color-info-text: var(--info-text);
+    --color-warning-text: var(--warning-text);
+    --color-success-text: var(--success-text);
+    --color-chart-bar: var(--chart-bar);
+    --color-bank-from: var(--bank-from);
+    --color-bank-via: var(--bank-via);
+    --color-bank-to: var(--bank-to);
+    --color-bank-foreground: var(--bank-foreground);
+    --color-chip-gold-from: var(--chip-gold-from);
+    --color-chip-gold-to: var(--chip-gold-to);
+    --shadow-card: var(--elevation-card);
+    --shadow-card-hover: var(--elevation-card-hover);
+    --radius-card: var(--card-radius);
     --color-warning: var(--warning);
     --color-success: var(--success);
     --color-destructive: var(--destructive);
@@ -48,106 +61,175 @@
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
     --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) * 1.4);
-    --radius-2xl: calc(var(--radius) * 1.8);
-    --radius-3xl: calc(var(--radius) * 2.2);
-    --radius-4xl: calc(var(--radius) * 2.6);
+    --radius-xl: calc(var(--radius) * 1.3);
+    --radius-2xl: calc(var(--radius) * 1.6);
+    --radius-3xl: calc(var(--radius) * 2.0);
+    --radius-4xl: calc(var(--radius) * 2.5);
 }
 
-/* Token warna DEC-023. Aturan di PROJECT-CONTEXT.md bagian 4; tabel rasio kontras: git show 1b26217:DESIGN_SYSTEM.md (bagian 2.5). */
+/*
+ * RAIHAN MODERN GREEN DESIGN SYSTEM (DEC-039)
+ * Monetra-style: kanvas abu sangat muda, kartu putih membulat, satu aksen lime (#B5F34D)
+ * yang hanya dipakai untuk tombol utama, item aktif, dan sorotan grafik.
+ * Dark Theme memakai nama token yang sama (kanvas #101210, permukaan #191C19).
+ */
 :root {
     color-scheme: light;
-    --background: #F6F1E7;
-    --foreground: #342B25;
-    --card: #FFFCF6;
-    --card-foreground: #342B25;
-    --popover: #FFFCF6;
-    --popover-foreground: #342B25;
-    --primary: #66734A;
-    --primary-foreground: #FFFCF6;
-    /* Teks beraksen Olive. Dipisah dari --primary agar bisa diganti tanpa mengubah warna tombol. */
-    --primary-text: #566239;
-    --secondary: #DCE4D2;
-    --secondary-foreground: #342B25;
-    --muted: #ECE5D8;
-    --muted-foreground: #655A50;
-    --accent: #DCE4D2;
-    --accent-foreground: #342B25;
-    /* Burnt Orange: hanya elemen non-teks (gagal kontras sebagai teks). */
-    --brand-accent: #C87545;
-    --destructive: #A63A2B;
-    --success: #2F6B3F;
-    --warning: #8A5A00;
-    --info: #2F5F80;
-    /* --border untuk garis pemisah dekoratif; --input untuk batas kontrol (>= 3:1). */
-    --border: #E3DACA;
-    --input: #857A6B;
-    --ring: #66734A;
-    /* Palet grafik selaras dengan identitas Optical Luxury (Olive, Terracotta, Espresso, Ochre, Slate). */
-    --chart-1: #66734A;
-    --chart-2: #C87545;
-    --chart-3: #342B25;
-    --chart-4: #8A5A00;
-    --chart-5: #2F5F80;
-    --radius: 0.625rem;
-    --sidebar: #FFFCF6;
-    --sidebar-foreground: #342B25;
-    --sidebar-primary: #66734A;
-    --sidebar-primary-foreground: #FFFCF6;
-    --sidebar-accent: #DCE4D2;
-    --sidebar-accent-foreground: #342B25;
-    --sidebar-border: #E3DACA;
-    --sidebar-ring: #66734A;
+    --background: #F4F5F7;
+    --foreground: #111827;
+    --card: #FFFFFF;
+    --card-foreground: #111827;
+    --popover: #FFFFFF;
+    --popover-foreground: #111827;
+
+    /* Primary Accent: Vibrant Lime Green; teks di atasnya selalu gelap. */
+    --primary: #B5F34D;
+    --primary-foreground: #101210;
+    /* Teks beraksen hijau di latar terang (kontras >= 4.5:1). */
+    --primary-text: #3E6316;
+
+    --secondary: #EAF4DC;
+    --secondary-foreground: #22380E;
+    --muted: #ECEEF1;
+    --muted-foreground: #6B7280;
+    --accent: #EAF4DC;
+    --accent-foreground: #22380E;
+
+    --brand-accent: #B5F34D;
+    --destructive: #DC2626;
+    --success: #16A34A;
+    --warning: #D97706;
+    --info: #0284C7;
+    /* Varian teks semantik untuk label kecil di atas kartu putih (kontras >= 4.5:1). */
+    --success-text: #15803D;
+    --warning-text: #B45309;
+    --info-text: #0369A1;
+
+    --border: #EEF0F3;
+    --input: #E2E5EA;
+    /* Cincin fokus cukup gelap agar terlihat (>= 3:1) di kartu putih maupun kanvas. */
+    --ring: #65A30D;
+
+    --chart-1: #94D82D;
+    --chart-2: #22380E;
+    --chart-3: #6B7280;
+    --chart-4: #D97706;
+    --chart-5: #0284C7;
+    /* Batang grafik non-aktif: abu sangat muda; batang aktif memakai --primary. */
+    --chart-bar: #ECEEF1;
+
+    /* Kartu pendapatan bergaya kartu bank: selalu gelap di kedua tema. */
+    --bank-from: #24421F;
+    --bank-via: #142612;
+    --bank-to: #0B120A;
+    --bank-foreground: #F4F7EF;
+    --chip-gold-from: #F5DB8B;
+    --chip-gold-to: #C9973A;
+
+    --radius: 0.875rem;
+    --card-radius: 1.375rem; /* 22px */
+    --elevation-card: 0 1px 2px rgb(17 24 39 / 0.04), 0 1px 1px rgb(17 24 39 / 0.02);
+    --elevation-card-hover: 0 10px 24px -10px rgb(17 24 39 / 0.18), 0 2px 4px rgb(17 24 39 / 0.04);
+
+    --sidebar: #FFFFFF;
+    --sidebar-foreground: #111827;
+    --sidebar-primary: #B5F34D;
+    --sidebar-primary-foreground: #101210;
+    --sidebar-accent: #EAF4DC;
+    --sidebar-accent-foreground: #101210;
+    --sidebar-border: #EEF0F3;
+    --sidebar-ring: #65A30D;
 }
 
 .dark {
     color-scheme: dark;
-    --background: #211F1A;
-    --foreground: #F3EBDD;
-    --card: #302D26;
-    --card-foreground: #F3EBDD;
-    --popover: #302D26;
-    --popover-foreground: #F3EBDD;
-    --primary: #A8B58A;
-    --primary-foreground: #211F1A;
-    --primary-text: #A8B58A;
-    --secondary: #3A4030;
-    --secondary-foreground: #F3EBDD;
-    --muted: #3A362E;
-    --muted-foreground: #B5AA98;
-    --accent: #3A4030;
-    --accent-foreground: #F3EBDD;
-    --brand-accent: #D68A60;
-    --destructive: #EE8F80;
-    --success: #8FC79A;
-    --warning: #E3B25C;
-    --info: #8DB9D6;
-    --border: #49443A;
-    --input: #857C6B;
-    --ring: #A8B58A;
-    --chart-1: #A8B58A;
-    --chart-2: #D68A60;
-    --chart-3: #F3EBDD;
-    --chart-4: #E3B25C;
-    --chart-5: #8DB9D6;
-    --sidebar: #302D26;
-    --sidebar-foreground: #F3EBDD;
-    --sidebar-primary: #A8B58A;
-    --sidebar-primary-foreground: #211F1A;
-    --sidebar-accent: #3A4030;
-    --sidebar-accent-foreground: #F3EBDD;
-    --sidebar-border: #49443A;
-    --sidebar-ring: #A8B58A;
+    --background: #101210;
+    --foreground: #F2F4EF;
+    --card: #191C19;
+    --card-foreground: #F2F4EF;
+    --popover: #191C19;
+    --popover-foreground: #F2F4EF;
+    
+    /* Primary Accent: Vibrant Lime Green in Dark Mode */
+    --primary: #B5F34D;
+    --primary-foreground: #101210;
+    --primary-text: #B5F34D;
+    
+    --secondary: #22291E;
+    --secondary-foreground: #E5F4D3;
+    --muted: #222622;
+    --muted-foreground: #929A90;
+    --accent: #22291E;
+    --accent-foreground: #E5F4D3;
+    
+    --brand-accent: #B5F34D;
+    --destructive: #F87171;
+    --success: #4ADE80;
+    --warning: #FBBF24;
+    --info: #38BDF8;
+    --success-text: #4ADE80;
+    --warning-text: #FBBF24;
+    --info-text: #38BDF8;
+
+    --border: #2A2F2A;
+    --input: #3E463E;
+    --ring: #B5F34D;
+    
+    --chart-1: #B5F34D;
+    --chart-2: #4ADE80;
+    --chart-3: #929A90;
+    --chart-4: #FBBF24;
+    --chart-5: #38BDF8;
+    --chart-bar: #262B26;
+
+    --bank-from: #2A4A24;
+    --bank-via: #172B14;
+    --bank-to: #0D160C;
+    --bank-foreground: #F4F7EF;
+    --chip-gold-from: #F5DB8B;
+    --chip-gold-to: #C9973A;
+
+    --elevation-card: 0 1px 2px rgb(0 0 0 / 0.35);
+    --elevation-card-hover: 0 12px 28px -12px rgb(0 0 0 / 0.7);
+
+    --sidebar: #151815;
+    --sidebar-foreground: #F2F4EF;
+    --sidebar-primary: #B5F34D;
+    --sidebar-primary-foreground: #101210;
+    --sidebar-accent: #22291E;
+    --sidebar-accent-foreground: #F2F4EF;
+    --sidebar-border: #262B26;
+    --sidebar-ring: #B5F34D;
+}
+
+/* Cincin fokus keyboard yang konsisten untuk elemen interaktif kustom (link kartu, tile, rail). */
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+  }
   body {
-    @apply bg-background text-foreground;
-    }
+    @apply bg-background text-foreground antialiased selection:bg-primary selection:text-primary-foreground;
+  }
   html {
     @apply font-sans;
-    }
+  }
+}
+
+/* Hormati preferensi pengguna yang mengurangi gerakan: animasi dan transisi praktis dimatikan. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

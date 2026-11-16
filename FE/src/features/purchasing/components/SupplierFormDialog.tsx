@@ -16,9 +16,9 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import type { Supplier } from "@/types/purchasing"
-import { getApiErrorMessage } from "@/utils/api-error"
-import { applyApiFieldErrors } from "@/utils/form-errors"
-import { useCreateSupplier, useUpdateSupplier } from "../hooks/use-suppliers"
+import { getApiErrorMessage } from "@/utils/common/api-error"
+import { applyApiFieldErrors } from "@/utils/common/form-errors"
+import { useCreateSupplier, useUpdateSupplier } from "@/hooks/purchasing/use-suppliers"
 import { supplierFormSchema, toSupplierFormValues, type SupplierFormValues } from "../schemas"
 
 const FORM_FIELDS = ["name", "phone", "address", "notes"] as const

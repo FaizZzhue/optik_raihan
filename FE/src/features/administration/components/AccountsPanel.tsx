@@ -9,13 +9,18 @@ import { TableSkeleton } from "@/components/shared/TableSkeleton"
 import { Button } from "@/components/ui/button"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { USER_ROLE_LABELS, USER_ROLES } from "@/constants/auth.constants"
+import { MANAGED_USER_ROLES, USER_ROLE_LABELS, USER_ROLES, type UserRole } from "@/constants/auth.constants"
 import type { UserAccount } from "@/types/administration"
-import { getApiErrorMessage } from "@/utils/api-error"
-import { formatDateShort } from "@/utils/format-date"
-import { useAccounts, useUpdateAccount } from "../hooks/use-administration"
+import { getApiErrorMessage } from "@/utils/common/api-error"
+import { formatDateShort } from "@/utils/formatting/format-date"
+import { useAccounts, useUpdateAccount } from "@/hooks/administration/use-administration"
 import { AccountFormDialog } from "./AccountFormDialog"
 import { ResetPasswordDialog } from "./ResetPasswordDialog"
+
+// Pegawai dan kasir dikelola owner; akun owner tidak (BE menolak 403).
+function isManagedRole(role: UserRole): boolean {
+  return (MANAGED_USER_ROLES as readonly UserRole[]).includes(role)
+}
 
 export function AccountsPanel() {
   const accountsQuery = useAccounts()
@@ -26,8 +31,9 @@ export function AccountsPanel() {
   const [search, setSearch] = useState("")
 
   const accounts = useMemo(() => accountsQuery.data ?? [], [accountsQuery.data])
-  const staffAccounts = useMemo(() => accounts.filter((a) => a.role === USER_ROLES.STAFF), [accounts])
-  const activeStaffCount = useMemo(() => staffAccounts.filter((a) => a.isActive).length, [staffAccounts])
+  const managedAccounts = useMemo(() => accounts.filter((a) => isManagedRole(a.role)), [accounts])
+  const activeManagedCount = useMemo(() => managedAccounts.filter((a) => a.isActive).length, [managedAccounts])
+  const cashierCount = useMemo(() => accounts.filter((a) => a.role === USER_ROLES.CASHIER).length, [accounts])
 
   const filteredAccounts = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -83,7 +89,7 @@ export function AccountsPanel() {
       )
     }
     return (
-      <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
+      <div className="overflow-hidden rounded-2xl border border-border/80 bg-card shadow-2xs">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/40 hover:bg-muted/40">
@@ -122,7 +128,7 @@ export function AccountsPanel() {
                   </TableCell>
                   <TableCell className="pr-4">
                     {/* Akun owner tidak dikelola dari sini (BE menolak dengan 403), jadi aksinya tidak ditampilkan. */}
-                    {account.role === USER_ROLES.STAFF ? (
+                    {isManagedRole(account.role) ? (
                       <div className="flex justify-end gap-1">
                         <IconActionButton
                           icon={KeyRound}
@@ -159,19 +165,17 @@ export function AccountsPanel() {
     <section className="flex flex-col gap-5" aria-label="Daftar akun">
       {!accountsQuery.isPending && !accountsQuery.isError && (
         <div className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border bg-card p-4 shadow-xs">
+          <div className="rounded-2xl border border-border/80 bg-card p-4.5 shadow-2xs">
             <p className="text-xs font-medium text-muted-foreground">Total Akun Pengguna</p>
-            <p className="mt-1 font-serif text-2xl font-semibold tabular-nums">{accounts.length}</p>
+            <p className="mt-1 font-sans text-2xl font-bold tracking-tight text-foreground tabular-nums">{accounts.length}</p>
           </div>
-          <div className="rounded-xl border bg-card p-4 shadow-xs">
-            <p className="text-xs font-medium text-muted-foreground">Pegawai Aktif</p>
-            <p className="mt-1 font-serif text-2xl font-semibold tabular-nums text-primary">{activeStaffCount}</p>
+          <div className="rounded-2xl border border-border/80 bg-card p-4.5 shadow-2xs">
+            <p className="text-xs font-medium text-muted-foreground">Pegawai & Kasir Aktif</p>
+            <p className="mt-1 font-sans text-2xl font-bold tracking-tight text-primary-text tabular-nums">{activeManagedCount}</p>
           </div>
-          <div className="rounded-xl border bg-card p-4 shadow-xs">
-            <p className="text-xs font-medium text-muted-foreground">Pegawai Nonaktif</p>
-            <p className="mt-1 font-serif text-2xl font-semibold tabular-nums text-muted-foreground">
-              {staffAccounts.length - activeStaffCount}
-            </p>
+          <div className="rounded-2xl border border-border/80 bg-card p-4.5 shadow-2xs">
+            <p className="text-xs font-medium text-muted-foreground">Akun Kasir</p>
+            <p className="mt-1 font-sans text-2xl font-bold tracking-tight text-foreground tabular-nums">{cashierCount}</p>
           </div>
         </div>
       )}
@@ -199,13 +203,13 @@ export function AccountsPanel() {
           className="self-start sm:self-auto"
         >
           <Plus data-icon="inline-start" aria-hidden />
-          Tambah akun pegawai
+          Tambah akun
         </Button>
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Akun tidak dapat dihapus agar jejak log aktivitas dan pencatatan stok tetap utuh. Nonaktifkan akun pegawai yang
-        sudah tidak bekerja; aksesnya langsung diputus seketika.
+        Akun tidak dapat dihapus agar jejak log aktivitas dan pencatatan stok tetap utuh. Nonaktifkan akun pegawai atau
+        kasir yang sudah tidak bekerja; aksesnya langsung diputus seketika.
       </p>
 
       <ActionNotice notice={notice} />

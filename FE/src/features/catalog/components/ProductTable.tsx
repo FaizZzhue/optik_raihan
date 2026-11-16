@@ -3,7 +3,7 @@ import { IconActionButton } from "@/components/shared/IconActionButton"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import type { Product } from "@/types/catalog"
-import { formatRupiah } from "@/utils/format-currency"
+import { formatRupiah } from "@/utils/formatting/format-currency"
 
 type ProductTableProps = {
   products: Product[]
@@ -26,7 +26,7 @@ export function ProductTable({
   onShowStock,
 }: ProductTableProps) {
   return (
-    <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
+    <div className="overflow-hidden rounded-2xl border border-border/80 bg-card shadow-2xs">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/40 hover:bg-muted/40">

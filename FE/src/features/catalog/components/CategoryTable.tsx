@@ -3,7 +3,7 @@ import { IconActionButton } from "@/components/shared/IconActionButton"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import type { Category } from "@/types/catalog"
-import { formatDateShort } from "@/utils/format-date"
+import { formatDateShort } from "@/utils/formatting/format-date"
 
 type CategoryTableProps = {
   categories: Category[]
@@ -30,7 +30,7 @@ function describeCategoryPurpose(name: string): string | null {
 
 export function CategoryTable({ categories, pendingCategoryId, onEdit, onToggleActive, onDelete }: CategoryTableProps) {
   return (
-    <div className="rounded-xl border bg-card">
+    <div className="overflow-hidden rounded-2xl border border-border/80 bg-card shadow-2xs">
       <Table>
         <TableHeader>
           <TableRow>

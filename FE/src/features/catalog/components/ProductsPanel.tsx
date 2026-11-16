@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useSearchParams } from "react-router-dom"
 import { Package, Plus, SearchX } from "lucide-react"
 import { ActionNotice, type Notice } from "@/components/shared/ActionNotice"
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog"
@@ -12,11 +13,11 @@ import type { UserRole } from "@/constants/auth.constants"
 import { ALL_CATEGORIES_VALUE, CATALOG_PERMISSIONS } from "@/constants/catalog.constants"
 import { DEFAULT_PAGE_SIZE, SEARCH_DEBOUNCE_MS } from "@/constants/pagination.constants"
 import { STATUS_FILTERS, type StatusFilter } from "@/constants/status-filter.constants"
-import { useDebouncedValue } from "@/hooks/use-debounced-value"
+import { useDebouncedValue } from "@/hooks/common/use-debounced-value"
 import type { Product, ProductListParams } from "@/types/catalog"
-import { getApiErrorMessage } from "@/utils/api-error"
-import { useCategories } from "../hooks/use-categories"
-import { useDeleteProduct, useProducts, useUpdateProduct } from "../hooks/use-products"
+import { getApiErrorMessage } from "@/utils/common/api-error"
+import { useCategories } from "@/hooks/catalog/use-categories"
+import { useDeleteProduct, useProducts, useUpdateProduct } from "@/hooks/catalog/use-products"
 import { ProductFilters } from "./ProductFilters"
 import { ProductFormDialog } from "./ProductFormDialog"
 import { ProductTable } from "./ProductTable"
@@ -29,7 +30,9 @@ type ProductsPanelProps = {
 type FormDialogState = { open: boolean; product: Product | null }
 
 export function ProductsPanel({ role }: ProductsPanelProps) {
-  const [search, setSearch] = useState("")
+  const [searchParams] = useSearchParams()
+  // Kata kunci awal dari pencarian dashboard (/barang?q=...).
+  const [search, setSearch] = useState(() => searchParams.get("q") ?? "")
   const [categoryValue, setCategoryValue] = useState(ALL_CATEGORIES_VALUE)
   const [status, setStatus] = useState<StatusFilter>(STATUS_FILTERS.ALL)
   const [page, setPage] = useState(1)
@@ -153,13 +156,13 @@ export function ProductsPanel({ role }: ProductsPanelProps) {
 
   return (
     <section className="flex flex-col gap-5" aria-label="Daftar barang">
-      <div className="rounded-xl border border-border/80 bg-card/60 px-4 py-3 text-xs text-muted-foreground">
-        <span className="font-medium text-foreground">Identitas SKU & Buku Besar Stok:</span> SKU internal (
+      {/* <div className="rounded-2xl border border-border/80 bg-secondary/30 px-4 py-3.5 text-xs text-muted-foreground">
+        <span className="font-semibold text-foreground">Identitas SKU &amp; Buku Besar Stok:</span> SKU internal (
         <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px] text-foreground">P-XXXXXX</code>) diterbitkan
         otomatis oleh sistem dan terpisah dari kode item supplier pada faktur. Saldo stok tidak dapat diubah dari form
         master barang—klik <span className="font-medium text-foreground">Riwayat stok</span> pada baris barang untuk
         memeriksa kartu stok inventaris.
-      </div>
+      </div> */}
 
       <div className="flex flex-col gap-3 rounded-xl border bg-card p-4 shadow-xs">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">

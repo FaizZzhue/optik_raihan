@@ -1,6 +1,6 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom"
 import { ErrorState } from "@/components/shared/ErrorState"
-import { useAuth } from "@/features/auth/hooks/use-auth"
+import { useAuth } from "@/hooks/auth/use-auth"
 import { DashboardLayoutSkeleton } from "@/layouts/DashboardLayout"
 
 // Hanya mengatur tampilan. Otorisasi sebenarnya tetap di BE (requireAuth).

@@ -15,9 +15,9 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import type { Category } from "@/types/catalog"
-import { getApiErrorMessage } from "@/utils/api-error"
-import { applyApiFieldErrors } from "@/utils/form-errors"
-import { useCreateCategory, useUpdateCategory } from "../hooks/use-categories"
+import { getApiErrorMessage } from "@/utils/common/api-error"
+import { applyApiFieldErrors } from "@/utils/common/form-errors"
+import { useCreateCategory, useUpdateCategory } from "@/hooks/catalog/use-categories"
 import { categoryFormSchema, type CategoryFormValues } from "../schemas"
 
 type CategoryFormDialogProps = {
