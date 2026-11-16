@@ -26,6 +26,7 @@ These preferences are confirmed defaults. Project requirements and explicit curr
 - Prefer React Bits as a source for relevant animation/visual interaction patterns when appropriate and compatible.
 - These are preferred defaults, not a requirement to install or use both libraries on every screen. Check the project's existing dependencies, framework, licensing/usage constraints, accessibility, performance, and compatibility first.
 - Avoid replacing a functioning design system without a concrete requirement.
+- **Optik Raihan Visual Direction**: Uses the **Raihan Modern Green Design System** (Modern Clean Minimalist, Monetra-inspired data dashboard, Vibrant Lime Green `#B5F34D` accent, Dual Theme Light & Dark Mode, clean modern sans-serif typography, rounded-2xl cards). Do not reintroduce brown, vintage, or retro serif styling.
 
 ## Fullstack boundaries
 
