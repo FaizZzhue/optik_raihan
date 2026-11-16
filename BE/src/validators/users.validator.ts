@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PASSWORD_MIN_LENGTH } from "../constants/auth.constants.js";
+import { MANAGED_USER_ROLES, PASSWORD_MIN_LENGTH, USER_ROLES } from "../constants/auth.constants.js";
 import { statusFilterSchema } from "./common.validator.js";
 
 // Aturan username sama dengan seed owner (prisma/seed.ts) dan CHECK huruf kecil di database (DEC-031).
@@ -21,17 +21,21 @@ const nameSchema = z
 const passwordSchema = z
   .string({ error: "Password wajib diisi." })
   .min(PASSWORD_MIN_LENGTH, `Password minimal ${PASSWORD_MIN_LENGTH} karakter.`)
-  .max(128, "Password maksimal 128 karakter.");
+  .max(128, "Password maksimal 128 karakter.")
+  .regex(/[A-Z]/, "Password harus mengandung minimal 1 huruf besar.")
+  .regex(/[a-z]/, "Password harus mengandung minimal 1 huruf kecil.")
+  .regex(/[0-9]/, "Password harus mengandung minimal 1 angka.");
 
 export const userListQuerySchema = z.object({
   status: statusFilterSchema,
 });
 
-// Role tidak diterima dari body: akun yang dibuat lewat API selalu pegawai (PRD FR-01.6).
+// Role hanya pegawai atau kasir; owner tidak bisa dibuat lewat API (PRD FR-01.6, DEC-043). Default pegawai.
 export const createUserSchema = z.object({
   username: usernameSchema,
   name: nameSchema,
   password: passwordSchema,
+  role: z.enum(MANAGED_USER_ROLES, { error: "Role harus pegawai atau kasir." }).default(USER_ROLES.STAFF),
 });
 
 export const updateUserSchema = z

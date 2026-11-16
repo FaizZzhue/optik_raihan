@@ -1,5 +1,5 @@
 import { AUDIT_ACTIONS, AUDIT_ENTITY_TYPES } from "../constants/audit.constants.js";
-import { USER_ROLES } from "../constants/auth.constants.js";
+import { MANAGED_USER_ROLES, type UserRole } from "../constants/auth.constants.js";
 import { ERROR_CODES } from "../constants/error.constants.js";
 import type { User } from "../generated/prisma/client.js";
 import { prisma } from "../lib/prisma.js";
@@ -32,14 +32,18 @@ function toUserAccountDto(user: User): UserAccountDto {
   };
 }
 
-// Owner hanya mengelola akun pegawai (PRD FR-01.6). Akun owner tidak diubah lewat API ini, sehingga owner
-// tidak bisa menonaktifkan dirinya sendiri atau owner lain dan terkunci dari aplikasi.
+// Owner hanya mengelola akun pegawai dan kasir (PRD FR-01.6, DEC-043). Akun owner tidak diubah lewat API ini,
+// sehingga owner tidak bisa menonaktifkan dirinya sendiri atau owner lain dan terkunci dari aplikasi.
+function isManagedRole(role: UserRole): boolean {
+  return (MANAGED_USER_ROLES as readonly UserRole[]).includes(role);
+}
+
 async function findStaffAccount(id: number): Promise<User> {
   const user = await prisma.user.findUnique({ where: { id } });
   if (!user) {
     throw new AppError(404, ERROR_CODES.NOT_FOUND, NOT_FOUND_MESSAGE);
   }
-  if (user.role !== USER_ROLES.STAFF) {
+  if (!isManagedRole(user.role)) {
     throw new AppError(403, ERROR_CODES.FORBIDDEN, "Akun owner tidak dapat diubah lewat menu ini.");
   }
   return user;
@@ -59,7 +63,7 @@ export async function createStaffUser(input: CreateUserInput, actorId: number): 
   try {
     const user = await prisma.$transaction(async (tx) => {
       const created = await tx.user.create({
-        data: { username: input.username, name: input.name, passwordHash, role: USER_ROLES.STAFF },
+        data: { username: input.username, name: input.name, passwordHash, role: input.role },
       });
       await recordAudit(tx, {
         actorId,

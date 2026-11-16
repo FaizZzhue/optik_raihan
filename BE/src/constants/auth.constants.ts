@@ -2,13 +2,17 @@
 export const USER_ROLES = {
   OWNER: "owner",
   STAFF: "staff",
+  CASHIER: "cashier",
 } as const;
 
 export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
+
+// Role yang boleh dibuat dan dikelola owner lewat /api/users. Owner tidak pernah dibuat lewat API (DEC-037, DEC-043).
+export const MANAGED_USER_ROLES = [USER_ROLES.STAFF, USER_ROLES.CASHIER] as const;
 
 export const AUTH_COOKIE_NAME = "access_token";
 
 // 8 jam, kira-kira satu shift kerja (keputusan developer, DEC-013). Tanpa refresh token.
 export const SESSION_DURATION_SECONDS = 8 * 60 * 60;
 
-export const PASSWORD_MIN_LENGTH = 12;
+export const PASSWORD_MIN_LENGTH = 8;

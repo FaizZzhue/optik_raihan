@@ -28,6 +28,9 @@ const seedEnvSchema = z.object({
   SEED_STAFF_USERNAME: usernameSchema.optional().or(z.literal("")),
   SEED_STAFF_NAME: z.string().trim().min(1).max(100).optional().or(z.literal("")),
   SEED_STAFF_PASSWORD: z.string().min(PASSWORD_MIN_LENGTH).max(128).optional().or(z.literal("")),
+  SEED_CASHIER_USERNAME: usernameSchema.optional().or(z.literal("")),
+  SEED_CASHIER_NAME: z.string().trim().min(1).max(100).optional().or(z.literal("")),
+  SEED_CASHIER_PASSWORD: z.string().min(PASSWORD_MIN_LENGTH).max(128).optional().or(z.literal("")),
   SEED_DEV_MASTER_DATA: z.enum(["true", "false"]).optional().default("true"),
 });
 
@@ -139,6 +142,29 @@ if (
       },
     });
     console.log(`Pegawai awal "${seedEnv.SEED_STAFF_USERNAME}" dibuat.`);
+  }
+}
+
+// Opsional: buat akun kasir di lingkungan non-produksi bila variabel SEED_CASHIER_* diisi lengkap.
+if (
+  isDevEnvironment &&
+  seedEnv.SEED_CASHIER_USERNAME &&
+  seedEnv.SEED_CASHIER_NAME &&
+  seedEnv.SEED_CASHIER_PASSWORD
+) {
+  const existingCashier = await prisma.user.findUnique({ where: { username: seedEnv.SEED_CASHIER_USERNAME } });
+  if (existingCashier) {
+    console.log(`User kasir "${seedEnv.SEED_CASHIER_USERNAME}" sudah ada. Pembuatan kasir dilewati.`);
+  } else {
+    await prisma.user.create({
+      data: {
+        username: seedEnv.SEED_CASHIER_USERNAME,
+        name: seedEnv.SEED_CASHIER_NAME,
+        passwordHash: await hashPassword(seedEnv.SEED_CASHIER_PASSWORD),
+        role: USER_ROLES.CASHIER,
+      },
+    });
+    console.log(`Kasir awal "${seedEnv.SEED_CASHIER_USERNAME}" dibuat.`);
   }
 }
 

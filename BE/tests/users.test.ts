@@ -5,7 +5,7 @@ import { prisma } from "../src/lib/prisma.js";
 import { verifyPassword } from "../src/utils/password.js";
 import { TEST_PASSWORD, apiAs, createSessionCookie, createTestUser, deleteAllUsers } from "./helpers.js";
 
-const NEW_PASSWORD = "password-baru-pegawai-1";
+const NEW_PASSWORD = "Password-baru-pegawai-1";
 
 let owner: ReturnType<typeof apiAs>;
 let ownerId: number;
@@ -51,12 +51,11 @@ describe("Owner mengelola akun pegawai (FR-01.6)", () => {
     expect(res.text).not.toContain("$argon2");
   });
 
-  it("membuat akun: selalu role pegawai, username dinormalisasi, password tersimpan sebagai hash", async () => {
+  it("membuat akun: default role pegawai, username dinormalisasi, password tersimpan sebagai hash", async () => {
     const res = await owner.post("/api/users", {
       username: "  Pegawai.Baru ",
       name: "Pegawai Baru",
       password: NEW_PASSWORD,
-      role: "owner",
     });
 
     expect(res.status).toBe(201);
@@ -66,14 +65,42 @@ describe("Owner mengelola akun pegawai (FR-01.6)", () => {
     expect(await verifyPassword(stored.passwordHash, NEW_PASSWORD)).toBe(true);
   });
 
-  it("username kembar → 409 field username; password < 12 dan username tidak valid → 400", async () => {
+  // DEC-043: role dari body diterima, tetapi hanya pegawai atau kasir. Owner tidak pernah bisa dibuat lewat API.
+  it("membuat akun kasir; role owner ditolak 400 tanpa membuat akun", async () => {
+    const cashier = await owner.post("/api/users", {
+      username: "kasir.baru",
+      name: "Kasir Baru",
+      password: NEW_PASSWORD,
+      role: "cashier",
+    });
+    const asOwner = await owner.post("/api/users", {
+      username: "owner.palsu",
+      name: "Owner Palsu",
+      password: NEW_PASSWORD,
+      role: "owner",
+    });
+
+    expect(cashier.status).toBe(201);
+    expect(cashier.body.data).toMatchObject({ username: "kasir.baru", role: "cashier", isActive: true });
+    expect(asOwner.status).toBe(400);
+    expect(asOwner.body.error.details.map((d: { field: string }) => d.field)).toEqual(["role"]);
+    expect(await prisma.user.findUnique({ where: { username: "owner.palsu" } })).toBeNull();
+  });
+
+  it("username kembar → 409 field username; password tidak valid (< 8 karakter / tanpa huruf besar / tanpa angka) dan username tidak valid → 400", async () => {
     const duplicate = await owner.post("/api/users", { username: "STAFF.akun", name: "X", password: NEW_PASSWORD });
-    const invalid = await owner.post("/api/users", { username: "a b", name: "X", password: "pendek" });
+    const invalid = await owner.post("/api/users", { username: "a b", name: "X", password: "Ab1" });
+    const missingUpper = await owner.post("/api/users", { username: "valid.user", name: "X", password: "password123" });
+    const missingNumber = await owner.post("/api/users", { username: "valid.user2", name: "X", password: "PasswordSaja" });
 
     expect(duplicate.status).toBe(409);
     expect(duplicate.body.error.details).toEqual([{ field: "username", message: "Username sudah dipakai." }]);
     expect(invalid.status).toBe(400);
     expect(invalid.body.error.details.map((d: { field: string }) => d.field).sort()).toEqual(["password", "username"]);
+    for (const res of [missingUpper, missingNumber]) {
+      expect(res.status).toBe(400);
+      expect(res.body.error.details.map((d: { field: string }) => d.field)).toEqual(["password"]);
+    }
   });
 
   it("menonaktifkan pegawai langsung memutus sesinya (AC-01.4), lalu mengaktifkan kembali", async () => {
@@ -108,6 +135,37 @@ describe("Owner mengelola akun pegawai (FR-01.6)", () => {
   it("id tidak ada → 404; body kosong → 400", async () => {
     expect((await owner.patch("/api/users/999999", { isActive: false })).status).toBe(404);
     expect((await owner.patch(`/api/users/${staffId}`, {})).status).toBe(400);
+  });
+});
+
+describe("Akses akun kasir (DEC-043)", () => {
+  it("kasir hanya membaca katalog; tulis barang, kategori, pembelian, supplier, akun, dan log ditolak 403", async () => {
+    const cashierUser = await createTestUser({ username: "kasir.akses", role: USER_ROLES.CASHIER });
+    const cashier = apiAs(await createSessionCookie(cashierUser.id));
+
+    const reads = await Promise.all([cashier.get("/api/products"), cashier.get("/api/categories")]);
+    const denied = await Promise.all([
+      cashier.post("/api/products", { name: "X", categoryId: 1, sellPrice: "1000", costPrice: "500" }),
+      cashier.post("/api/categories", { name: "X" }),
+      cashier.get("/api/purchases"),
+      cashier.get("/api/suppliers"),
+      cashier.get("/api/users"),
+      cashier.get("/api/audit-logs"),
+    ]);
+
+    expect(reads.map((res) => res.status)).toEqual([200, 200]);
+    expect(denied.map((res) => res.status)).toEqual([403, 403, 403, 403, 403, 403]);
+  });
+
+  it("owner bisa menonaktifkan dan mereset akun kasir", async () => {
+    const cashierUser = await createTestUser({ username: "kasir.kelola", role: USER_ROLES.CASHIER });
+
+    const off = await owner.patch(`/api/users/${cashierUser.id}`, { isActive: false });
+    const reset = await owner.post(`/api/users/${cashierUser.id}/reset-password`, { password: NEW_PASSWORD });
+
+    expect(off.status).toBe(200);
+    expect(off.body.data).toMatchObject({ role: "cashier", isActive: false });
+    expect(reset.status).toBe(204);
   });
 });
 

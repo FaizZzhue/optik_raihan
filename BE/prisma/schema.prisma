@@ -15,6 +15,7 @@ datasource db {
 enum UserRole {
   owner
   staff
+  cashier
 
   @@map("user_role")
 }
